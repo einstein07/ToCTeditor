@@ -34,4 +34,10 @@ public class Phrase extends TemplatePart{
     public void setNextPart(String nextPart) {
         this.nextPart = nextPart;
     }
+
+    public String getTurtle(){
+        return "<" + getPartName() + "> a toct:Phrase\n" +
+                "    ; toct:hasValue \"" + getValue() + "\"^^xsd:string\n" +
+                "    ; toct:hasNextPart <" + getNextPart() + "> .";
+    }
 }

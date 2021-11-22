@@ -53,4 +53,12 @@ public class PolymorphicWord extends TemplatePart{
     public void setNextPart(String nextPart) {
         this.nextPart = nextPart;
     }
+
+    public String getTurtle(){
+        return "<" + getPartName() + "> a toct:PolymorphicWord\n" +
+                "    ; toct:relies on <" + getReliesOn() + ">\n" +
+                "    ; toct:hasFirstPart <" + getFirstPart() + ">\n" +
+                "    ; toct:hasLastPart <" + getLastPart() + ">\n" +
+                "    ; toct:hasNextPart <" + getNextPart() + "> .";
+    }
 }

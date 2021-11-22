@@ -23,4 +23,9 @@ public class Root extends TemplatePart{
     public void setValue(String value) {
         this.value = value;
     }
+
+    public String getTurtle(){
+        return "<" + getPartName() + "> a toct:Root\n" +
+                "    ; toct:hasValue \"" + getValue() + "\"^^xsd:string .";
+    }
 }

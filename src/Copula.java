@@ -33,4 +33,10 @@ public class Copula extends TemplatePart{
     public void setNextPart(String nextPart) {
         this.nextPart = nextPart;
     }
+
+    public String getTurtle(){
+        return "<" + getPartName() + "> a toct:Copula\n" +
+                "    ; toct:hasLabel \"" + getLabel() + "\"^^xsd:string\n" +
+                "    ; toct:hasNextPart <" + getNextPart() + "> .";
+    }
 }

@@ -45,4 +45,11 @@ public class Concord extends TemplatePart{
     public void setNextPart(String nextPart) {
         this.nextPart = nextPart;
     }
+
+    public String getTurtle(){
+        return "<" + getPartName() + "> a toct:Concord\n" +
+                "    ; cao:hasConcordType <" + getType() + ">\n" +
+                "    ; toct:hasLabel \"" + getLabel() + "\"^^xsd:string\n" +
+                "    ; toct:hasNextPart <" + getNextPart() + "> .";
+    }
 }

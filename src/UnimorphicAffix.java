@@ -10,6 +10,15 @@
 public class UnimorphicAffix extends TemplatePart{
 
     private String value;
+    private String nextPart;
+
+    public String getNextPart() {
+        return nextPart;
+    }
+
+    public void setNextPart(String nextPart) {
+        this.nextPart = nextPart;
+    }
 
     public UnimorphicAffix(String partName, String value) {
         super(partName);
@@ -22,5 +31,11 @@ public class UnimorphicAffix extends TemplatePart{
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public String getTurtle(){
+        return "<" + getPartName() + "> a toct:UnimorphicAffix\n" +
+                "    ; toct:hasValue \"" + getValue() + "\"^^xsd:string\n" +
+                "    ; toct:hasNextPart <" + getNextPart() + "> .";
     }
 }

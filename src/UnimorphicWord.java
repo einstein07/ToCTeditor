@@ -33,4 +33,10 @@ public class UnimorphicWord extends TemplatePart{
     public void setNextPart(String nextPart) {
         this.nextPart = nextPart;
     }
+
+    public String getTurtle(){
+        return "<" + getPartName() + "> a toct:UnimorphicWord\n" +
+                "    ; toct:hasValue \"" + getValue() + "\"^^xsd:string\n" +
+                "    ; toct:hasNextPart <" + getNextPart() + "> ." ;
+    }
 }

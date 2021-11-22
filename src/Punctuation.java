@@ -23,4 +23,9 @@ public class Punctuation extends TemplatePart{
     public void setValue(String value) {
         this.value = value;
     }
+
+    public String getTurtle(){
+        return "<" + getPartName() + "> a toct:Punctuation\n" +
+                "    ; toct:hasValue \"" + getValue() + "^^xsd:string .";
+    }
 }

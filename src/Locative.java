@@ -1,4 +1,12 @@
-
+/*
+ * @(#) Locative.java   1.0   Nov 22, 2021
+ *
+ * Sindiso Mkhatshwa (mkhsin035@myuct.ac.za)
+ *
+ * Nitschke Laboratory, UCT
+ *
+ * @(#) $Id$
+ */
 public class Locative extends TemplatePart {
     private String label;
     private String nextPart;

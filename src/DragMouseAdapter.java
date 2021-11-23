@@ -41,7 +41,14 @@ public class DragMouseAdapter extends MouseAdapter {
         Component c = parent.getComponentAt(startPt);
         index = parent.getComponentZOrder(c);
 
-        ToCTeditor.controller.setIndex(index);
+        if (ToCTeditor.gui.getIndex() != index){
+            ToCTeditor.gui.setIndex(index);
+            ToCTeditor.gui.templateItems.updateEditorPanel(ToCTeditor.gui.templateItems.getPartPanelEditor(ToCTeditor.gui.getCurrentPart()));
+            ToCTeditor.gui.templateItems.updateTurtlePanel(ToCTeditor.gui.templateItems.getPartPanelTurtle(ToCTeditor.gui.getCurrentPart()));
+        }
+        //System.out.println("Clicked item index: " + index);
+
+
     }
 
 

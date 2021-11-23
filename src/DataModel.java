@@ -21,7 +21,13 @@ public class DataModel {
         templateItems.add(part);
     }
     public TemplatePart getPart(int index){
-        return templateItems.get(index);
+        if (index >= 0 && index < this.templateItems.size()){
+            return templateItems.get(index);
+        }
+        else{
+            //System.out.println("Index Out of bounds");
+            return null;
+        }
     }
     public int getSize(){
         return this.templateItems.size();

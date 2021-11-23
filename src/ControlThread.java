@@ -16,10 +16,7 @@ public class ControlThread extends Thread {
 
     public ControlThread(DataModel dataModel) {
         this.dataModel = dataModel;
-        prevPart = null;
-
-        index = 0;
-        currentPart = dataModel.getPart(index);
+        index = -1;
     }
     public void setIndex(int index){
         this.index = index;
@@ -42,9 +39,16 @@ public class ControlThread extends Thread {
                     prevPart = currentPart;
                 }
             }*/
-            if ( dataModel.getSize() > 0 ){
+            /**if ( dataModel.getSize() > 0 ){
                 currentPart = dataModel.getPart(index);
-            }
+                if (prevPart != null && currentPart != null)  {
+                    if (!currentPart.equals(prevPart)) {*/
+                        currentPart = dataModel.getPart(index);
+                        ToCTeditor.gui.setCallTemplateItems(true);
+                /**        prevPart = currentPart;
+                    }
+                }
+            }*/
         }
     }
 }

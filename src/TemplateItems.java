@@ -375,30 +375,71 @@ public class TemplateItems {
         return p;
     }
     private JComponent createItemComponent(JComponent name, JComponent type) {
-        name.setFont(new Font("Sans", Font.PLAIN, 14));
-        name.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        //JLabel l = new JLabel(String.format(" %04d ", i));
-        type.setFont(new Font("Sans", Font.PLAIN, 8));
-        type.setMaximumSize(new Dimension(40,50));
 
         JPanel p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+        p.setBackground(Color.white);
         p.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createEmptyBorder(5, 5, 5, 5),
                 BorderFactory.createLineBorder(Color.BLUE, 2)));
-        JPanel pnlLabel = new JPanel();
-        pnlLabel.setLayout(new BoxLayout(pnlLabel, BoxLayout.LINE_AXIS));
-        pnlLabel.setMaximumSize(new Dimension(100,50));
 
-        pnlLabel.add(type);
-        pnlLabel.add(Box.createRigidArea(new Dimension(60,0)));
+        /**
+         * Set up panel for menu button, and then add menu button to the panel
+         */
+        JPanel pnlKebab = new JPanel();
+        pnlKebab.setLayout(new BoxLayout(pnlKebab, BoxLayout.LINE_AXIS));
+        pnlKebab.setMaximumSize(new Dimension(100,20));
+        pnlKebab.setBackground(Color.white);
+
+        JPopupMenu menu = new JPopupMenu();
+        menu.setMaximumSize(new Dimension(200, 100));
+        menu.add(new JMenuItem("Cars"));
+        menu.add(new JMenuItem("Trains"));
+
+        Icon icon = new ImageIcon("kebabmenu.PNG");
+        final JButton button = new JButton();
+        button.setIcon(new ImageIcon(TemplateItems.class.getResource("/kebab30.png")));
+        button.setBorderPainted(false);
+        button.setBackground(Color.white);
+        button.setMaximumSize(new Dimension(15,15));
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed (ActionEvent ev){
+                menu.show(button, button.getWidth(), button.getHeight());
+            }
+        });
+        pnlKebab.add(Box.createRigidArea(new Dimension(30,0)));
+        pnlKebab.add(button);
+        /**
+         * Set up panel for the item name, and then add a label to the panel
+         */
+        name.setFont(new Font("Sans", Font.PLAIN, 14));
+        name.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JPanel pnlName = new JPanel();
+        pnlName.setLayout(new BoxLayout(pnlName, BoxLayout.Y_AXIS));
+        pnlName.setMaximumSize(new Dimension(100,50));
+        pnlName.add(name);
+        pnlName.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pnlName.setBackground(Color.white);
+
+        /**
+         * Set up panel for the item type, and then add a label to the panel
+         */
+        type.setFont(new Font("Sans", Font.PLAIN, 8));
+        type.setMaximumSize(new Dimension(40,50));
+
+        JPanel pnlType = new JPanel();
+        pnlType.setLayout(new BoxLayout(pnlType, BoxLayout.LINE_AXIS));
+        pnlType.setMaximumSize(new Dimension(100,30));
+        pnlType.add(type);
+        pnlType.add(Box.createRigidArea(new Dimension(60,0)));
+        pnlType.setBackground(Color.white);
 
 
-        p.setMaximumSize(new Dimension(100, 50));
-        p.setMinimumSize(new Dimension(100, 50));
-        p.add(name);
-        p.add(pnlLabel);
+        p.setMaximumSize(new Dimension(100, 90));
+        p.add(pnlKebab);
+        p.add(pnlName);
+        p.add(pnlType);
         p.setOpaque(false);
         return p;
     }

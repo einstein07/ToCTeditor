@@ -34,7 +34,7 @@ public class DataModel {
     }
 
     public List<TemplatePart> getData(){
-        return Collections.unmodifiableList(templateItems);
+        return templateItems /**Collections.unmodifiableList(templateItems)*/;
     }
 
 }

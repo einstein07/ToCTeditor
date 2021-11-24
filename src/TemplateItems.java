@@ -16,6 +16,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.List;
+import java.util.Objects;
 
 public class TemplateItems {
     private int frameX;
@@ -393,20 +394,22 @@ public class TemplateItems {
 
         JPopupMenu menu = new JPopupMenu();
         menu.setMaximumSize(new Dimension(200, 100));
-        menu.add(new JMenuItem("Cars"));
-        menu.add(new JMenuItem("Trains"));
+        menu.add(new JMenuItem("Duplicate"));
+        menu.add(new JMenuItem("Change type"));
+        menu.add(new JMenuItem("Remove"));
 
         Icon icon = new ImageIcon("kebabmenu.PNG");
         final JButton button = new JButton();
-        button.setIcon(new ImageIcon(TemplateItems.class.getResource("/kebab30.png")));
+        button.setIcon(createImageIcon("/images/kebab30.png"));
         button.setBorderPainted(false);
         button.setBackground(Color.white);
         button.setMaximumSize(new Dimension(15,15));
         button.addActionListener(new ActionListener() {
             public void actionPerformed (ActionEvent ev){
-                menu.show(button, button.getWidth(), button.getHeight());
+                menu.show(button, 0/**button.getWidth()*/, button.getHeight());
             }
         });
+
         pnlKebab.add(Box.createRigidArea(new Dimension(30,0)));
         pnlKebab.add(button);
         /**
@@ -443,6 +446,18 @@ public class TemplateItems {
         p.setOpaque(false);
         return p;
     }
+
+    /** Returns an ImageIcon, or null if the path was invalid. */
+    protected ImageIcon createImageIcon(String path) {
+        java.net.URL imgURL = getClass().getResource(path);
+        if (imgURL != null) {
+            return new ImageIcon(imgURL);
+        } else {
+            System.err.println("Couldn't find file: " + path);
+            return null;
+        }
+    }
+
     public JPanel getPartPanelEditor(TemplatePart currentPart) {
         
         String type = getPartType(currentPart);
@@ -589,6 +604,7 @@ public class TemplateItems {
         }
         return type;
     }
+
     public JPanel setupSlotEditor(Slot part){
         /**
          * Slot Editor Panel
@@ -617,6 +633,20 @@ public class TemplateItems {
         txtPartName.setFont(new Font("Sans", Font.PLAIN, 14));
         txtPartName.setMaximumSize(new Dimension(225, 30));
         txtPartName.setText(part.getPartName());
+        /**txtPartName.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                System.out.println("Inside action performed for textfield");
+                String text = txtPartName.getText();
+                ToCTeditor.controller.setPartName(text);
+                System.out.println("Current text: " + text);
+            }
+        });*/
+        /**txtPartName.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent evt) {
+
+            }
+        });*/
 
         pnlPartName.add(Box.createRigidArea(new Dimension(5,0)));
         pnlPartName.add(lblPartName);

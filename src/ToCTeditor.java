@@ -25,11 +25,12 @@ public class ToCTeditor {
         dataModel.addPart(new Slot("slot1", "s1", "concord1"));
         dataModel.addPart(new Concord("concord1", "c1", "subjectVerb", "root1"));
         dataModel.addPart(new Root("root1", "nke"));
+        dataModel.addPart(new PolymorphicWord("p1", "slot1", "o", "nke", "q1"));
 
-        /**controller = new ControlThread(dataModel);
-        controller.start();*/
         gui = new ViewThread(homeScreen, templateItems, createItem, dataModel);
         gui.start();
 
+        controller = new ControlThread(dataModel);
+        controller.start();
     }
 }

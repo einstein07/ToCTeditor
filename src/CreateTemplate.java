@@ -52,6 +52,16 @@ public class CreateTemplate {
         txtEntryTemplateName.setMaximumSize(new Dimension(400,30));
         txtEntryTemplateName.setFont(new Font("Sans", Font.PLAIN, 14));
 
+        txtEntryTemplateName.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                System.out.println("Inside action performed for textfield");
+                String text = txtEntryTemplateName.getText().trim();
+                //ToCTeditor.controller.setPartName(text);
+                System.out.println("Current text: " + text);
+            }
+        });
+
         /**
          * Supported language dropdown button
          */

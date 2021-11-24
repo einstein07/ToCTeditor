@@ -183,13 +183,13 @@ public class CreateItem {
     public JComponent createTemplateItem(String type){
 
         JButton btnType = new JButton(type);
-        btnType.setFont(new Font("Sans", Font.PLAIN, 15));
+        btnType.setFont(new Font("Sans", Font.PLAIN, 13));
         btnType.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnType.setAlignmentY(Component.CENTER_ALIGNMENT);
         btnType.setMaximumSize(new Dimension(150, 50));
-        btnType.setBorder(BorderFactory.createCompoundBorder(
+        /**btnType.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createEmptyBorder(5, 5, 5, 5),
-                BorderFactory.createLineBorder(Color.BLUE, 2)));
+                BorderFactory.createLineBorder(Color.BLUE, 2)));*/
 
         btnType.setBackground(Color.white);
         return btnType;

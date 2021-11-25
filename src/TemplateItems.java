@@ -91,24 +91,26 @@ public class TemplateItems {
          */
         JPanel pnlToggleButton = new JPanel();
         pnlToggleButton.setLayout(new BoxLayout(pnlToggleButton, BoxLayout.LINE_AXIS));
-        pnlToggleButton.setMaximumSize(new Dimension(700,15));
+        pnlToggleButton.setMaximumSize(new Dimension(700,30));
         pnlToggleButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         pnlToggleButton.setBackground(Color.lightGray);
 
-        JLabel lblShowTurtle = new JLabel("Show turtle syntax");
-        lblShowTurtle.setFont(new Font("Sans", Font.PLAIN, 12));
-        //lblShowTurtle.setMaximumSize(new Dimension(150,15));
 
         JToggleButton tbtnTurtle = new JToggleButton("Show turtle preview");
         tbtnTurtle.setFont(new Font("Sans", Font.PLAIN, 14));
-        tbtnTurtle.setMaximumSize(new Dimension(180,30));
+        tbtnTurtle.setMaximumSize(new Dimension(343,30));
         //tbtnTurtle.setSelected(true);
+
+
+
 
         /**
          * Add label and toggle button panel
          */
         tbtnTurtle.setSelected(ToCTeditor.gui.getToggleBtnState() == 1);
         pnlToggleButton.add(tbtnTurtle);
+        /**pnlToggleButton.add(Box.createRigidArea(new Dimension(10,0)));
+        pnlToggleButton.add(btnSaveTemplate);*/
 
         ItemListener itemListener = new ItemListener() {
             public void itemStateChanged(ItemEvent itemEvent) {
@@ -150,7 +152,7 @@ public class TemplateItems {
          */
         JButton btnBack = new JButton("Back");
         btnBack.setFont(new Font("Sans", Font.PLAIN, 15));
-        btnBack.setMaximumSize(new Dimension(345,30));
+        btnBack.setMaximumSize(new Dimension(226,30));
 
         // add the listener to the jbutton to handle the "pressed" event
         btnBack.addActionListener(new ActionListener(){
@@ -162,9 +164,9 @@ public class TemplateItems {
         /**
          * Add button
          */
-        JButton btnAdd = new JButton("Add");
+        JButton btnAdd = new JButton("Add Template Item");
         btnAdd.setFont(new Font("Sans", Font.PLAIN, 15));
-        btnAdd.setMaximumSize(new Dimension(345,30));
+        btnAdd.setMaximumSize(new Dimension(226,30));
 
         // add the listener to the jbutton to handle the "pressed" event
         btnAdd.addActionListener(new ActionListener(){
@@ -173,6 +175,20 @@ public class TemplateItems {
                 ToCTeditor.gui.setCallCreateItem(true);
             }
         });
+
+        /**
+         * Save template button
+         */
+        JButton btnSaveTemplate = new JButton("Save Template");
+        btnSaveTemplate.setFont(new Font("Sans", Font.PLAIN, 15));
+        btnSaveTemplate.setMaximumSize(new Dimension(226,30));
+
+        // add the listener to the jbutton to handle the "pressed" event
+        /**btnSaveTemplate.addActionListener(new ActionListener(){
+         public void actionPerformed(ActionEvent e){
+         ToCTeditor.gui.setCallCreateTemplate(true);
+         }
+         });*/
 
         /**
          * Buttons panel
@@ -186,8 +202,10 @@ public class TemplateItems {
          * Add buttons to buttons panel
          */
         pnlButtons.add(btnBack);
-        pnlButtons.add(Box.createRigidArea(new Dimension(10,0)));
+        pnlButtons.add(Box.createRigidArea(new Dimension(11,0)));
         pnlButtons.add(btnAdd);
+        pnlButtons.add(Box.createRigidArea(new Dimension(11,0)));
+        pnlButtons.add(btnSaveTemplate);
 
 
 
@@ -398,9 +416,13 @@ public class TemplateItems {
         menu.add(new JMenuItem("Change type"));
         menu.add(new JMenuItem("Remove"));
 
-        Icon icon = new ImageIcon("kebabmenu.PNG");
         final JButton button = new JButton();
-        button.setIcon(createImageIcon("/images/kebab30.png"));
+        /**
+         * Images folder is stored in the bin folder.
+         * Reason why found here (last answer is the only one that works with a Makefile):
+         * https://stackoverflow.com/questions/13151979/null-pointer-exception-when-an-imageicon-is-added-to-jbutton-in-netbeans
+         */
+        button.setIcon(createImageIcon("/images/kebab.png"));
         button.setBorderPainted(false);
         button.setBackground(Color.white);
         button.setMaximumSize(new Dimension(15,15));

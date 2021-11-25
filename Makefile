@@ -36,7 +36,7 @@ docs:
 	javadoc -d ./doc/ $$(find -name *java)
 	
 clean:
-	rm -rf $(BIN)*
+	rm -rf $(BIN)*.class
 
 run:
 	java -cp ./bin ToCTeditor

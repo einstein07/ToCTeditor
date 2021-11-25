@@ -98,7 +98,7 @@ public class CreateItem {
         /**
          * Search part text field
          */
-        HintTextField txtSearch = new HintTextField("Search from existing item");
+        HintTextField txtSearch = new HintTextField("Search from existing items");
         txtSearch.setAlignmentX(Component.CENTER_ALIGNMENT);
         txtSearch.setMaximumSize(new Dimension(400,30));
         txtSearch.setFont(new Font("Sans", Font.PLAIN, 14));
@@ -117,7 +117,9 @@ public class CreateItem {
          */
         JButton btnBack = new JButton("Back");
         btnBack.setFont(new Font("Sans", Font.PLAIN, 15));
-        btnBack.setMaximumSize(new Dimension(345,30));
+        btnBack.setMinimumSize(new Dimension(700,30));
+        btnBack.setMaximumSize(new Dimension(700,30));
+        btnBack.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // add the listener to the jbutton to handle the "pressed" event
         btnBack.addActionListener(new ActionListener(){
@@ -138,7 +140,7 @@ public class CreateItem {
          * Buttons panel
          */
         JPanel pnlButtons = new JPanel();
-        pnlButtons.setLayout(new BoxLayout(pnlButtons, BoxLayout.LINE_AXIS));
+        pnlButtons.setLayout(new BoxLayout(pnlButtons, BoxLayout.Y_AXIS));
         pnlButtons.setMaximumSize(new Dimension(700,30));
         pnlButtons.setBackground(Color.lightGray);
 
@@ -146,8 +148,8 @@ public class CreateItem {
          * Add buttons to buttons panel
          */
         pnlButtons.add(btnBack);
-        pnlButtons.add(Box.createRigidArea(new Dimension(10,0)));
-        pnlButtons.add(btnAdd);
+        /**pnlButtons.add(Box.createRigidArea(new Dimension(10,0)));
+        pnlButtons.add(btnAdd);*/
 
 
 

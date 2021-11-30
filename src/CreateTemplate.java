@@ -27,22 +27,41 @@ public class CreateTemplate {
     }
 
     public void setupGUI() {
-        // Frame init and dimensions
-        JPanel g = new JPanel();
-        g.setLayout(new BoxLayout(g, BoxLayout.PAGE_AXIS));
-        g.setSize(frameX,frameY);
-        g.add(Box.createRigidArea(new Dimension(0,100)));
-        JPanel pnlMain = new JPanel();
-        pnlMain.setLayout(new BoxLayout(pnlMain, BoxLayout.Y_AXIS));
-        pnlMain.setMaximumSize(new Dimension(600,250));
+        /**
+         * Create main panel that houses all other frame components
+         */
 
-        JPanel listPane = new JPanel();
-        listPane.setLayout(new BoxLayout(listPane, BoxLayout.PAGE_AXIS));
-        JLabel label = new JLabel("Create New Template");
-        //label.setForeground(Color.blue);
-        label.setFont(new Font("Sans", Font.PLAIN, 24));
+        JPanel pnlContent = new JPanel();
+        pnlContent.setLayout(new BoxLayout(pnlContent, BoxLayout.PAGE_AXIS));
+        pnlContent.setSize(frame.getFrameX(),frame.getFrameY());
+        pnlContent.add(Box.createRigidArea(new Dimension(0,100)));
 
-        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        /**
+         * Create panel to house title label, and add the said label to
+         * the panel
+         */
+        JPanel pnlCreateTemplateTitle = new JPanel();
+        pnlCreateTemplateTitle.setLayout(new BoxLayout(pnlCreateTemplateTitle, BoxLayout.LINE_AXIS));
+        pnlCreateTemplateTitle.setMaximumSize(new Dimension(600,15));
+        pnlCreateTemplateTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel lblCreateTemplateTitle = new JLabel("Create New Template");
+        lblCreateTemplateTitle.setFont(new Font("Sans", Font.PLAIN, 15));
+        //Add title to panel
+        pnlCreateTemplateTitle.add(lblCreateTemplateTitle);
+        // Add title panel to main panel
+        pnlContent.add(pnlCreateTemplateTitle);
+        pnlContent.add(Box.createRigidArea(new Dimension(0,5)));
+
+        /**
+         * Create panel to house the template name text field
+         * as well as language drop-down box
+         */
+        JPanel pnlCreateTemplate = new JPanel();
+        pnlCreateTemplate.setLayout(new BoxLayout(pnlCreateTemplate, BoxLayout.PAGE_AXIS));
+        pnlCreateTemplate.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        pnlCreateTemplate.setBackground(Color.LIGHT_GRAY);
+        pnlCreateTemplate.setMaximumSize(new Dimension(600, 130));
 
         /**
          * Template name text field
@@ -62,28 +81,35 @@ public class CreateTemplate {
             }
         });
 
+        pnlCreateTemplate.add(Box.createRigidArea(new Dimension(0,10)));
+        pnlCreateTemplate.add(txtEntryTemplateName);
+        pnlCreateTemplate.add(Box.createRigidArea(new Dimension(0,10)));
+
         /**
          * Supported language dropdown button
          */
         String[] languages = { "Supported language", "Zulu", "Xhosa", "Swati", "Ndebele" };
-        //Create the combo box, select item at index 4.
-        //Indices start at 0, so 4 specifies the pig.
         JComboBox supportedLanguage = new JComboBox(languages);
         supportedLanguage.setSelectedIndex(0);
         supportedLanguage.setAlignmentX(Component.CENTER_ALIGNMENT);
         supportedLanguage.setMaximumSize(new Dimension(400,30));
         supportedLanguage.setFont(new Font("Sans", Font.PLAIN, 14));
 
+        pnlCreateTemplate.add(supportedLanguage);
+        pnlCreateTemplate.add(Box.createRigidArea(new Dimension(0,10)));
+
         /**
          * Create button
          */
-        JButton btnCreate = new JButton("Create");
+        JButton btnCreate = new JButton("Create Template");
         btnCreate.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnCreate.setFont(new Font("Sans", Font.PLAIN, 15));
         btnCreate.setMaximumSize(new Dimension(400,30));
 
 
-        // add the listener to the jbutton to handle the "pressed" event
+        /**
+         * Add the listener to the JButton to handle the "pressed" event
+         */
         btnCreate.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 //[snip]
@@ -91,32 +117,65 @@ public class CreateTemplate {
             }
         });
 
+        pnlCreateTemplate.add(btnCreate);
+        pnlCreateTemplate.add(Box.createRigidArea(new Dimension(0,10)));
+        pnlContent.add(pnlCreateTemplate);
 
 
-        // Add heading label to list panel
-        listPane.add(label);
-        listPane.add(Box.createRigidArea(new Dimension(0,30)));
-        // Add template name text field to list panel
-        listPane.add(txtEntryTemplateName);
-        listPane.add(Box.createRigidArea(new Dimension(0,10)));
-        // Add supported language dropdown button to list panel
-        listPane.add(supportedLanguage);
-        listPane.add(Box.createRigidArea(new Dimension(0,50)));
-        // Add create button to list panel
-        listPane.add(btnCreate);
-        listPane.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-        listPane.setBackground(Color.LIGHT_GRAY);
+        /**
+         * Create panel to house title label, and add the said label to
+         * the panel
+         */
+        JPanel pnlOpenTemplateTitle = new JPanel();
+        pnlOpenTemplateTitle.setLayout(new BoxLayout(pnlOpenTemplateTitle, BoxLayout.LINE_AXIS));
+        pnlOpenTemplateTitle.setMaximumSize(new Dimension(600,15));
+        pnlOpenTemplateTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Add list panel to main panel
-        pnlMain.add(listPane);
-        pnlMain.setAlignmentX(Component.CENTER_ALIGNMENT);
-        pnlMain.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-        pnlMain.setBackground(Color.LIGHT_GRAY);
+        JLabel lblOpenTemplateTitle = new JLabel("Open Existing Template");
+        lblOpenTemplateTitle.setFont(new Font("Sans", Font.PLAIN, 15));
+        //Add title to panel
+        pnlOpenTemplateTitle.add(lblOpenTemplateTitle);
 
-        g.add(pnlMain);
 
-        //frame.getContentPane().add(g);
-        //frame.add(g); //add contents to window
-        frame.setContentPane(g);
+        // Add title panel to main panel
+        pnlContent.add(Box.createRigidArea(new Dimension(0,10)));
+        pnlContent.add(pnlOpenTemplateTitle);
+        pnlContent.add(Box.createRigidArea(new Dimension(0,5)));
+
+        /**
+         * Create panel to house the open template button
+         */
+        JPanel pnlOpenTemplate = new JPanel();
+        pnlOpenTemplate.setLayout(new BoxLayout(pnlOpenTemplate, BoxLayout.PAGE_AXIS));
+        pnlOpenTemplate.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        pnlOpenTemplate.setBackground(Color.LIGHT_GRAY);
+        pnlOpenTemplate.setMaximumSize(new Dimension(600, 130));
+
+        /**
+         * Open button
+         */
+        JButton btnOpen = new JButton("Open Template");
+        btnOpen.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnOpen.setFont(new Font("Sans", Font.PLAIN, 15));
+        btnOpen.setMaximumSize(new Dimension(400,30));
+
+
+        /**
+         * Add the listener to the JButton to handle the "pressed" event
+         */
+        btnOpen.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                //[snip]
+                ToCTeditor.gui.setCallTemplateItems(true);
+            }
+        });
+
+        pnlOpenTemplate.add(Box.createRigidArea(new Dimension(0,50)));
+        pnlOpenTemplate.add(btnOpen);
+        pnlOpenTemplate.add(Box.createRigidArea(new Dimension(0,10)));
+        pnlContent.add(pnlOpenTemplate);
+
+
+        frame.setContentPane(pnlContent);
     }
 }

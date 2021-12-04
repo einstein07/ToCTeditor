@@ -8,6 +8,7 @@
  * @(#) $Id$
  */
 
+import za.co.mahlaza.research.grammarengine.base.models.interfaces.InternalSlotRootAffix;
 import za.co.mahlaza.research.grammarengine.base.models.template.Phrase;
 import za.co.mahlaza.research.grammarengine.base.models.template.PolymorphicWord;
 import za.co.mahlaza.research.grammarengine.base.models.template.Punctuation;
@@ -16,12 +17,21 @@ import za.co.mahlaza.research.grammarengine.base.models.template.TemplatePortion
 import za.co.mahlaza.research.grammarengine.base.models.template.UnimorphicWord;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.Document;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
+import java.util.Objects;
 
 
 public class TemplateItems {
@@ -91,7 +101,7 @@ public class TemplateItems {
         templateItems.add(new Root("root1", "nke"));*/
 
         //pnlItems.add(setupTemplateItems(ToCTeditor.dataModel.getData()));
-        pnlItems.add(setupTemplateItems(ToCTeditor.dataModel.getTemplateWords()));
+        pnlItems.add(setupTemplateItems(ToCTeditor.dataModel.getData()));
 
         /**
          * Panel for turtle syntax toggle button
@@ -272,6 +282,7 @@ public class TemplateItems {
          */
         pnlTurtlePreview = new JPanel();
         pnlTurtlePreview.setLayout(new BoxLayout(pnlTurtlePreview, BoxLayout.Y_AXIS));
+        pnlTurtlePreview.setMinimumSize(new Dimension(345,250));
         pnlTurtlePreview.setMaximumSize(new Dimension(345,250));
         pnlTurtlePreview.setBackground(Color.lightGray);
         pnlTurtlePreview.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
@@ -286,6 +297,7 @@ public class TemplateItems {
             pnlEditorTurtleTitle.add(Box.createRigidArea(new Dimension(10,0)));
             pnlEditorTurtleTitle.add(lblTurtleTitle);
 
+            pnlItemEditor.setMinimumSize(new Dimension(345,250));
             pnlItemEditor.setMaximumSize(new Dimension(345,250));
 
             /**
@@ -339,6 +351,7 @@ public class TemplateItems {
             }
 
             pnlItemEditor.setMaximumSize(new Dimension(345,250));
+            pnlTurtlePreview.setMaximumSize(new Dimension(345,250));
 
             pnlTurtlePreview.remove(0);
             pnlTurtlePreview.add(currentTurtleCode);
@@ -401,20 +414,30 @@ public class TemplateItems {
         return p;
     }*/
 
-    public JComponent setupTemplateItems(List<TemplatePortion> list) {
+    public JComponent setupTemplateItems(List<Part> list) {
         Box box = Box.createHorizontalBox();
         JScrollPane pnlScroll = new JScrollPane(box, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         pnlScroll.setMaximumSize(new Dimension(700, 100));
         pnlScroll.setBackground(Color.lightGray);
 
-        DragMouseAdapter dh = new DragMouseAdapter(/**controlThread*/);
+        DragMouseAdapter dh = new DragMouseAdapter();
         box.addMouseListener(dh);
         box.addMouseMotionListener(dh);
 
-        for (TemplatePortion part : list) {
-            JLabel name = new JLabel(ToCTeditor.turtleGen.getPartId(part));
-            JLabel type = new JLabel(ToCTeditor.turtleGen.getPartType(part));
+        for (Part part : list) {
+            JLabel name = new JLabel(part.getPartName());
+            JLabel type = new JLabel(part.getType());
             box.add(createItemComponent(name, type));
+
+            /**if (type.getText().equals("Polymorphic word")){
+                List<InternalSlotRootAffix> morphemes = ((PolymorphicWord)part).getAllMorphemes();
+                //System.out.println("Polymophic type: " + ((PolymorphicWord)part).getIdentification() + "Affix boxes: " + morphemes.size());
+                for (InternalSlotRootAffix affix : morphemes) {
+                    JLabel morphemeName = new JLabel(ToCTeditor.turtleGen.getMorphemeId(affix));
+                    JLabel morphemeType = new JLabel(ToCTeditor.turtleGen.getMorphemeType(affix));
+                    box.add(createItemComponent(morphemeName, morphemeType));
+                }
+            }*/
         }
         JPanel p = new JPanel();
         p.setMaximumSize(new Dimension(700, 100));
@@ -424,7 +447,7 @@ public class TemplateItems {
         return p;
     }
 
-    private JComponent createItemComponent(JComponent name, JComponent type) {
+    private JPanel createItemComponent(JComponent name, JComponent type) {
 
         JPanel p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
@@ -560,36 +583,52 @@ public class TemplateItems {
         return currentPanel;
     }*/
 
-    public JPanel getPartPanelEditor(TemplatePortion currentPart) {
+    public JPanel getPartPanelEditor(Part currentPart/**TemplatePortion currentPart*/) {
 
-        String type = ToCTeditor.turtleGen.getPartType(currentPart);
+        //String type = ToCTeditor.turtleGen.getPartType(currentPart);
         JPanel currentPanel;
         //System.out.println("Inside getPanelEditor. Current part type: " + type);
-        if (type.equals("Slot")){
-            Slot part = (Slot)currentPart;
-            currentPanel = setupSlotEditor(part);
-        }
-        else if (type.equals("Unimorphic word")){
-            UnimorphicWord part = (UnimorphicWord)currentPart;
-            currentPanel = setupUnimorphicWordEditor(part);
-        }
-        else if (type.equals("Punctuation")){
-            Punctuation part = (Punctuation)currentPart;
-            currentPanel = setupPunctuationEditor(part);
-        }
-        else if (type.equals("Polymorphic word")){
-            PolymorphicWord part = (PolymorphicWord)currentPart;
-            currentPanel = setupPolymorphicWordEditor(part);
-        }
-        else if ( type.equals("Phrase") ){
-            Phrase part = (Phrase)currentPart;
-            currentPanel = setupPhraseEditor(part);
+        if (currentPart != null) {
+
+            if (currentPart.getType().equals("Slot")/**type.equals("Slot")*/) {
+                //Slot part = (Slot)currentPart;
+                currentPanel = setupSlotEditor(currentPart);
+            } else if (currentPart.getType().equals("Unimorphic word")/**type.equals("Unimorphic word")*/) {
+                /**UnimorphicWord part = (UnimorphicWord)currentPart;
+                 currentPanel = setupUnimorphicWordEditor(part);*/
+                currentPanel = setupUnimorphicWordEditor(currentPart);
+            } else if (currentPart.getType().equals("Punctuation")/**type.equals("Punctuation")*/) {
+                /**Punctuation part = (Punctuation)currentPart;
+                 currentPanel = setupPunctuationEditor(part);*/
+                currentPanel = setupPunctuationEditor(currentPart);
+            } else if (currentPart.getType().equals("Polymorphic word")/**type.equals("Polymorphic word")*/) {
+                /**PolymorphicWord part = (PolymorphicWord)currentPart;
+                 currentPanel = setupPolymorphicWordEditor(part);*/
+                currentPanel = setupPolymorphicWordEditor(currentPart);
+            } else if (currentPart.getType().equals("Phrase")/***type.equals("Phrase")*/) {
+                /**Phrase part = (Phrase)currentPart;
+                 currentPanel = setupPhraseEditor(part);*/
+                currentPanel = setupPhraseEditor(currentPart);
+            }
+            else if (currentPart.getType().equals("Concord")) {
+                currentPanel = setupConcordEditor(currentPart);
+            }
+            else if (currentPart.getType().equals("Copula")) {
+                currentPanel = setupCopulaEditor(currentPart);
+            }
+            else if (currentPart.getType().equals("Unimorphic affix")) {
+                currentPanel = setupUnimorphicAffixEditor(currentPart);
+            }
+            else{
+                currentPanel = new JPanel();
+                currentPanel.setBackground(Color.lightGray);
+            }
         }
         else{
-            //System.out.println("No current item selected");
             currentPanel = new JPanel();
             currentPanel.setBackground(Color.lightGray);
         }
+
         return currentPanel;
     }
 
@@ -658,8 +697,8 @@ public class TemplateItems {
         return currentPanel;
     }*/
 
-    public JPanel getPartPanelTurtle(TemplatePortion currentPart) {
-        String type = ToCTeditor.turtleGen.getPartType(currentPart);
+    public JPanel getPartPanelTurtle(/**TemplatePortion currentPart*/Part currentPart) {
+        //String type = ToCTeditor.turtleGen.getPartType(currentPart);
         JPanel currentPanel = new JPanel();
         currentPanel.setLayout(new BoxLayout(currentPanel, BoxLayout.Y_AXIS));
         currentPanel.setBackground(Color.lightGray);
@@ -670,11 +709,15 @@ public class TemplateItems {
         txtArea.setAlignmentX(Component.CENTER_ALIGNMENT);
         txtArea.setFont(new Font("Sans", Font.PLAIN, 12));
         txtArea.setForeground(Color.blue);
+        JScrollPane pnlScroll = new JScrollPane(txtArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        pnlScroll.setMaximumSize(new Dimension(345, 250));
+        pnlScroll.setBackground(Color.lightGray);
+
 
         String turtle = ToCTeditor.turtleGen.getPartTurtle(currentPart);
         if (turtle.length() > 0 ){
             txtArea.setText(turtle);
-            currentPanel.add(txtArea);
+                currentPanel.add(pnlScroll);
         }
         return currentPanel;
     }
@@ -714,12 +757,13 @@ public class TemplateItems {
         return type;
     }*/
 
-    public JPanel setupSlotEditor(Slot part){
+    public JPanel setupSlotEditor(Part part/**Slot part*/){
         /**
          * Slot Editor Panel
          */
         JPanel pnlSlotEditor = new JPanel();
         pnlSlotEditor.setLayout(new BoxLayout(pnlSlotEditor, BoxLayout.Y_AXIS));
+        pnlSlotEditor.setMinimumSize(new Dimension(345,250));
         pnlSlotEditor.setMaximumSize(new Dimension(345,250));
         pnlSlotEditor.setBackground(Color.lightGray);
 
@@ -741,8 +785,12 @@ public class TemplateItems {
         JTextField txtPartName = new JTextField();
         txtPartName.setFont(new Font("Sans", Font.PLAIN, 14));
         txtPartName.setMaximumSize(new Dimension(225, 30));
-        //txtPartName.setText(part.getPartName());
-        txtPartName.setText(part.getIdentification());
+        txtPartName.setText(part.getPartName());
+        //txtPartName.setText(part.getIdentification());
+
+
+        addChangeListener(txtPartName, e -> updateSlotName(txtPartName.getText()));
+
         /**txtPartName.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -804,8 +852,8 @@ public class TemplateItems {
         JTextField txtNextPart = new JTextField();
         txtNextPart.setFont(new Font("Sans", Font.PLAIN, 14));
         txtNextPart.setMaximumSize(new Dimension(225, 30));
-        //txtNextPart.setText(part.getNextPart());
-        txtNextPart.setText(ToCTeditor.dataModel.getItem( part.getIndex() + 1 ).toString());
+        txtNextPart.setText(part.getNextPart());
+        //txtNextPart.setText(ToCTeditor.dataModel.getItem( part.getIndex()).toString());
 
         pnlNextPart.add(Box.createRigidArea(new Dimension(5,0)));
         pnlNextPart.add(lblNextPart);
@@ -826,7 +874,12 @@ public class TemplateItems {
         return pnlSlotEditor;
     }
 
-    public JPanel setupUnimorphicWordEditor(UnimorphicWord part){
+    private void updateSlotName(String updatedText) {
+        System.out.println("Fired: " + updatedText);
+        //ToCTeditor.controller.setPartName(updatedText);
+    }
+
+    public JPanel setupUnimorphicWordEditor(Part part/**UnimorphicWord part*/){
         /**
          * Unimorphic Word Editor Panel
          */
@@ -852,8 +905,8 @@ public class TemplateItems {
         JTextField txtPartName = new JTextField();
         txtPartName.setFont(new Font("Sans", Font.PLAIN, 14));
         txtPartName.setMaximumSize(new Dimension(225, 30));
-        //txtPartName.setText(part.getPartName());
-        txtPartName.setText(part.getIdentification());
+        txtPartName.setText(part.getPartName());
+        //txtPartName.setText(part.getIdentification());
 
         pnlPartName.add(Box.createRigidArea(new Dimension(5,0)));
         pnlPartName.add(lblPartName);
@@ -901,8 +954,8 @@ public class TemplateItems {
         JTextField txtNextPart = new JTextField();
         txtNextPart.setFont(new Font("Sans", Font.PLAIN, 14));
         txtNextPart.setMaximumSize(new Dimension(225, 30));
-        //txtNextPart.setText(part.getNextPart());
-        txtNextPart.setText(part.getValue()); /**Placeholder*/
+        txtNextPart.setText(part.getNextPart());
+        //txtNextPart.setText(part.getValue()); /**Placeholder*/
 
         pnlNextPart.add(Box.createRigidArea(new Dimension(5,0)));
         pnlNextPart.add(lblNextPart);
@@ -923,7 +976,7 @@ public class TemplateItems {
         return pnlUnimorphicWordEditor;
     }
 
-    public JPanel setupPunctuationEditor(Punctuation part){
+    public JPanel setupPunctuationEditor(Part part/**Punctuation part*/){
         /**
          * Punctuation Editor Panel
          */
@@ -949,8 +1002,7 @@ public class TemplateItems {
         JTextField txtPartName = new JTextField();
         txtPartName.setFont(new Font("Sans", Font.PLAIN, 14));
         txtPartName.setMaximumSize(new Dimension(225, 30));
-        //txtPartName.setText(part.getPartName());
-        txtPartName.setText(part.toString()); /**Placeholder*/
+        txtPartName.setText(part.getPartName());
 
         pnlPartName.add(Box.createRigidArea(new Dimension(5,0)));
         pnlPartName.add(lblPartName);
@@ -974,8 +1026,8 @@ public class TemplateItems {
         JTextField txtValue = new JTextField();
         txtValue.setFont(new Font("Sans", Font.PLAIN, 14));
         txtValue.setMaximumSize(new Dimension(225, 30));
-        //txtValue.setText(part.getValue());
-        txtValue.setText(part.toString()); /**Placeholder*/
+        txtValue.setText(part.getValue());
+        //txtValue.setText(part.toString()); /**Placeholder*/
 
         pnlValue.add(Box.createRigidArea(new Dimension(5,0)));
         pnlValue.add(lblValue);
@@ -994,7 +1046,7 @@ public class TemplateItems {
         return pnlPunctuationEditor;
     }
 
-    public JPanel setupRootEditor(Root part){
+    public JPanel setupRootEditor(Part part/***Root part*/){
         /**
          * Root Editor Panel
          */
@@ -1062,7 +1114,7 @@ public class TemplateItems {
         return pnlRootEditor;
     }
 
-    public JPanel setupPolymorphicWordEditor(PolymorphicWord part){
+    public JPanel setupPolymorphicWordEditor(Part part/**PolymorphicWord part*/){
         /**
          * Polymorphic Word Editor Panel
          */
@@ -1088,8 +1140,8 @@ public class TemplateItems {
         JTextField txtPartName = new JTextField();
         txtPartName.setFont(new Font("Sans", Font.PLAIN, 14));
         txtPartName.setMaximumSize(new Dimension(225, 30));
-        //txtPartName.setText(part.getPartName());
-        txtPartName.setText(part.getIdentification());
+        txtPartName.setText(part.getPartName());
+        //txtPartName.setText(part.getIdentification());
 
         pnlPartName.add(Box.createRigidArea(new Dimension(5,0)));
         pnlPartName.add(lblPartName);
@@ -1113,8 +1165,8 @@ public class TemplateItems {
         JTextField txtReliesOn = new JTextField();
         txtReliesOn.setFont(new Font("Sans", Font.PLAIN, 14));
         txtReliesOn.setMaximumSize(new Dimension(225, 30));
-        //txtReliesOn.setText(part.getReliesOn());
-        txtReliesOn.setText(part.getIdentification()); /**Placeholder*/
+        txtReliesOn.setText(part.getReliesOn());
+        //txtReliesOn.setText(part.getIdentification()); /**Placeholder*/
 
         pnlReliesOn.add(Box.createRigidArea(new Dimension(5,0)));
         pnlReliesOn.add(lblReliesOn);
@@ -1140,8 +1192,8 @@ public class TemplateItems {
         JTextField txtFirstPart = new JTextField();
         txtFirstPart.setFont(new Font("Sans", Font.PLAIN, 14));
         txtFirstPart.setMaximumSize(new Dimension(225, 30));
-        //txtFirstPart.setText(part.getFirstPart());
-        txtFirstPart.setText(part.getIdentification()); /**Placeholder*/
+        txtFirstPart.setText(part.getFirstPart());
+        //txtFirstPart.setText(part.getIdentification()); /**Placeholder*/
 
         pnlFirstPart.add(Box.createRigidArea(new Dimension(5,0)));
         pnlFirstPart.add(lblFirstPart);
@@ -1166,8 +1218,8 @@ public class TemplateItems {
         JTextField txtLastPart = new JTextField();
         txtLastPart.setFont(new Font("Sans", Font.PLAIN, 14));
         txtLastPart.setMaximumSize(new Dimension(225, 30));
-        //txtLastPart.setText(part.getLastPart());
-        txtLastPart.setText(part.getIdentification()); /**Placeholder*/
+        txtLastPart.setText(part.getLastPart());
+        //txtLastPart.setText(part.getIdentification()); /**Placeholder*/
 
         pnlLastPart.add(Box.createRigidArea(new Dimension(5,0)));
         pnlLastPart.add(lblLastPart);
@@ -1192,8 +1244,8 @@ public class TemplateItems {
         JTextField txtNextPart = new JTextField();
         txtNextPart.setFont(new Font("Sans", Font.PLAIN, 14));
         txtNextPart.setMaximumSize(new Dimension(225, 30));
-        //txtNextPart.setText(part.getNextPart());
-        txtNextPart.setText(part.getIdentification()); /**Placeholder*/
+        txtNextPart.setText(part.getNextPart());
+        //txtNextPart.setText(part.getIdentification()); /**Placeholder*/
 
         pnlNextPart.add(Box.createRigidArea(new Dimension(5,0)));
         pnlNextPart.add(lblNextPart);
@@ -1218,7 +1270,7 @@ public class TemplateItems {
         return pnlPolymorphicWordEditor;
     }
 
-    public JPanel setupConcordEditor(Concord part){
+    public JPanel setupConcordEditor(Part part /**Concord part*/){
         /**
          * Concord Editor Panel
          */
@@ -1342,7 +1394,7 @@ public class TemplateItems {
         return pnlConcordEditor;
     }
 
-    public JPanel setupPhraseEditor(Phrase part){
+    public JPanel setupPhraseEditor(Part part/**Phrase part*/){
         /**
          * Phrase Editor Panel
          */
@@ -1439,7 +1491,7 @@ public class TemplateItems {
         return pnlPhraseEditor;
     }
 
-    public JPanel setupCopulaEditor(Copula part){
+    public JPanel setupCopulaEditor(Part part){
         /**
          * Copula Editor Panel
          */
@@ -1534,7 +1586,7 @@ public class TemplateItems {
         return pnlCopulaEditor;
     }
 
-    public JPanel setupUnimorphicAffixEditor(UnimorphicAffix part){
+    public JPanel setupUnimorphicAffixEditor(Part part/**UnimorphicAffix part*/){
         /**
          * Unimorphic Affix Editor Panel
          */
@@ -1601,5 +1653,57 @@ public class TemplateItems {
         pnlUnimorphicAffixEditor.add(pnlValue);
 
         return pnlUnimorphicAffixEditor;
+    }
+
+    /**
+     * Installs a listener to receive notification when the text of any
+     * {@code JTextComponent} is changed. Internally, it installs a
+     * {@link DocumentListener} on the text component's {@link Document},
+     * and a {@link PropertyChangeListener} on the text component to detect
+     * if the {@code Document} itself is replaced.
+     *
+     * @param text any text component, such as a {@link JTextField}
+     *        or {@link JTextArea}
+     * @param changeListener a listener to receieve {@link ChangeEvent}s
+     *        when the text is changed; the source object for the events
+     *        will be the text component
+     * @throws NullPointerException if either parameter is null
+     */
+    public void addChangeListener(JTextComponent text, ChangeListener changeListener) {
+        Objects.requireNonNull(text);
+        Objects.requireNonNull(changeListener);
+        DocumentListener dl = new DocumentListener() {
+            private int lastChange = 0, lastNotifiedChange = 0;
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                changedUpdate(e);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                changedUpdate(e);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                lastChange++;
+                SwingUtilities.invokeLater(() -> {
+                    if (lastNotifiedChange != lastChange) {
+                        lastNotifiedChange = lastChange;
+                        changeListener.stateChanged(new ChangeEvent(text));
+                    }
+                });
+            }
+        };
+        text.addPropertyChangeListener("document", (PropertyChangeEvent e) -> {
+            Document d1 = (Document)e.getOldValue();
+            Document d2 = (Document)e.getNewValue();
+            if (d1 != null) d1.removeDocumentListener(dl);
+            if (d2 != null) d2.addDocumentListener(dl);
+            dl.changedUpdate(null);
+        });
+        Document d = text.getDocument();
+        if (d != null) d.addDocumentListener(dl);
     }
 }

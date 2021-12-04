@@ -1,3 +1,5 @@
+import za.co.mahlaza.research.grammarengine.base.models.template.TemplatePortion;
+
 /*
  * @(#) ViewThread.java   1.0   Nov 18, 2021
  *
@@ -17,7 +19,7 @@ public class ViewThread extends Thread {
     boolean callTemplateItems;
     boolean callCreateItem;
 
-    private TemplatePart currentPart;
+    private Part currentPart;
 
     private int index;
     private int toggleBtnState;
@@ -58,31 +60,36 @@ public class ViewThread extends Thread {
         this.index = index;
     }
 
-    public TemplatePart getCurrentPart() {
+    public Part getCurrentPart() {
         currentPart = dataModel.getPart(index);
         return currentPart;
     }
+
 
     @Override
     public void run() {
         System.out.println("ToCTeditor v 1.0");
         while (true) {
             currentPart = dataModel.getPart(index);
-            //System.out.println("Called template items equals: " + callTemplateItems);
+
+            System.out.println(callTemplateItems);
             if (callTemplateItems) {
                 currentPart = dataModel.getPart(index);
+
+                //templateItems.setupGUI(templateItems.getPartPanelEditor(currentPart), templateItems.getPartPanelTurtle(currentPart));
                 templateItems.setupGUI(templateItems.getPartPanelEditor(currentPart), templateItems.getPartPanelTurtle(currentPart));
                 callTemplateItems = false;
             } else if (callCreateItem) {
-                currentPart = dataModel.getPart(index);
+                //currentPart = dataModel.getPart(index);
                 createItem.setupGUI();
                 callCreateItem = false;
             } else if (callCreateTemplate) {
-                currentPart = dataModel.getPart(index);
+                //currentPart = dataModel.getPart(index);
                 homeScreen.setupGUI();
                 callCreateTemplate = false;
             }
             else if (toggleBtnState != prevToggleBtnState){
+                //ToCTeditor.gui.templateItems.updateEditorTurtlePanel(templateItems.getPartPanelEditor(currentPart), templateItems.getPartPanelTurtle(currentPart));
                 ToCTeditor.gui.templateItems.updateEditorTurtlePanel(templateItems.getPartPanelEditor(currentPart), templateItems.getPartPanelTurtle(currentPart));
                 prevToggleBtnState = toggleBtnState;
             }

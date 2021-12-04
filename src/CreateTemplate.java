@@ -7,10 +7,17 @@
  *
  * @(#) $Id$
  */
+import za.co.mahlaza.research.grammarengine.base.models.template.Template;
+import za.co.mahlaza.research.grammarengine.nguni.zu.ZuluFeatureParser;
+import za.co.mahlaza.research.templateparsing.TemplateReader;
+import za.co.mahlaza.research.templateparsing.URIS;
+
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 public class CreateTemplate {
     private int frameX;
@@ -112,7 +119,6 @@ public class CreateTemplate {
          */
         btnCreate.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                //[snip]
                 ToCTeditor.gui.setCallTemplateItems(true);
             }
         });
@@ -165,8 +171,39 @@ public class CreateTemplate {
          */
         btnOpen.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                //[snip]
-                ToCTeditor.gui.setCallTemplateItems(true);
+                String templatePath;
+                String templateName;
+                String templateURI = "http://people.cs.uct.ac.za/~zmahlaza/templates/owlsiz/";
+                JFileChooser chooser = new JFileChooser();
+                FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                        "TTL Templates", "ttl", "*");
+                chooser.setFileFilter(filter);
+                int returnVal = chooser.showOpenDialog(null);
+                if(returnVal == JFileChooser.APPROVE_OPTION) {
+                    templatePath = chooser.getSelectedFile().getAbsolutePath().trim();
+                    templateName = "templ2";
+                    /**templateName = chooser.getSelectedFile().getName();
+                    templateName = templateName.substring(0, templateName.length() - 4);*/
+                    //System.out.println("Name:" + templateName + " Path: " + templatePath);
+
+                    TemplateReader.Init(new ZuluFeatureParser());
+                    TemplateReader.setTemplateOntologyNamespace(URIS.ToCT_NS);
+                    TemplateReader.IS_DEBUG_ENABLED = true;
+                    Template template = TemplateReader.parseTemplate(templateName, templateURI, templatePath);
+                    ToCTeditor.dataModel.setTemplate(template);
+                    ToCTeditor.gui.setCallTemplateItems(true);
+                    System.out.println(template.toString());
+                }
+                /**String templateURI = "http://people.cs.uct.ac.za/~zmahlaza/templates/owlsiz/";
+                String templatePath = "/home/root07/Documents/Academics/Templates/template1.1.ttl";
+                String templateName = "templ1.1";
+                System.out.println("Name:" + templateName + " Path: " + templatePath);
+
+                TemplateReader.Init(new ZuluFeatureParser());
+                TemplateReader.setTemplateOntologyNamespace(URIS.ToCT_NS);
+                TemplateReader.IS_DEBUG_ENABLED = true;
+                Template template = TemplateReader.parseTemplate(templateName, templateURI, templatePath);
+                System.out.println("Template parsed.");*/
             }
         });
 

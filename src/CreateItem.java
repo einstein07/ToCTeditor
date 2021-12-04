@@ -8,10 +8,16 @@
  * @(#) $Id$
  */
 
+import za.co.mahlaza.research.grammarengine.base.models.feature.ConcordType;
+import za.co.mahlaza.research.grammarengine.base.models.feature.Feature;
+import za.co.mahlaza.research.grammarengine.base.models.template.Slot;
+import za.co.mahlaza.research.grammarengine.base.models.template.TemplatePortion;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CreateItem {
@@ -109,7 +115,8 @@ public class CreateItem {
         pnlExistingItem.add(Box.createRigidArea(new Dimension(0,5)));
         pnlExistingItem.add(pnlSearchField);
 
-        pnlExistingItem.add(setupExistingItems(ToCTeditor.dataModel.getData()));
+        //pnlExistingItem.add(setupExistingItems(ToCTeditor.dataModel.getData()));
+        pnlExistingItem.add(setupExistingItems(ToCTeditor.dataModel.getTemplateWords()));
 
 
         /**
@@ -189,11 +196,26 @@ public class CreateItem {
         btnType.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnType.setAlignmentY(Component.CENTER_ALIGNMENT);
         btnType.setMaximumSize(new Dimension(150, 50));
+        btnType.setBackground(Color.white);
+
         /**btnType.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createEmptyBorder(5, 5, 5, 5),
                 BorderFactory.createLineBorder(Color.BLUE, 2)));*/
+        /**
+         * Add the listener to the JButton to handle the "pressed" event
+         */
 
-        btnType.setBackground(Color.white);
+        if (type.equals("Slot")){
+            btnType.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent e){
+                    List<Feature> cType = new ArrayList<>();
+
+                    ToCTeditor.dataModel.addPart(new Slot("", cType));
+                    ToCTeditor.gui.setCallTemplateItems(true);
+                    System.out.println("Slot template part created.");
+                }
+            });
+        }
         return btnType;
     }
 
@@ -266,7 +288,7 @@ public class CreateItem {
         return pnlItems;
     }
 
-    public JComponent setupExistingItems(List<TemplatePart> list) {
+    /**public JComponent setupExistingItems(List<TemplatePart> list) {
         Box box = Box.createVerticalBox();
         box.setBackground(Color.lightGray);
         box.setMaximumSize(new Dimension(400, 200));
@@ -274,9 +296,6 @@ public class CreateItem {
         pnlScroll.setMaximumSize(new Dimension(400, 200));
         pnlScroll.setBackground(Color.lightGray);
 
-        /**DragMouseAdapter dh = new DragMouseAdapter();
-        box.addMouseListener(dh);
-        box.addMouseMotionListener(dh);*/
 
         for (TemplatePart part : list) {
             JLabel name = new JLabel(part.getPartName());
@@ -290,7 +309,34 @@ public class CreateItem {
         p.add(Box.createRigidArea(new Dimension(150,0)));
         p.add(pnlScroll);
         return p;
+    }*/
+
+    public JComponent setupExistingItems(List<TemplatePortion> list) {
+        Box box = Box.createVerticalBox();
+        box.setBackground(Color.lightGray);
+        box.setMaximumSize(new Dimension(400, 200));
+        JScrollPane pnlScroll = new JScrollPane(box, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        pnlScroll.setMaximumSize(new Dimension(400, 200));
+        pnlScroll.setBackground(Color.lightGray);
+
+        /**DragMouseAdapter dh = new DragMouseAdapter();
+         box.addMouseListener(dh);
+         box.addMouseMotionListener(dh);*/
+
+        for (TemplatePortion part : list) {
+            JLabel name = new JLabel(ToCTeditor.turtleGen.getPartId(part));
+            JLabel type = new JLabel(ToCTeditor.turtleGen.getPartType(part));
+            box.add(createItemComponent(name, type));
+        }
+        JPanel p = new JPanel();
+        p.setMaximumSize(new Dimension(700, 200));
+        p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
+        p.setBackground(Color.lightGray);
+        p.add(Box.createRigidArea(new Dimension(150,0)));
+        p.add(pnlScroll);
+        return p;
     }
+
     private static JComponent createItemComponent(JComponent name, JComponent type) {
         JPanel p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));

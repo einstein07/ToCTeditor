@@ -39,10 +39,26 @@ public class DragMouseAdapter extends MouseAdapter {
          * SM
          */
         Component c = parent.getComponentAt(startPt);
+        String type;
+        if (c instanceof JPanel){
+            System.out.println("Panel has " + ((JPanel)c).getComponentCount() + " components.");
+            Component typePanel = ((JPanel)c).getComponent(2);
+            if ( typePanel instanceof JPanel){
+               type = ((JLabel)((JPanel)typePanel).getComponent(0)).getText();
+               System.out.println("Component Type: " + type);
+               if (type.equals("Polymorphic word")){
+
+               }
+            }
+        }
+
         index = parent.getComponentZOrder(c);
 
         if (ToCTeditor.gui.getIndex() != index){
             ToCTeditor.gui.setIndex(index);
+
+            /**ToCTeditor.gui.templateItems.updateEditorPanel(ToCTeditor.gui.templateItems.getPartPanelEditor(ToCTeditor.gui.getCurrentPart()));
+            ToCTeditor.gui.templateItems.updateTurtlePanel(ToCTeditor.gui.templateItems.getPartPanelTurtle(ToCTeditor.gui.getCurrentPart()));*/
             ToCTeditor.gui.templateItems.updateEditorPanel(ToCTeditor.gui.templateItems.getPartPanelEditor(ToCTeditor.gui.getCurrentPart()));
             ToCTeditor.gui.templateItems.updateTurtlePanel(ToCTeditor.gui.templateItems.getPartPanelTurtle(ToCTeditor.gui.getCurrentPart()));
         }

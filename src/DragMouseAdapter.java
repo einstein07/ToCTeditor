@@ -39,7 +39,7 @@ public class DragMouseAdapter extends MouseAdapter {
          * SM
          */
         Component c = parent.getComponentAt(startPt);
-        String type;
+        /**String type;
         if (c instanceof JPanel){
             System.out.println("Panel has " + ((JPanel)c).getComponentCount() + " components.");
             Component typePanel = ((JPanel)c).getComponent(2);
@@ -50,7 +50,7 @@ public class DragMouseAdapter extends MouseAdapter {
 
                }
             }
-        }
+        }*/
 
         index = parent.getComponentZOrder(c);
 

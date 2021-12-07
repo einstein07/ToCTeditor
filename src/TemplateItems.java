@@ -62,10 +62,10 @@ public class TemplateItems {
         JPanel g = new JPanel();
         g.setLayout(new BoxLayout(g, BoxLayout.PAGE_AXIS));
         g.setSize(frameX,frameY);
-        g.add(Box.createRigidArea(new Dimension(0,25)));
+        g.add(Box.createRigidArea(new Dimension(0,12)));
         JPanel pnlMain = new JPanel();
         pnlMain.setLayout(new BoxLayout(pnlMain, BoxLayout.Y_AXIS));
-        pnlMain.setMaximumSize(new Dimension(800,525));
+        pnlMain.setMaximumSize(new Dimension(800,550));
 
         JPanel listPane = new JPanel();
         listPane.setLayout(new BoxLayout(listPane, BoxLayout.PAGE_AXIS));
@@ -89,7 +89,7 @@ public class TemplateItems {
          */
         JPanel pnlItems = new JPanel();
         pnlItems.setLayout(new BoxLayout(pnlItems, BoxLayout.LINE_AXIS));
-        pnlItems.setMaximumSize(new Dimension(700,100));
+        pnlItems.setMaximumSize(new Dimension(700,145));
         pnlItems.setBackground(Color.lightGray);
         pnlItems.setAlignmentX(Component.CENTER_ALIGNMENT);
         pnlItems.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
@@ -174,7 +174,9 @@ public class TemplateItems {
         // add the listener to the jbutton to handle the "pressed" event
         btnBack.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
+
                 ToCTeditor.gui.setCallCreateTemplate(true);
+                ToCTeditor.gui.start();
             }
         });
 
@@ -188,8 +190,9 @@ public class TemplateItems {
         // add the listener to the jbutton to handle the "pressed" event
         btnAdd.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                //[snip]
+
                 ToCTeditor.gui.setCallCreateItem(true);
+                ToCTeditor.gui.start();
             }
         });
 
@@ -416,18 +419,28 @@ public class TemplateItems {
 
     public JComponent setupTemplateItems(List<Part> list) {
         Box box = Box.createHorizontalBox();
-        JScrollPane pnlScroll = new JScrollPane(box, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        pnlScroll.setMaximumSize(new Dimension(700, 100));
-        pnlScroll.setBackground(Color.lightGray);
+
+        JScrollPane pnlScroll = new JScrollPane(box, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        pnlScroll.setMinimumSize(new Dimension(700, 145));
+        pnlScroll.setMaximumSize(new Dimension(700, 145));
 
         DragMouseAdapter dh = new DragMouseAdapter();
         box.addMouseListener(dh);
         box.addMouseMotionListener(dh);
 
         for (Part part : list) {
-            JLabel name = new JLabel(part.getPartName());
-            JLabel type = new JLabel(part.getType());
-            box.add(createItemComponent(name, type));
+            if (part.isParent()){
+                JLabel name = new JLabel(part.getPartName());
+                JLabel type = new JLabel(part.getType());
+                box.add(createItemComponent(part));
+                //box.add(createItemComponent(name, type, true));
+            }
+            else{
+                JLabel name = new JLabel(part.getPartName());
+                JLabel type = new JLabel(part.getType());
+                box.add(createItemComponent(name, type, false));
+            }
+
 
             /**if (type.getText().equals("Polymorphic word")){
                 List<InternalSlotRootAffix> morphemes = ((PolymorphicWord)part).getAllMorphemes();
@@ -440,20 +453,19 @@ public class TemplateItems {
             }*/
         }
         JPanel p = new JPanel();
-        p.setMaximumSize(new Dimension(700, 100));
+        p.setMaximumSize(new Dimension(700, 145));
         p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
         p.setBackground(Color.lightGray);
         p.add(pnlScroll);
         return p;
     }
-
-    private JPanel createItemComponent(JComponent name, JComponent type) {
+    private JPanel createItemComponent(Part part) {
 
         JPanel p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
         p.setBackground(Color.white);
         p.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(5, 5, 5, 5),
+                BorderFactory.createEmptyBorder(0, 5, 0, 5),
                 BorderFactory.createLineBorder(Color.BLUE, 2)));
 
         /**
@@ -461,7 +473,6 @@ public class TemplateItems {
          */
         JPanel pnlKebab = new JPanel();
         pnlKebab.setLayout(new BoxLayout(pnlKebab, BoxLayout.LINE_AXIS));
-        pnlKebab.setMaximumSize(new Dimension(100,20));
         pnlKebab.setBackground(Color.white);
 
         JPopupMenu menu = new JPopupMenu();
@@ -479,46 +490,197 @@ public class TemplateItems {
         button.setIcon(createImageIcon("/images/kebab.png"));
         button.setBorderPainted(false);
         button.setBackground(Color.white);
-        button.setMaximumSize(new Dimension(15,15));
+        button.setMinimumSize(new Dimension(35,8));
+        button.setMaximumSize(new Dimension(35,8));
+
+
         button.addActionListener(new ActionListener() {
             public void actionPerformed (ActionEvent ev){
-                menu.show(button, 0/**button.getWidth()*/, button.getHeight());
+                menu.show(button, 0, button.getHeight());
             }
         });
 
-        pnlKebab.add(Box.createRigidArea(new Dimension(30,0)));
+
+
+
+
+
+        /**
+         * Set up panel for the item name, and then add a label to the panel
+         */
+
+        JLabel name = new JLabel(part.getPartName());
+        name.setFont(new Font("Sans", Font.PLAIN, 14));
+
+        JPanel pnlName = new JPanel();
+        pnlName.setLayout(new BoxLayout(pnlName, BoxLayout.Y_AXIS));
+        pnlName.setBackground(Color.white);
+        pnlName.add(name);
+        name.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JPanel nameAndButton = new JPanel();
+        nameAndButton.setLayout(new BoxLayout(nameAndButton, BoxLayout.LINE_AXIS));
+        nameAndButton.add((JLabel)name);
+        nameAndButton.add(Box.createRigidArea(new Dimension(5,0)));
+        nameAndButton.add(button);
+        nameAndButton.setBackground(Color.white);
+        /**
+         * Set up morphemes
+         */
+        JPanel pnlMorphemes = new JPanel();
+        pnlMorphemes.setLayout(new BoxLayout(pnlMorphemes, BoxLayout.LINE_AXIS));
+        DragMouseAdapter dh = new DragMouseAdapter();
+        pnlMorphemes.addMouseListener(dh);
+        int maxWidth = 0;
+        pnlMorphemes.addMouseMotionListener(dh);
+        for (int i = 0; i < part.getMorphemes(); i++){
+            JLabel mName = new JLabel(part.getPartName());
+            JLabel mType = new JLabel(part.getType());
+            maxWidth += 116;
+            pnlMorphemes.add(createItemComponent(mName, mType, true));
+        }
+        System.out.println(maxWidth);
+        pnlMorphemes.setBackground(Color.white);
+        pnlKebab.setMinimumSize(new Dimension(maxWidth ,8));
+        pnlKebab.setMaximumSize(new Dimension(maxWidth ,8));
+        pnlKebab.add(Box.createRigidArea(new Dimension((maxWidth),0)));
+
+        pnlKebab.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pnlName.setMinimumSize(new Dimension(maxWidth ,15));
+        pnlName.setMaximumSize(new Dimension(maxWidth ,15));
+
+        nameAndButton.setMinimumSize(new Dimension(maxWidth ,15));
+        pnlName.add(nameAndButton);
+        pnlMorphemes.setMinimumSize(new Dimension(maxWidth, 42));
+        pnlMorphemes.setMaximumSize(new Dimension(maxWidth, 42));
+        p.add(pnlName);
+        pnlName.setAlignmentX(Component.CENTER_ALIGNMENT);
+        p.add(pnlMorphemes);
+        pnlMorphemes.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        /**
+         * Set up panel for the item type, and then add a label to the panel
+         */
+        JLabel type = new JLabel(part.getType());
+        type.setFont(new Font("Sans", Font.PLAIN, 8));
+
+        JPanel pnlType = new JPanel();
+        pnlType.setLayout(new BoxLayout(pnlType, BoxLayout.LINE_AXIS));
+        pnlType.setMaximumSize(new Dimension(maxWidth,8));
+        pnlType.add(type);
+        pnlType.setBackground(Color.white);
+        p.add(pnlType);
+
+        p.setMaximumSize(new Dimension(maxWidth , 90));
+        p.setMinimumSize(new Dimension(maxWidth, 90));
+        p.setOpaque(false);
+        return p;
+    }
+
+    private JPanel createItemComponent(JComponent name, JComponent type, boolean isMorpheme) {
+
+        JPanel p = new JPanel();
+        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+        p.setBackground(Color.white);
+
+
+        /**
+         * Set up panel for menu button, and then add menu button to the panel
+         */
+        JPanel pnlKebab = new JPanel();
+        pnlKebab.setLayout(new BoxLayout(pnlKebab, BoxLayout.LINE_AXIS));
+        if (isMorpheme){
+            p.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createEmptyBorder(0, 2, 0, 2),
+                    BorderFactory.createLineBorder(Color.BLUE, 2)));
+            pnlKebab.setMinimumSize(new Dimension(100,8));
+            pnlKebab.setMaximumSize(new Dimension(100,8));
+        }
+        else{
+            p.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createEmptyBorder(0, 5, 0, 5),
+                    BorderFactory.createLineBorder(Color.BLUE, 2)));
+            pnlKebab.setMaximumSize(new Dimension(100,20));
+        }
+
+        pnlKebab.setBackground(Color.white);
+
+        JPopupMenu menu = new JPopupMenu();
+        menu.setMaximumSize(new Dimension(200, 100));
+        menu.add(new JMenuItem("Duplicate"));
+        menu.add(new JMenuItem("Change type"));
+        menu.add(new JMenuItem("Remove"));
+
+        final JButton button = new JButton();
+        /**
+         * Images folder is stored in the bin folder.
+         * Reason why found here (last answer is the only one that works with a Makefile):
+         * https://stackoverflow.com/questions/13151979/null-pointer-exception-when-an-imageicon-is-added-to-jbutton-in-netbeans
+         */
+        button.setIcon(createImageIcon("/images/kebab.png"));
+        button.setBorderPainted(false);
+        button.setBackground(Color.white);
+        if (isMorpheme){
+            pnlKebab.add(Box.createRigidArea(new Dimension(50,0)));
+            button.setMinimumSize(new Dimension(35,8));
+            button.setMaximumSize(new Dimension(35,8));
+        }
+        else {
+            pnlKebab.add(Box.createRigidArea(new Dimension(30,0)));
+            button.setMaximumSize(new Dimension(35, 15));
+        }
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed (ActionEvent ev){
+                menu.show(button, 0, button.getHeight());
+            }
+        });
+
+
         pnlKebab.add(button);
         /**
          * Set up panel for the item name, and then add a label to the panel
          */
         name.setFont(new Font("Sans", Font.PLAIN, 14));
-        name.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JPanel pnlName = new JPanel();
         pnlName.setLayout(new BoxLayout(pnlName, BoxLayout.Y_AXIS));
-        pnlName.setMaximumSize(new Dimension(100,50));
+        if (isMorpheme){
+            pnlName.setMinimumSize(new Dimension(100,15));
+            pnlName.setMaximumSize(new Dimension(100,15));
+        }
+        else{
+            pnlName.setMaximumSize(new Dimension(100,50));
+        }
         pnlName.add(name);
-        pnlName.setAlignmentX(Component.CENTER_ALIGNMENT);
+        name.setAlignmentX(Component.CENTER_ALIGNMENT);
         pnlName.setBackground(Color.white);
 
         /**
          * Set up panel for the item type, and then add a label to the panel
          */
         type.setFont(new Font("Sans", Font.PLAIN, 8));
-        type.setMaximumSize(new Dimension(40,50));
 
         JPanel pnlType = new JPanel();
         pnlType.setLayout(new BoxLayout(pnlType, BoxLayout.LINE_AXIS));
-        pnlType.setMaximumSize(new Dimension(100,30));
         pnlType.add(type);
-        pnlType.add(Box.createRigidArea(new Dimension(60,0)));
         pnlType.setBackground(Color.white);
 
 
-        p.setMaximumSize(new Dimension(100, 90));
+        if (isMorpheme){
+            pnlType.setMinimumSize(new Dimension(100,8));
+            pnlType.setMaximumSize(new Dimension(100,8));
+            p.setMaximumSize(new Dimension(100, 42));
+        }
+        else{
+            pnlType.setMaximumSize(new Dimension(100,30));
+            p.setMaximumSize(new Dimension(100, 90));
+        }
         p.add(pnlKebab);
+        pnlKebab.setAlignmentX(Component.CENTER_ALIGNMENT);
         p.add(pnlName);
+        pnlName.setAlignmentX(Component.CENTER_ALIGNMENT);
         p.add(pnlType);
+        pnlType.setAlignmentX(Component.CENTER_ALIGNMENT);
         p.setOpaque(false);
         return p;
     }

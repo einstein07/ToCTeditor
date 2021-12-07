@@ -192,6 +192,7 @@ public class CreateTemplate {
                     Template template = TemplateReader.parseTemplate(templateName, templateURI, templatePath);
                     ToCTeditor.dataModel.setTemplate(template);
                     ToCTeditor.gui.setCallTemplateItems(true);
+                    ToCTeditor.gui.start();
                     System.out.println(template.toString());
                 }
                 /**String templateURI = "http://people.cs.uct.ac.za/~zmahlaza/templates/owlsiz/";

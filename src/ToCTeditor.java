@@ -40,7 +40,7 @@ public class ToCTeditor {
         //controller = new ControlThread(dataModel);
         //controller.start();
         gui = new ViewThread(homeScreen, templateItems, createItem, dataModel);
-        gui.start();
+        //gui.start();
 
 
         //testParseTemplate();

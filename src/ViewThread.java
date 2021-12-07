@@ -69,10 +69,10 @@ public class ViewThread extends Thread {
     @Override
     public void run() {
         System.out.println("ToCTeditor v 1.0");
-        while (true) {
+        //while (true) {
             currentPart = dataModel.getPart(index);
 
-            System.out.println(callTemplateItems);
+            //System.out.println(callTemplateItems);
             if (callTemplateItems) {
                 currentPart = dataModel.getPart(index);
 
@@ -96,7 +96,7 @@ public class ViewThread extends Thread {
 
 
             //templateItems.getPartPanelEditor(currentPart);
-        }
+        //}
     }
 
     public void setCallCreateTemplate(boolean callCreateTemplate) {

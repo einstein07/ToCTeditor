@@ -102,7 +102,7 @@ public class TurtleCode {
     public String getPartId(TemplatePortion part){
         String id;
         if (part instanceof Slot){
-            id = ((Slot)part).getIdentification();
+            id = ((Slot)part).getSerialisedName();
         }
         else if (part instanceof UnimorphicWord){
             id = ((UnimorphicWord)part).getIdentification();

@@ -9,13 +9,16 @@
  */
 
 import za.co.mahlaza.research.grammarengine.base.models.interfaces.InternalSlotRootAffix;
+import za.co.mahlaza.research.grammarengine.base.models.template.*;
 import za.co.mahlaza.research.grammarengine.base.models.template.Concord;
 import za.co.mahlaza.research.grammarengine.base.models.template.Copula;
+import za.co.mahlaza.research.grammarengine.base.models.template.Locative;
+import za.co.mahlaza.research.grammarengine.base.models.template.Phrase;
 import za.co.mahlaza.research.grammarengine.base.models.template.PolymorphicWord;
 import za.co.mahlaza.research.grammarengine.base.models.template.Punctuation;
+import za.co.mahlaza.research.grammarengine.base.models.template.Root;
 import za.co.mahlaza.research.grammarengine.base.models.template.Slot;
-import za.co.mahlaza.research.grammarengine.base.models.template.Template;
-import za.co.mahlaza.research.grammarengine.base.models.template.TemplatePortion;
+import za.co.mahlaza.research.grammarengine.base.models.template.UnimorphicAffix;
 import za.co.mahlaza.research.grammarengine.base.models.template.UnimorphicWord;
 
 import java.util.ArrayList;
@@ -23,33 +26,45 @@ import java.util.Collections;
 import java.util.List;
 
 public class DataModel {
-    //private List<TemplatePart> templateItems;
-    private List<TemplatePortion> templateWords;
-    //private List<InternalSlotRootAffix> morphemes;
+    private List<TemplatePortion> templatePortions;
+    private Template template;
 
     public static List<Part> parts;
 
-    Template template;
     public DataModel(){
-        //templateItems = new ArrayList<>();
-        templateWords = new ArrayList<>();
+        templatePortions = new ArrayList<>();
         parts = new ArrayList<>();
     }
 
     public void setTemplate(Template template){
         this.template = template;
-        this.templateWords = template.getTemplatePortions();
-        for (TemplatePortion part: templateWords){
+        this.templatePortions = template.getTemplatePortions();
+        for (TemplatePortion part: templatePortions){
             addPart(part);
         }
     }
-    public void addPart(Part part){
-        //templateItems.add(part);
+
+    public void addTemplatePortion(TemplatePortion templatePortion){
+        templatePortions.add(templatePortion);
     }
 
-    /**public void addPart(TemplatePortion part){
-        templateWords.add(part);
-    }*/
+    public TemplatePortion getTemplatePortion(int index){
+        if (index >= 0 && index < this.templatePortions.size()){
+            return templatePortions.get(index);
+        }
+        else{
+            return null;
+        }
+    }
+
+    public int getTemplateSize(){
+        return this.templatePortions.size();
+    }
+
+    public List<TemplatePortion> getTemplatePortions(){
+        return templatePortions;
+    }
+
     public void addPart(TemplatePortion part){
         String type = ToCTeditor.turtleGen.getPartType(part);
         if (type.equals("Slot")){
@@ -68,6 +83,15 @@ public class DataModel {
             parts.get(i).setMorpheme ( false );
             parts.get(i).setType( "Punctuation" );
         }
+        else if (type.equals("Phrase")){
+            int i = parts.size();
+            parts.add(new Part("Placeholder"));
+            parts.get(i).setValue(((Phrase)part).getValue());
+            parts.get(i).setNextPart("plceholder");
+            parts.get(i).setMorpheme(false);
+            parts.get(i).setType("Phrase");
+        }
+
         else if (type.equals("Polymorphic word")){
             int i = parts.size();
             parts.add(new Part(((PolymorphicWord)part).getIdentification()));
@@ -78,7 +102,12 @@ public class DataModel {
             parts.get(i).setMorpheme( false );
             parts.get(i).setType( "Polymorphic word" );
 
+
             List<InternalSlotRootAffix> morphemes = ((PolymorphicWord)part).getAllMorphemes();
+            if (morphemes.size() > 0){
+                parts.get(i).setParent(true);
+                parts.get(i).setMorphemes(morphemes.size());
+            }
             //System.out.println("Polymophic type: " + ((PolymorphicWord)part).getIdentification() + "Affix boxes: " + morphemes.size());
             for (InternalSlotRootAffix affix : morphemes) {
                 String affixType = ToCTeditor.turtleGen.getMorphemeType(affix);
@@ -98,7 +127,7 @@ public class DataModel {
                     parts.get(j).setNextPart( "placeholder" );
                     parts.get(j).setMorpheme( true );
                     parts.get(j).setParentId( parts.get(i).getPartName() );
-                    parts.get(i).setType( "Copula" );
+                    parts.get(j).setType( "Copula" );
                 }
                 else if (affixType.equals("Slot")){
                     int j = parts.size();
@@ -110,6 +139,30 @@ public class DataModel {
                     parts.get(j).setMorpheme(true);
                     parts.get(j).setParentId( parts.get(i).getPartName() );
                 }
+                else if (affixType.equals("Unimorphic affix")){
+                    int j = parts.size();
+                    parts.add(new Part("placeholder"));
+                    parts.get(j).setValue(((UnimorphicAffix)affix).getValue());
+                    parts.get(j).setMorpheme( true );
+                    parts.get(j).setParentId( parts.get(i).getPartName() );
+                    parts.get(j).setType( "Unimorphic affix" );
+                }
+                else if (affixType.equals("Locative")){
+                    int j = parts.size();
+                    parts.add(new Part(((Locative)affix).getIdentification()));
+                    parts.get(j).setValue(((Locative)affix).getValue());
+                    parts.get(j).setMorpheme( true );
+                    parts.get(j).setParentId( parts.get(i).getPartName() );
+                    parts.get(j).setType( "Locative" );
+                }
+                else if (affixType.equals("Root")){
+                    int j = parts.size();
+                    parts.add(new Part("Placeholder"));
+                    parts.get(j).setValue(((Root)affix).getValue());
+                    parts.get(j).setMorpheme( true );
+                    parts.get(j).setParentId( parts.get(i).getPartName() );
+                    parts.get(j).setType( "Root" );
+                }
             }
         }
         else if (type.equals("Unimorphic word")){
@@ -120,6 +173,14 @@ public class DataModel {
             parts.get(i).setMorpheme ( false );
             parts.get(i).setType ( "Unimorphic word" );
         }
+        else if (type.equals("Space")){
+            int i = parts.size();
+            parts.add(new Part("placeholder"));
+            parts.get(i).setValue( ((UnimorphicWord)part).getValue() );
+
+            parts.get(i).setMorpheme ( false );
+            parts.get(i).setType ( "Space" );
+        }
 
     }
 
@@ -128,17 +189,6 @@ public class DataModel {
             return parts.get(index);
         }
         else{
-            //System.out.println("Index Out of bounds");
-            return null;
-        }
-    }
-
-    public TemplatePortion getItem(int index){
-        if (index >= 0 && index < this.templateWords.size()){
-            return templateWords.get(index);
-        }
-        else{
-            //System.out.println("Index Out of bounds");
             return null;
         }
     }
@@ -147,16 +197,10 @@ public class DataModel {
         return this.parts.size();
     }
 
-    public int getTemplateSize(){
-        return this.templateWords.size();
-    }
-
     public List<Part> getData(){
         return parts /**Collections.unmodifiableList(templateItems)*/;
     }
 
-    public List<TemplatePortion> getTemplateWords(){
-        return templateWords;
-    }
+
 
 }

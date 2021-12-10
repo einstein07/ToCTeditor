@@ -77,6 +77,62 @@ public class TurtleCode {
         }
         return turtle;
     }
+    public String getPartTurtle(TemplatePortion templatePortion){
+        String turtle = "";
+        String type = getPartType(templatePortion);
+        if (type.equals("Slot")) {
+            turtle = "<" + templatePortion.getSerialisedName() + "> a toct:Slot\n" +
+                    "    ; toct:hasLabel \"" + ((Slot)templatePortion).getLabel() + "\"^^xsd:string\n" +
+                    "    ; toct:hasNextPart " + templatePortion.getNextPart() + " .";
+        } else if (type.equals("Unimorphic word")) {
+            turtle = "<" + templatePortion.getSerialisedName() + "> a toct:UnimorphicWord\n" +
+                    "    ; toct:hasValue \"" + ((UnimorphicWord)templatePortion).getValue() + "\"^^xsd:string\n" +
+                    "    ; toct:hasNextPart <" + templatePortion.getNextPart() + "> .";
+        } else if (templatePortion.equals("Polymorphic word")) {
+            turtle = "<" + templatePortion.getSerialisedName() + "> a toct:PolymorphicWord\n";
+                    for (int i = 0; i < ((PolymorphicWord)templatePortion).getItemsItReliesOn().size(); i++){
+                        turtle += "    ; toct:relies on <" + ((PolymorphicWord)templatePortion).getItemsItReliesOn().get(i) + ">\n";
+                    }
+                    turtle +=   "    ; toct:hasFirstPart <" + ((PolymorphicWord)templatePortion).getFirstItem().getSerialisedName()  + ">\n" +
+                                "    ; toct:hasLastPart <" + ((PolymorphicWord)templatePortion).getLastItem().getSerialisedName() + ">\n" +
+                                "    ; toct:hasNextPart <" + ((PolymorphicWord)templatePortion).getNextPart().getSerialisedName() + "> .";
+        }
+        else if ( type.equals("Phrase") ){
+            turtle = "<" + templatePortion.getSerialisedName() + "> a toct:Phrase\n" +
+                    "    ; toct:hasValue \"" + ((Phrase)templatePortion).getValue() + "\"^^xsd:string\n" +
+                    "    ; toct:hasNextPart <" + templatePortion.getNextPart() + "> .";
+        }
+        else if (type.equals("Punctuation")) {
+            turtle = "<" + templatePortion.getSerialisedName() + "> a toct:Punctuation\n" +
+                    "    ; toct:hasValue \"" + ((Punctuation)templatePortion).getValue()  + "^^xsd:string .";
+        }
+        /**else if (part.getType().equals("Concord")){
+            turtle = "<" + part.getPartName() + "> a toct:Concord\n" +
+                    "    ; cao:hasConcordType <" + part.getType() + ">\n" +
+                    "    ; toct:hasLabel \"" + part.getLabel() + "\"^^xsd:string\n" +
+                    "    ; toct:hasNextPart <" + part.getNextPart() + "> .";
+        }
+        else if (part.getType().equals("Copula")){
+            turtle = "<" + part.getPartName() + "> a toct:Copula\n" +
+                    "    ; toct:hasLabel \"" + part.getLabel() + "\"^^xsd:string\n" +
+                    "    ; toct:hasNextPart <" + part.getNextPart() + "> .";
+        }
+        else if (part.getType().equals("Locative")){
+            turtle = "<" + part.getPartName() + "> a toct:Locative\n" +
+                    "    ; toct:hasLabel \"" + part.getLabel() + "\"\n" +
+                    "    ; toct:hasNextPart <" + part.getNextPart() + "> .";
+        }
+        else if (part.getType().equals("Unimorphic affix")){
+            turtle = "<" + part.getPartName() + "> a toct:UnimorphicAffix\n" +
+                    "    ; toct:hasValue \"" + part.getValue() + "\"^^xsd:string\n" +
+                    "    ; toct:hasNextPart <" + part.getNextPart() + "> .";
+        }
+        else if (part.getType().equals("Root")){
+            turtle = "<" + part.getPartName() + "> a toct:Root\n" +
+                    "    ; toct:hasValue \"" + part.getValue() + "\"^^xsd:string .";
+        }*/
+        return turtle;
+    }
     public String getPartType(TemplatePortion part){
         String type;
         if (part instanceof Slot){

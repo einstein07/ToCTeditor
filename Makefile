@@ -5,9 +5,11 @@ PKG = main/ \
 
 BIN = ./bin/
 
+LIBS = ./libs/*
+
 SRC = ./src/
 
-JFLAGS = -g -d $(BIN) -cp $(SRC)
+JFLAGS = -g -d $(BIN) -cp $(SRC):$(LIBS)
 
 JC = javac
 
@@ -39,4 +41,4 @@ clean:
 	rm -rf $(BIN)*.class
 
 run:
-	java -cp ./bin ToCTeditor
+	java -cp $(BIN):$(LIBS) ToCTeditor

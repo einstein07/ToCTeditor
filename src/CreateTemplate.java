@@ -119,7 +119,11 @@ public class CreateTemplate {
          */
         btnCreate.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
+
+                ToCTeditor.gui = new ViewThread(ToCTeditor.homeScreen, ToCTeditor.templateItems, ToCTeditor.createItem, ToCTeditor.dataModel);
                 ToCTeditor.gui.setCallTemplateItems(true);
+                ToCTeditor.gui.start();
+                //ToCTeditor.gui.start();
             }
         });
 
@@ -189,11 +193,20 @@ public class CreateTemplate {
                     TemplateReader.Init(new ZuluFeatureParser());
                     TemplateReader.setTemplateOntologyNamespace(URIS.ToCT_NS);
                     TemplateReader.IS_DEBUG_ENABLED = true;
-                    Template template = TemplateReader.parseTemplate(templateName, templateURI, templatePath);
-                    ToCTeditor.dataModel.setTemplate(template);
-                    ToCTeditor.gui.setCallTemplateItems(true);
-                    ToCTeditor.gui.start();
-                    System.out.println(template.toString());
+                    Template template;
+                    try {
+                        template = TemplateReader.parseTemplate(templateName, templateURI, templatePath);
+                        ToCTeditor.dataModel.setTemplate(template);
+
+                        ToCTeditor.gui = new ViewThread(ToCTeditor.homeScreen, ToCTeditor.templateItems, ToCTeditor.createItem, ToCTeditor.dataModel);
+                        ToCTeditor.gui.setCallTemplateItems(true);
+                        ToCTeditor.gui.start();
+                        System.out.println(template.toString());
+                    }
+                    catch(Exception error){
+                        System.out.println(error.getMessage());
+                    }
+
                 }
                 /**String templateURI = "http://people.cs.uct.ac.za/~zmahlaza/templates/owlsiz/";
                 String templatePath = "/home/root07/Documents/Academics/Templates/template1.1.ttl";

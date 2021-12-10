@@ -56,13 +56,16 @@ public class DragMouseAdapter extends MouseAdapter {
 
         if (ToCTeditor.gui.getIndex() != index){
             ToCTeditor.gui.setIndex(index);
+        if (ToCTeditor.DEBUG){
+                ToCTeditor.templateItems.updateEditorPanel(ToCTeditor.templateItems.getPartPanelEditor(ToCTeditor.gui.getCurrentTemplatePortion()));
+                ToCTeditor.templateItems.updateTurtlePanel(ToCTeditor.templateItems.getPartPanelTurtle(ToCTeditor.gui.getCurrentTemplatePortion()));
+            }
+            else {
+                ToCTeditor.templateItems.updateEditorPanel(ToCTeditor.templateItems.getPartPanelEditor(ToCTeditor.gui.getCurrentPart()));
+                ToCTeditor.templateItems.updateTurtlePanel(ToCTeditor.templateItems.getPartPanelTurtle(ToCTeditor.gui.getCurrentPart()));
+            }
 
-            /**ToCTeditor.gui.templateItems.updateEditorPanel(ToCTeditor.gui.templateItems.getPartPanelEditor(ToCTeditor.gui.getCurrentPart()));
-            ToCTeditor.gui.templateItems.updateTurtlePanel(ToCTeditor.gui.templateItems.getPartPanelTurtle(ToCTeditor.gui.getCurrentPart()));*/
-            ToCTeditor.gui.templateItems.updateEditorPanel(ToCTeditor.gui.templateItems.getPartPanelEditor(ToCTeditor.gui.getCurrentPart()));
-            ToCTeditor.gui.templateItems.updateTurtlePanel(ToCTeditor.gui.templateItems.getPartPanelTurtle(ToCTeditor.gui.getCurrentPart()));
         }
-        //System.out.println("Clicked item index: " + index);
 
 
     }

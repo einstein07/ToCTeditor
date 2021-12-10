@@ -14,23 +14,38 @@ import za.co.mahlaza.research.templateparsing.URIS;
  */
 public class ToCTeditor {
 
+
+    static boolean DEBUG = true;
     static ControlThread controller;
     static ViewThread gui;
     static DataModel dataModel;
 
     static TurtleCode turtleGen;
 
+    static ToCTeditorFrame frame;
+    static CreateTemplate homeScreen;
+    static TemplateItems templateItems;
+    static CreateItem createItem;
+    static CreateMorpheme createMorpheme;
+
+    static int prevToggleBtnState;
+    // By default, set the gui to show the turtle preview
+    static int toggleBtnState;
+
     public static void main(String[] args) {
 
-        ToCTeditorFrame frame = new ToCTeditorFrame(1000, 600);
-        CreateTemplate homeScreen = new CreateTemplate(frame);
-        TemplateItems templateItems = new TemplateItems(frame);
-        CreateItem createItem = new CreateItem(frame);
+
+        frame = new ToCTeditorFrame(1000, 600);
+        homeScreen = new CreateTemplate(frame);
+        templateItems = new TemplateItems(frame);
+        createItem = new CreateItem(frame);
+        createMorpheme = new CreateMorpheme(frame);
 
         turtleGen = new TurtleCode();
         dataModel = new DataModel();
 
-        dataModel.addPart(new Part(""));
+        homeScreen.setupGUI();
+
         /**
         dataModel.addPart(new Slot("slot1", "s1", "concord1"));
         dataModel.addPart(new Concord("concord1", "c1", "subjectVerb", "root1"));
@@ -39,24 +54,30 @@ public class ToCTeditor {
         */
         //controller = new ControlThread(dataModel);
         //controller.start();
-        gui = new ViewThread(homeScreen, templateItems, createItem, dataModel);
-        //gui.start();
+        //gui = new ViewThread(homeScreen, templateItems, createItem, dataModel);
+        //gui.start()
 
+        // By default, set the gui to show the turtle preview
+        toggleBtnState = 1;
+        prevToggleBtnState = 1;
 
-        //testParseTemplate();
+        /**
+        try{
+            testParseTemplate();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }*/
+
     }
 
-    public static void testParseTemplate () {
-        System.out.println("Testing. . .");
-
-        String templatePath = "/home/root07/Documents/Academics/Templates/template2.ttl";
-        String templateName = "templ2";
+    public static void testParseTemplate() throws Exception {
+        String templatePath = "/home/root07/Documents/Academics/Templates/template1.1.ttl";
+        String templateName = "templ1.1";
         String templateURI = "http://people.cs.uct.ac.za/~zmahlaza/templates/owlsiz/";
 
-        System.out.println("Name:" + templateName + " Path: " + templatePath);
         TemplateReader.Init(new ZuluFeatureParser());
         TemplateReader.setTemplateOntologyNamespace(URIS.ToCT_NS);
         Template template = TemplateReader.parseTemplate(templateName, templateURI, templatePath);
-        System.out.println("Done.");
     }
 }

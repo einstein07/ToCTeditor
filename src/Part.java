@@ -20,8 +20,18 @@ public class Part{
     private String nextPart;
     private boolean isNextPartChanged;
     private String concordType;
+    private boolean isParent;
     private boolean isMorpheme;
     private String parentId;
+    private int morphemes;
+
+    public int getMorphemes() {
+        return morphemes;
+    }
+
+    public void setMorphemes(int morphemes) {
+        this.morphemes = morphemes;
+    }
 
     public Part(String partName){
         this.partName = partName;
@@ -33,6 +43,8 @@ public class Part{
         this.isFirstPartChanged = false;
         this.isLastPartChanged = false;
         this.isNextPartChanged = false;
+        this.isParent = false;
+        this.morphemes = 0;
     }
     public void setPartName(String partName) {
         this.partName = partName;
@@ -106,6 +118,14 @@ public class Part{
 
     public void setParentId(String parentId) {
         this.parentId = parentId;
+    }
+
+    public boolean isParent() {
+        return isParent;
+    }
+
+    public void setParent(boolean parent) {
+        isParent = parent;
     }
 
     public void setLastPart(String lastPart) {

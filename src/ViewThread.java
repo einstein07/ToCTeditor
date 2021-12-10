@@ -10,46 +10,62 @@ import za.co.mahlaza.research.grammarengine.base.models.template.TemplatePortion
  * @(#) $Id$
  */
 public class ViewThread extends Thread {
-    private CreateTemplate homeScreen;
-     TemplateItems templateItems;
-    private CreateItem createItem;
-    private DataModel dataModel;
+    //private CreateTemplate homeScreen;
+    //TemplateItems templateItems;
+    //private CreateItem createItem;
+    //private DataModel dataModel;
 
     boolean callCreateTemplate;
     boolean callTemplateItems;
     boolean callCreateItem;
+    boolean callCreateMorpheme;
 
     private Part currentPart;
+    private TemplatePortion currentTemplatePortion;
 
     private int index;
     private int toggleBtnState;
     private int prevToggleBtnState;
 
-    public ViewThread(CreateTemplate homeScreen, TemplateItems templateItems, CreateItem createItem, DataModel datamodel) {
-        this.homeScreen = homeScreen;
-        this.templateItems = templateItems;
-        this.createItem = createItem;
-        this.dataModel = datamodel;
+    public ViewThread() {
 
         this.callCreateTemplate = false;
         this.callTemplateItems = false;
         this.callCreateItem = false;
+        this.callCreateMorpheme = false;
 
         // By default, set the gui to show the turtle preview
-        this.toggleBtnState = 1;
-        this.prevToggleBtnState = 1;
+        //this.toggleBtnState = 1;
+        //this.prevToggleBtnState = 1;
+
+    }
+
+    public ViewThread(CreateTemplate homeScreen, TemplateItems templateItems, CreateItem createItem, DataModel datamodel) {
+        /**this.homeScreen = homeScreen;
+        this.templateItems = templateItems;
+        this.createItem = createItem;
+        this.dataModel = datamodel;*/
+
+        this.callCreateTemplate = false;
+        this.callTemplateItems = false;
+        this.callCreateItem = false;
+        this.callCreateMorpheme = false;
+
+        // By default, set the gui to show the turtle preview
+        //this.toggleBtnState = 1;
+        //this.prevToggleBtnState = 1;
 
 
         //this.index = -1;
-        homeScreen.setupGUI();
+        //homeScreen.setupGUI();
     }
 
     public int getToggleBtnState() {
-        return toggleBtnState;
+        return ToCTeditor.toggleBtnState;
     }
 
     public void setToggleBtnState(int toggleBtnState) {
-        this.toggleBtnState = toggleBtnState;
+        ToCTeditor.toggleBtnState = ToCTeditor.toggleBtnState;
     }
 
     public int getIndex() {
@@ -61,42 +77,19 @@ public class ViewThread extends Thread {
     }
 
     public Part getCurrentPart() {
-        currentPart = dataModel.getPart(index);
+        currentPart = ToCTeditor.dataModel.getPart(index);
         return currentPart;
     }
 
 
-    @Override
-    public void run() {
-        System.out.println("ToCTeditor v 1.0");
-        //while (true) {
-            currentPart = dataModel.getPart(index);
+    public TemplatePortion getCurrentTemplatePortion(){
+        currentTemplatePortion = ToCTeditor.dataModel.getTemplatePortion(index);
+        return currentTemplatePortion;
+    }
+    public void setCurrentTemplatePortion(int index){
 
-            //System.out.println(callTemplateItems);
-            if (callTemplateItems) {
-                currentPart = dataModel.getPart(index);
+        currentTemplatePortion = ToCTeditor.dataModel.getTemplatePortion(index);
 
-                //templateItems.setupGUI(templateItems.getPartPanelEditor(currentPart), templateItems.getPartPanelTurtle(currentPart));
-                templateItems.setupGUI(templateItems.getPartPanelEditor(currentPart), templateItems.getPartPanelTurtle(currentPart));
-                callTemplateItems = false;
-            } else if (callCreateItem) {
-                //currentPart = dataModel.getPart(index);
-                createItem.setupGUI();
-                callCreateItem = false;
-            } else if (callCreateTemplate) {
-                //currentPart = dataModel.getPart(index);
-                homeScreen.setupGUI();
-                callCreateTemplate = false;
-            }
-            else if (toggleBtnState != prevToggleBtnState){
-                //ToCTeditor.gui.templateItems.updateEditorTurtlePanel(templateItems.getPartPanelEditor(currentPart), templateItems.getPartPanelTurtle(currentPart));
-                ToCTeditor.gui.templateItems.updateEditorTurtlePanel(templateItems.getPartPanelEditor(currentPart), templateItems.getPartPanelTurtle(currentPart));
-                prevToggleBtnState = toggleBtnState;
-            }
-
-
-            //templateItems.getPartPanelEditor(currentPart);
-        //}
     }
 
     public void setCallCreateTemplate(boolean callCreateTemplate) {
@@ -110,4 +103,52 @@ public class ViewThread extends Thread {
     public void setCallCreateItem(boolean callCreateItem) {
         this.callCreateItem = callCreateItem;
     }
+    public void setCallCreateMorpheme(boolean callCreateMorpheme) {
+        this.callCreateMorpheme = callCreateMorpheme;
+    }
+
+    @Override
+    public void run() {
+        //System.out.println("ToCTeditor v 1.0");
+        //while (true) {
+            currentPart = ToCTeditor.dataModel.getPart(index);
+
+            //System.out.println(callTemplateItems);
+            if (callCreateTemplate) {
+                //currentPart = dataModel.getPart(index);
+                //homeScreen.setupGUI();
+                ToCTeditor.homeScreen.setupGUI();
+                callCreateTemplate = false;
+            }
+            else if (callTemplateItems) {
+                currentPart = ToCTeditor.dataModel.getPart(index);
+
+                //templateItems.setupGUI(templateItems.getPartPanelEditor(currentPart), templateItems.getPartPanelTurtle(currentPart));
+                //templateItems.setupGUI(templateItems.getPartPanelEditor(currentPart), templateItems.getPartPanelTurtle(currentPart));
+                ToCTeditor.templateItems.setupGUI(ToCTeditor.templateItems.getPartPanelEditor(currentPart), ToCTeditor.templateItems.getPartPanelTurtle(currentPart));
+                callTemplateItems = false;
+            }
+            else if (callCreateItem) {
+                currentPart = ToCTeditor.dataModel.getPart(index);
+                //createItem.setupGUI();
+                ToCTeditor.createItem.setupGUI();
+                callCreateItem = false;
+            }
+            else if (callCreateMorpheme) {
+                currentPart = ToCTeditor.dataModel.getPart(index);
+                ToCTeditor.createMorpheme.setupGUI(currentTemplatePortion);
+                callCreateItem = false;
+            }
+            else if (ToCTeditor.toggleBtnState != ToCTeditor.prevToggleBtnState){
+                //ToCTeditor.gui.templateItems.updateEditorTurtlePanel(templateItems.getPartPanelEditor(currentPart), templateItems.getPartPanelTurtle(currentPart));
+                ToCTeditor.templateItems.updateEditorTurtlePanel(ToCTeditor.templateItems.getPartPanelEditor(currentTemplatePortion), ToCTeditor.templateItems.getPartPanelTurtle(currentTemplatePortion));
+                ToCTeditor.prevToggleBtnState = ToCTeditor.toggleBtnState;
+            }
+
+
+            //templateItems.getPartPanelEditor(currentPart);
+        //}
+    }
+
+
 }

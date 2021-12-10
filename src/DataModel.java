@@ -61,6 +61,11 @@ public class DataModel {
         return this.templatePortions.size();
     }
 
+    public Template getTemplate(){
+        return this.template;
+    }
+
+
     public List<TemplatePortion> getTemplatePortions(){
         return templatePortions;
     }

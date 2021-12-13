@@ -88,14 +88,36 @@ public class TurtleCode {
             turtle = "<" + templatePortion.getSerialisedName() + "> a toct:UnimorphicWord\n" +
                     "    ; toct:hasValue \"" + ((UnimorphicWord)templatePortion).getValue() + "\"^^xsd:string\n" +
                     "    ; toct:hasNextPart <" + templatePortion.getNextPart() + "> .";
-        } else if (templatePortion.equals("Polymorphic word")) {
+        } else if (type.equals("Polymorphic word")) {
             turtle = "<" + templatePortion.getSerialisedName() + "> a toct:PolymorphicWord\n";
-                    for (int i = 0; i < ((PolymorphicWord)templatePortion).getItemsItReliesOn().size(); i++){
-                        turtle += "    ; toct:relies on <" + ((PolymorphicWord)templatePortion).getItemsItReliesOn().get(i) + ">\n";
-                    }
-                    turtle +=   "    ; toct:hasFirstPart <" + ((PolymorphicWord)templatePortion).getFirstItem().getSerialisedName()  + ">\n" +
-                                "    ; toct:hasLastPart <" + ((PolymorphicWord)templatePortion).getLastItem().getSerialisedName() + ">\n" +
-                                "    ; toct:hasNextPart <" + ((PolymorphicWord)templatePortion).getNextPart().getSerialisedName() + "> .";
+            if ( ((PolymorphicWord)templatePortion).getItemsItReliesOn() != null ) {
+                for (int i = 0; i < ((PolymorphicWord) templatePortion).getItemsItReliesOn().size(); i++) {
+                    turtle += "    ; toct:relies on <" + ((PolymorphicWord) templatePortion).getItemsItReliesOn().get(i) + ">\n";
+                }
+            }
+            else {
+                turtle += "    ; toct:relies on <>\n";
+            }
+            if ( ((PolymorphicWord)templatePortion).getAllMorphemes().size() > 0 ){
+                turtle +=   "    ; toct:hasFirstPart <" + ((PolymorphicWord)templatePortion).getFirstItem().getSerialisedName()  + ">\n";
+            }
+            else{
+                turtle +=   "    ; toct:hasFirstPart <>\n";
+            }
+            if ( ((PolymorphicWord)templatePortion).getAllMorphemes().size() > 0 ){
+                turtle += "    ; toct:hasLastPart <" + ((PolymorphicWord)templatePortion).getLastItem().getSerialisedName() + ">\n";
+            }
+            else {
+                turtle += "    ; toct:hasLastPart <>\n";
+            }
+            if (((PolymorphicWord)templatePortion).getAllMorphemes().size() > 0 ){
+                turtle += "    ; toct:hasNextPart <" + ((PolymorphicWord)templatePortion).getNextPart().getSerialisedName() + "> .";
+            }
+            else {
+                turtle += "    ; toct:hasNextPart <> .";
+            }
+
+
         }
         else if ( type.equals("Phrase") ){
             turtle = "<" + templatePortion.getSerialisedName() + "> a toct:Phrase\n" +

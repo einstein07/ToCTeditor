@@ -11,7 +11,9 @@
 import za.co.mahlaza.research.grammarengine.base.models.feature.ConcordType;
 import za.co.mahlaza.research.grammarengine.base.models.feature.Feature;
 import za.co.mahlaza.research.grammarengine.base.models.interfaces.InternalSlotRootAffix;
+import za.co.mahlaza.research.grammarengine.base.models.template.Phrase;
 import za.co.mahlaza.research.grammarengine.base.models.template.PolymorphicWord;
+import za.co.mahlaza.research.grammarengine.base.models.template.Punctuation;
 import za.co.mahlaza.research.grammarengine.base.models.template.Slot;
 import za.co.mahlaza.research.grammarengine.base.models.template.TemplatePortion;
 import za.co.mahlaza.research.grammarengine.base.models.template.UnimorphicWord;
@@ -225,7 +227,7 @@ public class CreateItem {
 
                     ToCTeditor.gui = new ViewThread(ToCTeditor.homeScreen, ToCTeditor.templateItems, ToCTeditor.createItem, ToCTeditor.dataModel);
                     ToCTeditor.gui.setCallTemplateItems(true);
-                    ToCTeditor.gui.setCurrentTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-1);
+                    ToCTeditor.gui.setIndex(ToCTeditor.dataModel.getTemplatePortions().size()-1);
                     ToCTeditor.gui.start();
 
                 }
@@ -246,7 +248,7 @@ public class CreateItem {
 
                     ToCTeditor.gui = new ViewThread(ToCTeditor.homeScreen, ToCTeditor.templateItems, ToCTeditor.createItem, ToCTeditor.dataModel);
                     ToCTeditor.gui.setCallTemplateItems(true);
-                    ToCTeditor.gui.setCurrentTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-1);
+                    ToCTeditor.gui.setIndex(ToCTeditor.dataModel.getTemplatePortions().size()-1);
                     ToCTeditor.gui.start();
 
                 }
@@ -256,25 +258,56 @@ public class CreateItem {
             btnType.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent e){
 
-                    List<InternalSlotRootAffix> wordPortions = new ArrayList<>();
-                    List<Feature> featuresList = new ArrayList<>();
-
-                    int portionNumber = 0;
-                    if (ToCTeditor.dataModel.getTemplatePortions() != null){
-                        portionNumber = ToCTeditor.dataModel.getTemplatePortions().size();
-                    }
-                    String id = "polyword" + portionNumber;
-                    ToCTeditor.dataModel.addTemplatePortion(new PolymorphicWord(wordPortions, featuresList));
-                    ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-1).setSerialisedName(id);
 
                     /**
                     ToCTeditor.gui = new ViewThread(ToCTeditor.homeScreen, ToCTeditor.templateItems, ToCTeditor.createItem, ToCTeditor.dataModel);
                     ToCTeditor.gui.setCallTemplateItems(true);
                     ToCTeditor.gui.setCurrentTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-1);
                     ToCTeditor.gui.start();*/
-                    ToCTeditor.gui = new ViewThread(ToCTeditor.homeScreen, ToCTeditor.templateItems, ToCTeditor.createItem, ToCTeditor.dataModel);
+                    ToCTeditor.gui = new ViewThread();
                     ToCTeditor.gui.setCallCreateMorpheme(true);
-                    ToCTeditor.gui.setCurrentTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-1);
+                    ToCTeditor.gui.setIndex(-1);
+                    ToCTeditor.gui.start();
+
+                }
+            });
+        }
+
+        else if (type.equals("Punctuation")){
+            btnType.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent e){
+                    List<Feature> featureList = new ArrayList<>();
+                    int portionNumber = 0;
+                    if (ToCTeditor.dataModel.getTemplatePortions() != null){
+                        portionNumber = ToCTeditor.dataModel.getTemplatePortions().size();
+                    }
+                    String id = "punct" + portionNumber;
+                    ToCTeditor.dataModel.addTemplatePortion(new Punctuation(""));
+                    ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-1).setSerialisedName(id);
+
+                    ToCTeditor.gui = new ViewThread(ToCTeditor.homeScreen, ToCTeditor.templateItems, ToCTeditor.createItem, ToCTeditor.dataModel);
+                    ToCTeditor.gui.setCallTemplateItems(true);
+                    ToCTeditor.gui.setIndex(ToCTeditor.dataModel.getTemplatePortions().size()-1);
+                    ToCTeditor.gui.start();
+
+                }
+            });
+        }
+        else if (type.equals("Phrase")){
+            btnType.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent e){
+                    List<Feature> featureList = new ArrayList<>();
+                    int portionNumber = 0;
+                    if (ToCTeditor.dataModel.getTemplatePortions() != null){
+                        portionNumber = ToCTeditor.dataModel.getTemplatePortions().size();
+                    }
+                    String id = "phrase" + portionNumber;
+                    ToCTeditor.dataModel.addTemplatePortion(new Phrase(""));
+                    ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-1).setSerialisedName(id);
+
+                    ToCTeditor.gui = new ViewThread(ToCTeditor.homeScreen, ToCTeditor.templateItems, ToCTeditor.createItem, ToCTeditor.dataModel);
+                    ToCTeditor.gui.setCallTemplateItems(true);
+                    ToCTeditor.gui.setIndex(ToCTeditor.dataModel.getTemplatePortions().size()-1);
                     ToCTeditor.gui.start();
 
                 }

@@ -11,9 +11,14 @@
 import za.co.mahlaza.research.grammarengine.base.models.feature.ConcordType;
 import za.co.mahlaza.research.grammarengine.base.models.feature.Feature;
 import za.co.mahlaza.research.grammarengine.base.models.interfaces.InternalSlotRootAffix;
+import za.co.mahlaza.research.grammarengine.base.models.template.Concord;
+import za.co.mahlaza.research.grammarengine.base.models.template.Copula;
+import za.co.mahlaza.research.grammarengine.base.models.template.Locative;
 import za.co.mahlaza.research.grammarengine.base.models.template.PolymorphicWord;
+import za.co.mahlaza.research.grammarengine.base.models.template.Root;
 import za.co.mahlaza.research.grammarengine.base.models.template.Slot;
 import za.co.mahlaza.research.grammarengine.base.models.template.TemplatePortion;
+import za.co.mahlaza.research.grammarengine.base.models.template.UnimorphicAffix;
 import za.co.mahlaza.research.grammarengine.base.models.template.UnimorphicWord;
 
 import javax.swing.*;
@@ -28,11 +33,21 @@ public class CreateMorpheme {
     private int frameY;
     private ToCTeditorFrame frame;
 
+    List<InternalSlotRootAffix> wordPortions;
+    List<Feature> featuresList;
+
+
+    /**
+     * Existing Item panel
+     */
+    JPanel pnlExistingItem;
 
     public CreateMorpheme(ToCTeditorFrame frame) {
         this.frameX = frame.getFrameX();
         this.frameY = frame.getFrameY();
         this.frame = frame;
+
+
     }
 
     public void setupGUI(TemplatePortion templatePortion){
@@ -88,85 +103,77 @@ public class CreateMorpheme {
         /**
          * Existing Item panel
          */
-        JPanel pnlExistingItem = new JPanel();
+        //JPanel pnlExistingItem = new JPanel();
+        pnlExistingItem = new JPanel();
         pnlExistingItem.setLayout(new BoxLayout(pnlExistingItem, BoxLayout.Y_AXIS));
         pnlExistingItem.setMaximumSize(new Dimension(700,250));
         pnlExistingItem.setAlignmentX(Component.CENTER_ALIGNMENT);
         pnlExistingItem.setBackground(Color.lightGray);
         pnlExistingItem.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
 
-        JPanel pnlSearchField = new JPanel();
-        pnlSearchField.setLayout(new BoxLayout(pnlSearchField, BoxLayout.LINE_AXIS));
-        pnlSearchField.setMaximumSize(new Dimension(700,30));
-        pnlSearchField.setAlignmentX(Component.CENTER_ALIGNMENT);
-        pnlSearchField.setBackground(Color.LIGHT_GRAY);
-
-        /**
-         * Search part text field
-         */
-        HintTextField txtSearch = new HintTextField("Search from existing items");
-        txtSearch.setAlignmentX(Component.CENTER_ALIGNMENT);
-        txtSearch.setMaximumSize(new Dimension(400,30));
-        txtSearch.setFont(new Font("Sans", Font.PLAIN, 14));
-
-        pnlSearchField.add(Box.createRigidArea(new Dimension(150,0)));
-        pnlSearchField.add(txtSearch);
-
-        pnlExistingItem.add(Box.createRigidArea(new Dimension(0,5)));
-        pnlExistingItem.add(pnlSearchField);
-
         //pnlExistingItem.add(setupExistingItems(ToCTeditor.dataModel.getData()));
         //pnlExistingItem.add(setupExistingItems(ToCTeditor.dataModel.getTemplatePortions()));
         List<InternalSlotRootAffix> wordPortions = new ArrayList<>();
 
-        if (((PolymorphicWord)templatePortion).getAllMorphemes().size() > 0){
-            wordPortions = ((PolymorphicWord)templatePortion).getAllMorphemes();
-        }
-        pnlExistingItem.add(setupExistingItems(wordPortions));
+        if (templatePortion != null) {
+            if (((PolymorphicWord) templatePortion).getAllMorphemes().size() > 0) {
+                wordPortions = ((PolymorphicWord) templatePortion).getAllMorphemes();
+            }
+            pnlExistingItem.add(setupExistingItems(wordPortions));
 
+        }
+        else {
+            this.wordPortions = new ArrayList<>();
+            this.featuresList = new ArrayList<>();
+        }
         /**
-         * Back button
+         * Create button
          */
-        JButton btnBack = new JButton("Back");
-        btnBack.setFont(new Font("Sans", Font.PLAIN, 15));
-        btnBack.setMinimumSize(new Dimension(700,30));
-        btnBack.setMaximumSize(new Dimension(700,30));
-        btnBack.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JButton btnCreate = new JButton("Create");
+        btnCreate.setFont(new Font("Sans", Font.PLAIN, 15));
+        btnCreate.setMaximumSize(new Dimension(345,30));
+        btnCreate.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // add the listener to the jbutton to handle the "pressed" event
-        btnBack.addActionListener(new ActionListener(){
+        List<InternalSlotRootAffix> finalWordPortions = wordPortions;
+        btnCreate.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
 
-                ToCTeditor.gui = new ViewThread(ToCTeditor.homeScreen, ToCTeditor.templateItems, ToCTeditor.createItem, ToCTeditor.dataModel);
+                int portionNumber = 0;
+                if (ToCTeditor.dataModel.getTemplatePortions() != null){
+                    portionNumber = ToCTeditor.dataModel.getTemplatePortions().size();
+                }
+                String id = "polyword" + portionNumber;
+                ToCTeditor.dataModel.addTemplatePortion(new PolymorphicWord(finalWordPortions, featuresList));
+                ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-1).setSerialisedName(id);
+
+                ToCTeditor.gui = new ViewThread();
                 ToCTeditor.gui.setCallTemplateItems(true);
                 ToCTeditor.gui.start();
             }
         });
 
         /**
-         * Add button
+         * Cancel button
          */
-        JButton btnAdd = new JButton("Add");
-        btnAdd.setFont(new Font("Sans", Font.PLAIN, 15));
-        btnAdd.setMaximumSize(new Dimension(345,30));
+        JButton btnCancel = new JButton("Cancel");
+        btnCancel.setFont(new Font("Sans", Font.PLAIN, 15));
+        btnCancel.setMaximumSize(new Dimension(345,30));
 
         /**
          * Buttons panel
          */
         JPanel pnlButtons = new JPanel();
-        pnlButtons.setLayout(new BoxLayout(pnlButtons, BoxLayout.Y_AXIS));
+        pnlButtons.setLayout(new BoxLayout(pnlButtons, BoxLayout.LINE_AXIS));
         pnlButtons.setMaximumSize(new Dimension(700,30));
         pnlButtons.setBackground(Color.lightGray);
 
         /**
          * Add buttons to buttons panel
          */
-        pnlButtons.add(btnBack);
-        /**pnlButtons.add(Box.createRigidArea(new Dimension(10,0)));
-         pnlButtons.add(btnAdd);*/
-
-
-
+        pnlButtons.add(btnCancel);
+        pnlButtons.add(Box.createRigidArea(new Dimension(10,0)));
+        pnlButtons.add(btnCreate);
 
         // Add heading label to list panel
         listPane.add(pnlItemsTitle);
@@ -209,7 +216,31 @@ public class CreateMorpheme {
          * Add the listener to the JButton to handle the "pressed" event
          */
 
-        if (type.equals("Slot")){
+        if (type.equals("Concord")){
+            btnType.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent e){
+                    List<Feature> concordFeatures = new ArrayList<>();
+                    int portionNumber = 0;
+                    if (ToCTeditor.dataModel.getTemplatePortions() != null){
+                        portionNumber = ToCTeditor.dataModel.getTemplatePortions().size();
+                    }
+                    String id = "concord" + portionNumber;
+                    wordPortions.add(new Concord(id, concordFeatures));
+
+                    int componentCount = pnlExistingItem.getComponentCount();
+                    for (int i = (componentCount-1); i >= 0 ; i--){
+                        pnlExistingItem.remove(i);
+                    }
+
+                    pnlExistingItem.add(Box.createRigidArea(new Dimension(0,5)));
+                    pnlExistingItem.add(setupSearchField());
+                    pnlExistingItem.add(setupExistingItems(wordPortions));
+                    pnlExistingItem.getParent().revalidate();
+
+                }
+            });
+        }
+        else if (type.equals("Copula")){
             btnType.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent e){
                     List<Feature> featureList = new ArrayList<>();
@@ -217,43 +248,97 @@ public class CreateMorpheme {
                     if (ToCTeditor.dataModel.getTemplatePortions() != null){
                         portionNumber = ToCTeditor.dataModel.getTemplatePortions().size();
                     }
-                    String id = "slot" + portionNumber;
-                    ToCTeditor.dataModel.addTemplatePortion(new Slot("", featureList));
-                    ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-1).setSerialisedName(id);
+                    String id = "copula" + portionNumber;
+                    wordPortions.add(new Copula("", featureList));
 
 
-                    ToCTeditor.gui = new ViewThread(ToCTeditor.homeScreen, ToCTeditor.templateItems, ToCTeditor.createItem, ToCTeditor.dataModel);
-                    ToCTeditor.gui.setCallTemplateItems(true);
-                    ToCTeditor.gui.setCurrentTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-1);
-                    ToCTeditor.gui.start();
+                    int componentCount = pnlExistingItem.getComponentCount();
+                    for (int i = (componentCount-1); i >= 0 ; i--){
+                        pnlExistingItem.remove(i);
+                    }
+
+                    pnlExistingItem.add(Box.createRigidArea(new Dimension(0,5)));
+                    pnlExistingItem.add(setupSearchField());
+                    pnlExistingItem.add(setupExistingItems(wordPortions));
+                    pnlExistingItem.getParent().revalidate();
 
                 }
             });
         }
-        else if (type.equals("Unimorphic word")){
+        else if (type.equals("Locative")){
             btnType.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent e){
+
                     List<Feature> featureList = new ArrayList<>();
                     int portionNumber = 0;
                     if (ToCTeditor.dataModel.getTemplatePortions() != null){
                         portionNumber = ToCTeditor.dataModel.getTemplatePortions().size();
                     }
-                    String id = "uniword" + portionNumber;
-                    ToCTeditor.dataModel.addTemplatePortion(new UnimorphicWord(""));
-                    ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-1).setSerialisedName(id);
+                    String id = "locative" + portionNumber;
+                    wordPortions.add(new Locative("", featureList));
 
 
-                    ToCTeditor.gui = new ViewThread(ToCTeditor.homeScreen, ToCTeditor.templateItems, ToCTeditor.createItem, ToCTeditor.dataModel);
-                    ToCTeditor.gui.setCallTemplateItems(true);
-                    ToCTeditor.gui.setCurrentTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-1);
-                    ToCTeditor.gui.start();
+                    int componentCount = pnlExistingItem.getComponentCount();
+                    for (int i = (componentCount-1); i >= 0 ; i--){
+                        pnlExistingItem.remove(i);
+                    }
+
+                    pnlExistingItem.add(Box.createRigidArea(new Dimension(0,5)));
+                    pnlExistingItem.add(setupSearchField());
+                    pnlExistingItem.add(setupExistingItems(wordPortions));
+                    pnlExistingItem.getParent().revalidate();
 
                 }
             });
         }
-        else if (type.equals("Polymorphic word")){
+        else if (type.equals("Root")){
             btnType.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent e){
+
+                    List<Feature> featureList = new ArrayList<>();
+                    int portionNumber = 0;
+                    if (ToCTeditor.dataModel.getTemplatePortions() != null){
+                        portionNumber = ToCTeditor.dataModel.getTemplatePortions().size();
+                    }
+                    String id = "root" + portionNumber;
+                    wordPortions.add(new Root("", featureList));
+
+
+                    int componentCount = pnlExistingItem.getComponentCount();
+                    for (int i = (componentCount-1); i >= 0 ; i--){
+                        pnlExistingItem.remove(i);
+                    }
+
+                    pnlExistingItem.add(Box.createRigidArea(new Dimension(0,5)));
+                    pnlExistingItem.add(setupSearchField());
+                    pnlExistingItem.add(setupExistingItems(wordPortions));
+                    pnlExistingItem.getParent().revalidate();
+
+                }
+            });
+        }
+        else if (type.equals("Unimorphic affix")){
+            btnType.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent e){
+
+                    List<Feature> featureList = new ArrayList<>();
+                    int portionNumber = 0;
+                    if (ToCTeditor.dataModel.getTemplatePortions() != null){
+                        portionNumber = ToCTeditor.dataModel.getTemplatePortions().size();
+                    }
+                    String id = "uniaffix" + portionNumber;
+                    wordPortions.add(new UnimorphicAffix("", featureList));
+
+
+                    int componentCount = pnlExistingItem.getComponentCount();
+                    for (int i = (componentCount-1); i >= 0 ; i--){
+                        pnlExistingItem.remove(i);
+                    }
+
+                    pnlExistingItem.add(Box.createRigidArea(new Dimension(0,5)));
+                    pnlExistingItem.add(setupSearchField());
+                    pnlExistingItem.add(setupExistingItems(wordPortions));
+                    pnlExistingItem.getParent().revalidate();
 
                 }
             });
@@ -359,6 +444,7 @@ public class CreateMorpheme {
      }*/
 
     public JComponent setupExistingItems(List<InternalSlotRootAffix> list) {
+
         Box box = Box.createVerticalBox();
         box.setBackground(Color.lightGray);
         box.setMaximumSize(new Dimension(400, 250/**200*/));
@@ -383,6 +469,27 @@ public class CreateMorpheme {
         p.add(Box.createRigidArea(new Dimension(150,0)));
         p.add(pnlScroll);
         return p;
+    }
+    public JComponent setupSearchField(){
+        JPanel pnlSearchField = new JPanel();
+        pnlSearchField.setLayout(new BoxLayout(pnlSearchField, BoxLayout.LINE_AXIS));
+        pnlSearchField.setMaximumSize(new Dimension(700,30));
+        pnlSearchField.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pnlSearchField.setBackground(Color.LIGHT_GRAY);
+
+        /**
+         * Search part text field
+         */
+        HintTextField txtSearch = new HintTextField("Search from existing items");
+        txtSearch.setAlignmentX(Component.CENTER_ALIGNMENT);
+        txtSearch.setMaximumSize(new Dimension(400,30));
+        txtSearch.setFont(new Font("Sans", Font.PLAIN, 14));
+
+        pnlSearchField.add(Box.createRigidArea(new Dimension(150,0)));
+        pnlSearchField.add(txtSearch);
+
+
+        return pnlSearchField;
     }
 
     private static JComponent createItemComponent(JComponent name, JComponent type) {

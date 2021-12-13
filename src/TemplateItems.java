@@ -864,11 +864,11 @@ public class TemplateItems {
             PolymorphicWord part = (PolymorphicWord)currentTemplatePortion;
             currentPanel = setupPolymorphicWordEditor(part);
         }
-        /**else if ( type.equals("Concord") ){
-            Concord part = (Concord)currentPart;
-            currentPanel = setupConcordEditor(part);
-        }
         else if ( type.equals("Phrase") ){
+            Phrase part = (Phrase)currentTemplatePortion;
+            currentPanel = setupPhraseEditor(part);
+        }
+        /**else if ( type.equals("Phrase") ){
             Phrase part = (Phrase)currentTemplatePortion;
             currentPanel = setupPhraseEditor(part);
         }
@@ -2333,6 +2333,102 @@ public class TemplateItems {
 
         return pnlPhraseEditor;
     }
+    public JPanel setupPhraseEditor(Phrase part){
+        /**
+         * Phrase Editor Panel
+         */
+        JPanel pnlPhraseEditor = new JPanel();
+        pnlPhraseEditor.setLayout(new BoxLayout(pnlPhraseEditor, BoxLayout.Y_AXIS));
+        pnlPhraseEditor.setMaximumSize(new Dimension(345,250));
+        pnlPhraseEditor.setBackground(Color.lightGray);
+
+        /**
+         * Create part name panel and add components to panel
+         */
+        JPanel pnlPartName = new JPanel();
+        pnlPartName.setLayout(new BoxLayout(pnlPartName, BoxLayout.LINE_AXIS));
+        pnlPartName.setMaximumSize(new Dimension(340,30));
+        pnlPartName.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pnlPartName.setBackground(Color.lightGray);
+
+
+        JLabel lblPartName = new JLabel("Part name:");
+        lblPartName.setFont(new Font("Sans", Font.PLAIN, 14));
+        lblPartName.setMaximumSize(new Dimension(100, 30));
+
+        JTextField txtPartName = new JTextField();
+        txtPartName.setFont(new Font("Sans", Font.PLAIN, 14));
+        txtPartName.setMaximumSize(new Dimension(225, 30));
+        txtPartName.setText(part.getSerialisedName());
+
+        pnlPartName.add(Box.createRigidArea(new Dimension(5,0)));
+        pnlPartName.add(lblPartName);
+        pnlPartName.add(Box.createRigidArea(new Dimension(5,0)));
+        pnlPartName.add(txtPartName);
+        pnlPartName.add(Box.createRigidArea(new Dimension(5,0)));
+
+        /**
+         * Create value panel and add components to panel
+         */
+        JPanel pnlValue = new JPanel();
+        pnlValue.setLayout(new BoxLayout(pnlValue, BoxLayout.LINE_AXIS));
+        pnlValue.setMaximumSize(new Dimension(340,30));
+        pnlValue.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pnlValue.setBackground(Color.lightGray);
+
+        JLabel lblValue = new JLabel("Value:");
+        lblValue.setFont(new Font("Sans", Font.PLAIN, 14));
+        lblValue.setMaximumSize(new Dimension(100, 30));
+
+        JTextField txtValue = new JTextField();
+        txtValue.setFont(new Font("Sans", Font.PLAIN, 14));
+        txtValue.setMaximumSize(new Dimension(225, 30));
+        txtValue.setText(part.getValue());
+
+        pnlValue.add(Box.createRigidArea(new Dimension(5,0)));
+        pnlValue.add(lblValue);
+        pnlValue.add(Box.createRigidArea(new Dimension(5,0)));
+        pnlValue.add(txtValue);
+        pnlValue.add(Box.createRigidArea(new Dimension(5,0)));
+        /**
+         * Create next part panel and add components to panel
+         */
+        JPanel pnlNextPart = new JPanel();
+        pnlNextPart.setLayout(new BoxLayout(pnlNextPart, BoxLayout.LINE_AXIS));
+        pnlNextPart.setMaximumSize(new Dimension(340,30));
+        pnlNextPart.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pnlNextPart.setBackground(Color.lightGray);
+
+
+        JLabel lblNextPart = new JLabel("Next Part:");
+        lblNextPart.setFont(new Font("Sans", Font.PLAIN, 14));
+        lblNextPart.setMaximumSize(new Dimension(100, 30));
+
+        JTextField txtNextPart = new JTextField();
+        txtNextPart.setFont(new Font("Sans", Font.PLAIN, 14));
+        txtNextPart.setMaximumSize(new Dimension(225, 30));
+        if (part.getNextPart() != null) {
+            txtNextPart.setText(part.getNextPart().getSerialisedName());
+        }
+        pnlNextPart.add(Box.createRigidArea(new Dimension(5,0)));
+        pnlNextPart.add(lblNextPart);
+        pnlNextPart.add(Box.createRigidArea(new Dimension(5,0)));
+        pnlNextPart.add(txtNextPart);
+        pnlNextPart.add(Box.createRigidArea(new Dimension(5,0)));
+
+        /***
+         * Add all panels to main panel - i.e. Phrase editor panel
+         */
+        pnlPhraseEditor.add(Box.createRigidArea(new Dimension(0,10)));
+        pnlPhraseEditor.add(pnlPartName);
+        pnlPhraseEditor.add(Box.createRigidArea(new Dimension(0,10)));
+        pnlPhraseEditor.add(pnlValue);
+        pnlPhraseEditor.add(Box.createRigidArea(new Dimension(0,10)));
+        pnlPhraseEditor.add(pnlNextPart);
+
+        return pnlPhraseEditor;
+    }
+
 
     public JPanel setupCopulaEditor(Part part){
         /**

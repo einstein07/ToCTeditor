@@ -18,6 +18,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.Collection;
 
 public class CreateTemplate {
     private int frameX;
@@ -177,7 +178,8 @@ public class CreateTemplate {
             public void actionPerformed(ActionEvent e){
                 String templatePath;
                 String templateName;
-                String templateURI = "http://people.cs.uct.ac.za/~zmahlaza/templates/owlsiz/";
+                String templateURI;
+
                 JFileChooser chooser = new JFileChooser();
                 FileNameExtensionFilter filter = new FileNameExtensionFilter(
                         "TTL Templates", "ttl", "*");
@@ -185,25 +187,44 @@ public class CreateTemplate {
                 int returnVal = chooser.showOpenDialog(null);
                 if(returnVal == JFileChooser.APPROVE_OPTION) {
                     templatePath = chooser.getSelectedFile().getAbsolutePath().trim();
-                    templateName = "templ2";
-                    /**templateName = chooser.getSelectedFile().getName();
-                    templateName = templateName.substring(0, templateName.length() - 4);*/
-                    //System.out.println("Name:" + templateName + " Path: " + templatePath);
 
                     TemplateReader.Init(new ZuluFeatureParser());
                     TemplateReader.setTemplateOntologyNamespace(URIS.ToCT_NS);
                     TemplateReader.IS_DEBUG_ENABLED = true;
                     Template template;
                     try {
-                        template = TemplateReader.parseTemplate(templateName, templateURI, templatePath);
-                        ToCTeditor.dataModel.setTemplate(template);
 
-                        ToCTeditor.gui = new ViewThread(ToCTeditor.homeScreen, ToCTeditor.templateItems, ToCTeditor.createItem, ToCTeditor.dataModel);
-                        ToCTeditor.gui.setCallTemplateItems(true);
-                        ToCTeditor.gui.start();
-                        System.out.println(template.toString());
+                        Collection<String> templateURIs = TemplateReader.getTemplateURIs(templatePath);
+                        if (templateURIs.size() == 1) {
+                            templateURI = templateURIs.iterator().next();
+
+                            Collection<Template> templates = TemplateReader.parseTemplates(templateURI, templatePath);
+                            if (templates.size() == 1) {
+                                template = templates.iterator().next();
+                                ToCTeditor.dataModel.setTemplate(template);
+
+                                ToCTeditor.gui = new ViewThread(ToCTeditor.homeScreen, ToCTeditor.templateItems, ToCTeditor.createItem, ToCTeditor.dataModel);
+                                ToCTeditor.gui.setCallTemplateItems(true);
+                                ToCTeditor.gui.start();
+                                System.out.println(template.toString());  
+                            }
+                            else if (templates.size() == 0) {
+                                throw new UnsupportedOperationException("No template found in file.");
+   
+                            }
+                            else {
+                                throw new UnsupportedOperationException("Support for opening a file with multiple templates not added yet. Please seperate the templates into seperate files.");
+
+                            }
+ 
+                        }
+                        else {
+                            throw new UnsupportedOperationException("Support for opening a file with multiple templates not added yet. Please seperate the templates into seperate files.");
+                        }
+
+
                     }
-                    catch(Exception error){
+                    catch(Exception error) {
                         System.out.println(error.getMessage());
                     }
 

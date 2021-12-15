@@ -1246,7 +1246,7 @@ public class TemplateItems {
             txtPartName.setText(part.getSerialisedName());
         }
 
-        addChangeListener(txtPartName, e -> updateSlotName(part, txtPartName.getText()));
+        addChangeListener(txtPartName, e -> updateName(part, txtPartName.getText()));
 
         /**txtPartName.addActionListener(new ActionListener() {
         @Override
@@ -1285,10 +1285,10 @@ public class TemplateItems {
         JTextField txtLabel = new JTextField();
         txtLabel.setFont(new Font("Sans", Font.PLAIN, 14));
         txtLabel.setMaximumSize(new Dimension(225, 30));
-        if (part.getLabel() != null) {
-            txtLabel.setText(part.getLabel());
+        if (part.getValue() != null) {
+            txtLabel.setText(part.getValue());
         }
-        addChangeListener(txtLabel, e -> updateSlotLabel(part, txtLabel.getText()));
+        addChangeListener(txtLabel, e -> updateValue(part, txtLabel.getText()));
 
         pnlLabel.add(Box.createRigidArea(new Dimension(5,0)));
         pnlLabel.add(lblLabel);
@@ -1316,7 +1316,7 @@ public class TemplateItems {
         if (part.getNextPart() != null){
             txtNextPart.setText(part.getNextPart().getSerialisedName());
         }
-        addChangeListener(txtNextPart, e -> updateSlotNextPart(part, txtNextPart.getText()));
+        addChangeListener(txtNextPart, e -> updateNextPart(part, txtNextPart.getText()));
 
         pnlNextPart.add(Box.createRigidArea(new Dimension(5,0)));
         pnlNextPart.add(lblNextPart);
@@ -1336,25 +1336,29 @@ public class TemplateItems {
 
         return pnlSlotEditor;
     }
-
-    private void updateSlotNextPart(Slot part, String updatedText) {
+    private void updateNextPart(TemplatePortion part, String updatedText) {
         if (ToCTeditor.dataModel.findTemplatePortion(updatedText) != null){
             part.setNextPart(ToCTeditor.dataModel.findTemplatePortion(updatedText));
         }
-        else if ( ToCTeditor.dataModel.findTemplatePortion(updatedText) != null ){
+        /**else if ( ToCTeditor.dataModel.findTemplatePortion(updatedText) != null ){
             part.setNextPart(ToCTeditor.dataModel.findWordPortion(updatedText));
+        }*/
+        updateTurtlePanel(getPartPanelTurtle(part));
+        updateItems();
+    }
+    private void updateValue(TemplatePortion part, String updatedText) {
+        String type = ToCTeditor.turtleGen.getPartType(part);
+        if (type.equals("Slot")){
+            ((Slot)part).setValue(updatedText);
         }
+        else if ( type.equals("Unimorphic word")){
+            // @TODO add set-value-functionality
+        }
+
         updateTurtlePanel(getPartPanelTurtle(part));
         updateItems();
     }
-
-    private void updateSlotLabel(Slot part, String updatedText) {
-        part.setValue(updatedText);
-        updateTurtlePanel(getPartPanelTurtle(part));
-        updateItems();
-    }
-
-    private void updateSlotName(TemplatePortion part, String updatedText) {
+    private void updateName(TemplatePortion part, String updatedText) {
         part.setSerialisedName(updatedText);
         updateTurtlePanel(getPartPanelTurtle(part));
         updateItems();
@@ -1486,6 +1490,8 @@ public class TemplateItems {
         if (part.getSerialisedName() != null) {
             txtPartName.setText(part.getSerialisedName());
         }
+        addChangeListener(txtPartName, e -> updateName(part, txtPartName.getText()));
+
         pnlPartName.add(Box.createRigidArea(new Dimension(5,0)));
         pnlPartName.add(lblPartName);
         pnlPartName.add(Box.createRigidArea(new Dimension(5,0)));
@@ -1512,6 +1518,7 @@ public class TemplateItems {
         if (part.getValue() != null) {
             txtValue.setText(part.getValue());
         }
+        addChangeListener(txtValue, e -> updateValue(part, txtValue.getText()));
 
         pnlValue.add(Box.createRigidArea(new Dimension(5,0)));
         pnlValue.add(lblValue);
@@ -1539,6 +1546,7 @@ public class TemplateItems {
         if (part.getNextPart() != null) {
             txtNextPart.setText(part.getNextPart().getSerialisedName());
         }
+        addChangeListener(txtNextPart, e -> updateNextPart(part, txtNextPart.getText()));
 
         pnlNextPart.add(Box.createRigidArea(new Dimension(5,0)));
         pnlNextPart.add(lblNextPart);
@@ -1656,6 +1664,7 @@ public class TemplateItems {
         txtPartName.setMaximumSize(new Dimension(225, 30));
 
         txtPartName.setText(part.getSerialisedName());
+        addChangeListener(txtPartName, e -> updateName(part, txtPartName.getText()));
 
         pnlPartName.add(Box.createRigidArea(new Dimension(5,0)));
         pnlPartName.add(lblPartName);
@@ -1681,6 +1690,7 @@ public class TemplateItems {
         txtValue.setMaximumSize(new Dimension(225, 30));
 
         txtValue.setText(part.getValue());
+        addChangeListener(txtValue, e -> updateValue(part, txtValue.getText()));
 
         pnlValue.add(Box.createRigidArea(new Dimension(5,0)));
         pnlValue.add(lblValue);
@@ -1952,6 +1962,8 @@ public class TemplateItems {
             txtPartName.setText(part.getSerialisedName());
         }
 
+        addChangeListener(txtPartName, e -> updateName(part, txtPartName.getText()));
+
         pnlPartName.add(Box.createRigidArea(new Dimension(5,0)));
         pnlPartName.add(lblPartName);
         pnlPartName.add(Box.createRigidArea(new Dimension(5,0)));
@@ -2084,6 +2096,8 @@ public class TemplateItems {
         if (part.getNextPart() != null) {
             txtNextPart.setText(part.getNextPart().getSerialisedName());
         }
+
+        addChangeListener(txtNextPart, e -> updateNextPart(part, txtNextPart.getText()));
 
         pnlNextPart.add(Box.createRigidArea(new Dimension(5,0)));
         pnlNextPart.add(lblNextPart);

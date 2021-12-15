@@ -111,7 +111,7 @@ public class TurtleCode {
             else {
                 turtle += "    ; toct:hasLastPart <>\n";
             }
-            if (((PolymorphicWord)templatePortion).getAllMorphemes().size() > 0 ){
+            if (((PolymorphicWord)templatePortion).getNextPart() != null ){
                 turtle += "    ; toct:hasNextPart <" + ((PolymorphicWord)templatePortion).getNextPart().getSerialisedName() + "> .";
             }
             else {

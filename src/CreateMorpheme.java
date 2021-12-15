@@ -113,7 +113,7 @@ public class CreateMorpheme {
 
         //pnlExistingItem.add(setupExistingItems(ToCTeditor.dataModel.getData()));
         //pnlExistingItem.add(setupExistingItems(ToCTeditor.dataModel.getTemplatePortions()));
-        List<InternalSlotRootAffix> wordPortions = new ArrayList<>();
+        //List<InternalSlotRootAffix> wordPortions = new ArrayList<>();
 
         if (templatePortion != null) {
             if (((PolymorphicWord) templatePortion).getAllMorphemes().size() > 0) {
@@ -135,21 +135,26 @@ public class CreateMorpheme {
         btnCreate.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // add the listener to the jbutton to handle the "pressed" event
-        List<InternalSlotRootAffix> finalWordPortions = wordPortions;
+        //List<InternalSlotRootAffix> finalWordPortions = wordPortions;
         btnCreate.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
 
-                int portionNumber = 0;
-                if (ToCTeditor.dataModel.getTemplatePortions() != null){
-                    portionNumber = ToCTeditor.dataModel.getTemplatePortions().size();
+                if (templatePortion != null) {
+                    // @TODO: Set word portions. . .
                 }
-                String id = "polyword" + portionNumber;
-                ToCTeditor.dataModel.addTemplatePortion(new PolymorphicWord(finalWordPortions, featuresList));
-                ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-1).setSerialisedName(id);
+                else {
+                    int portionNumber = 0;
+                    if (ToCTeditor.dataModel.getTemplatePortions() != null) {
+                        portionNumber = ToCTeditor.dataModel.getTemplatePortions().size();
+                    }
+                    String id = "polyword" + portionNumber;
+                    ToCTeditor.dataModel.addTemplatePortion(new PolymorphicWord(wordPortions, featuresList));
+                    ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size() - 1).setSerialisedName(id);
 
-                ToCTeditor.gui = new ViewThread();
-                ToCTeditor.gui.setCallTemplateItems(true);
-                ToCTeditor.gui.start();
+                    ToCTeditor.gui = new ViewThread();
+                    ToCTeditor.gui.setCallTemplateItems(true);
+                    ToCTeditor.gui.start();
+                }
             }
         });
 

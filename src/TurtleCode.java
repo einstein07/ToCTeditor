@@ -6,6 +6,7 @@ import za.co.mahlaza.research.grammarengine.base.models.template.Locative;
 import za.co.mahlaza.research.grammarengine.base.models.template.Phrase;
 import za.co.mahlaza.research.grammarengine.base.models.template.PolymorphicWord;
 import za.co.mahlaza.research.grammarengine.base.models.template.Punctuation;
+import za.co.mahlaza.research.grammarengine.base.models.template.Root;
 import za.co.mahlaza.research.grammarengine.base.models.template.Slot;
 import za.co.mahlaza.research.grammarengine.base.models.template.UnimorphicAffix;
 import za.co.mahlaza.research.grammarengine.base.models.template.UnimorphicWord;
@@ -183,16 +184,16 @@ public class TurtleCode {
             id = ((Slot)part).getSerialisedName();
         }
         else if (part instanceof UnimorphicWord){
-            id = ((UnimorphicWord)part).getIdentification();
+            id = ((UnimorphicWord)part).getSerialisedName();
         }
         else if (part instanceof PolymorphicWord){
-            id = ((PolymorphicWord)part).getIdentification();
+            id = ((PolymorphicWord)part).getSerialisedName();
         }
         else if (part instanceof Phrase){
-            id = ((Phrase)part).getValue(); /**Placeholder*/
+            id = ((Phrase)part).getSerialisedName();
         }
         else if (part instanceof Punctuation){
-            id = ((Punctuation)part).toString(); /**Placeholder*/
+            id = ((Punctuation)part).getSerialisedName();
         }
         else{
             id = "Unknown type";
@@ -203,22 +204,25 @@ public class TurtleCode {
     public String getMorphemeId(InternalSlotRootAffix affix) {
         String id;
         if (affix  instanceof AffixChunk) {
-            id = "Affix chunk";
+            id = ((AffixChunk)affix).getSerialisedName();
         }
         else if (affix instanceof Concord){
-            id = ((Concord)affix).getIdentification();
+            id = ((Concord)affix).getSerialisedName();
         }
         else if (affix instanceof Copula){
-            id = ((Copula)affix).getIdentification();
+            id = ((Copula)affix).getSerialisedName();
         }
         else if (affix instanceof Locative){
-            id = ((Locative)affix).getIdentification();
+            id = ((Locative)affix).getSerialisedName();
         }
         else if (affix instanceof  Slot) {
-            id = ((Slot)affix).getIdentification();
+            id = ((Slot)affix).getSerialisedName();
         }
         else if (affix instanceof UnimorphicAffix){
-            id = "Unimorphic affix";
+            id = ((UnimorphicAffix)affix).getSerialisedName();
+        }
+        else if (affix instanceof Root){
+            id = ((Root)affix).getSerialisedName();
         }
         else{
             id = "Unknown type";
@@ -245,6 +249,9 @@ public class TurtleCode {
         }
         else if (affix instanceof UnimorphicAffix){
             type = "Unimorphic affix";
+        }
+        else if (affix instanceof Root){
+            type = "Root";
         }
         else{
             type = "Unknown type";

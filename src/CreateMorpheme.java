@@ -221,11 +221,12 @@ public class CreateMorpheme {
                 public void actionPerformed(ActionEvent e){
                     List<Feature> concordFeatures = new ArrayList<>();
                     int portionNumber = 0;
-                    if (ToCTeditor.dataModel.getTemplatePortions() != null){
-                        portionNumber = ToCTeditor.dataModel.getTemplatePortions().size();
+                    if (wordPortions != null){
+                        portionNumber = wordPortions.size();
                     }
                     String id = "concord" + portionNumber;
                     wordPortions.add(new Concord(id, concordFeatures));
+                    wordPortions.get(wordPortions.size()-1).setSerialisedName(id);
 
                     int componentCount = pnlExistingItem.getComponentCount();
                     for (int i = (componentCount-1); i >= 0 ; i--){
@@ -245,12 +246,12 @@ public class CreateMorpheme {
                 public void actionPerformed(ActionEvent e){
                     List<Feature> featureList = new ArrayList<>();
                     int portionNumber = 0;
-                    if (ToCTeditor.dataModel.getTemplatePortions() != null){
-                        portionNumber = ToCTeditor.dataModel.getTemplatePortions().size();
+                    if ( wordPortions != null){
+                        portionNumber = wordPortions.size();
                     }
                     String id = "copula" + portionNumber;
                     wordPortions.add(new Copula("", featureList));
-
+                    wordPortions.get(wordPortions.size()-1).setSerialisedName(id);
 
                     int componentCount = pnlExistingItem.getComponentCount();
                     for (int i = (componentCount-1); i >= 0 ; i--){
@@ -271,12 +272,12 @@ public class CreateMorpheme {
 
                     List<Feature> featureList = new ArrayList<>();
                     int portionNumber = 0;
-                    if (ToCTeditor.dataModel.getTemplatePortions() != null){
-                        portionNumber = ToCTeditor.dataModel.getTemplatePortions().size();
+                    if ( wordPortions != null){
+                        portionNumber = wordPortions.size();
                     }
                     String id = "locative" + portionNumber;
                     wordPortions.add(new Locative("", featureList));
-
+                    wordPortions.get(wordPortions.size()-1).setSerialisedName(id);
 
                     int componentCount = pnlExistingItem.getComponentCount();
                     for (int i = (componentCount-1); i >= 0 ; i--){
@@ -297,12 +298,12 @@ public class CreateMorpheme {
 
                     List<Feature> featureList = new ArrayList<>();
                     int portionNumber = 0;
-                    if (ToCTeditor.dataModel.getTemplatePortions() != null){
-                        portionNumber = ToCTeditor.dataModel.getTemplatePortions().size();
+                    if ( wordPortions != null){
+                        portionNumber = wordPortions.size();
                     }
                     String id = "root" + portionNumber;
                     wordPortions.add(new Root("", featureList));
-
+                    wordPortions.get(wordPortions.size()-1).setSerialisedName(id);
 
                     int componentCount = pnlExistingItem.getComponentCount();
                     for (int i = (componentCount-1); i >= 0 ; i--){
@@ -323,12 +324,12 @@ public class CreateMorpheme {
 
                     List<Feature> featureList = new ArrayList<>();
                     int portionNumber = 0;
-                    if (ToCTeditor.dataModel.getTemplatePortions() != null){
-                        portionNumber = ToCTeditor.dataModel.getTemplatePortions().size();
+                    if ( wordPortions != null){
+                        portionNumber = wordPortions.size();
                     }
                     String id = "uniaffix" + portionNumber;
                     wordPortions.add(new UnimorphicAffix("", featureList));
-
+                    wordPortions.get(wordPortions.size()-1).setSerialisedName(id);
 
                     int componentCount = pnlExistingItem.getComponentCount();
                     for (int i = (componentCount-1); i >= 0 ; i--){

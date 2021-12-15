@@ -207,5 +207,29 @@ public class DataModel {
     }
 
 
+    public TemplatePortion findTemplatePortion(String updatedText) {
 
+        for (TemplatePortion portion : templatePortions ){
+            if (portion.getSerialisedName().equals(updatedText)){
+                return portion;
+            }
+        }
+        return null;
+    }
+    public InternalSlotRootAffix findWordPortion(String updatedText) {
+
+        for (TemplatePortion portion : templatePortions ){
+            String type = ToCTeditor.turtleGen.getPartType(portion);
+            if ( type.equals("Polymorphic word")){
+                if (portion.equals(ToCTeditor.gui.getCurrentTemplatePortion())){
+                    for (InternalSlotRootAffix word : ((PolymorphicWord)portion).getAllMorphemes() ){
+                        if (word.getSerialisedName().equals(updatedText)){
+                            return word;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
 }

@@ -86,11 +86,7 @@ public class ViewThread extends Thread {
         currentTemplatePortion = ToCTeditor.dataModel.getTemplatePortion(index);
         return currentTemplatePortion;
     }
-    public void setCurrentTemplatePortion(int index){
 
-        currentTemplatePortion = ToCTeditor.dataModel.getTemplatePortion(index);
-
-    }
 
     public void setCallCreateTemplate(boolean callCreateTemplate) {
         this.callCreateTemplate = callCreateTemplate;
@@ -121,21 +117,21 @@ public class ViewThread extends Thread {
                 callCreateTemplate = false;
             }
             else if (callTemplateItems) {
-                currentPart = ToCTeditor.dataModel.getPart(index);
+                currentTemplatePortion = ToCTeditor.dataModel.getTemplatePortion(index);
 
                 //templateItems.setupGUI(templateItems.getPartPanelEditor(currentPart), templateItems.getPartPanelTurtle(currentPart));
                 //templateItems.setupGUI(templateItems.getPartPanelEditor(currentPart), templateItems.getPartPanelTurtle(currentPart));
-                ToCTeditor.templateItems.setupGUI(ToCTeditor.templateItems.getPartPanelEditor(currentPart), ToCTeditor.templateItems.getPartPanelTurtle(currentPart));
+                ToCTeditor.templateItems.setupGUI(ToCTeditor.templateItems.getPartPanelEditor(currentTemplatePortion), ToCTeditor.templateItems.getPartPanelTurtle(currentTemplatePortion));
                 callTemplateItems = false;
             }
             else if (callCreateItem) {
-                currentPart = ToCTeditor.dataModel.getPart(index);
+                //currentPart = ToCTeditor.dataModel.getPart(index);
                 //createItem.setupGUI();
                 ToCTeditor.createItem.setupGUI();
                 callCreateItem = false;
             }
             else if (callCreateMorpheme) {
-                currentPart = ToCTeditor.dataModel.getPart(index);
+                currentTemplatePortion = ToCTeditor.dataModel.getTemplatePortion(index);
                 ToCTeditor.createMorpheme.setupGUI(currentTemplatePortion);
                 callCreateItem = false;
             }

@@ -39,6 +39,8 @@ public class TemplateItems {
     private int frameY;
     private ToCTeditorFrame frame;
 
+    JPanel pnlItems;
+
     JPanel pnlEditorPreview;
     JPanel pnlItemEditor;
     JPanel pnlTurtlePreview;
@@ -87,7 +89,7 @@ public class TemplateItems {
         /**
          * Items panel
          */
-        JPanel pnlItems = new JPanel();
+        pnlItems = new JPanel();
         pnlItems.setLayout(new BoxLayout(pnlItems, BoxLayout.LINE_AXIS));
         pnlItems.setMaximumSize(new Dimension(700,145));
         pnlItems.setBackground(Color.lightGray);
@@ -412,10 +414,17 @@ public class TemplateItems {
     }
     public void updateTurtlePanel(JPanel currentPartProperties){
         if (ToCTeditor.gui.getToggleBtnState() == 1) {
-            pnlTurtlePreview.remove(0);
+            this.pnlTurtlePreview.remove(0);
             this.pnlTurtlePreview.add(currentPartProperties);
             this.pnlTurtlePreview.getParent().revalidate();
         }
+    }
+
+    public void updateItems(){
+
+        this.pnlItems.remove(0);
+        pnlItems.add(setupTemplatePortions(ToCTeditor.dataModel.getTemplatePortions()));
+        this.pnlItems.getParent().revalidate();
     }
 
     public JComponent setupTemplateItems(List<Part> list) {
@@ -1122,7 +1131,7 @@ public class TemplateItems {
         //txtPartName.setText(part.getIdentification());
 
 
-        addChangeListener(txtPartName, e -> updateSlotName(txtPartName.getText()));
+
 
         /**txtPartName.addActionListener(new ActionListener() {
             @Override
@@ -1237,17 +1246,17 @@ public class TemplateItems {
             txtPartName.setText(part.getSerialisedName());
         }
 
-        addChangeListener(txtPartName, e -> updateSlotName(txtPartName.getText()));
+        addChangeListener(txtPartName, e -> updateSlotName(part, txtPartName.getText()));
 
         /**txtPartName.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
         System.out.println("Inside action performed for textfield");
         String text = txtPartName.getText();
-        ToCTeditor.controller.setPartName(text);
+        part.setSerialisedName(text);
         System.out.println("Current text: " + text);
         }
-        });*/
+        });
         /**txtPartName.addActionListener(new ActionListener(){
          public void actionPerformed(ActionEvent evt) {
 
@@ -1279,6 +1288,7 @@ public class TemplateItems {
         if (part.getLabel() != null) {
             txtLabel.setText(part.getLabel());
         }
+        addChangeListener(txtLabel, e -> updateSlotLabel(part, txtLabel.getText()));
 
         pnlLabel.add(Box.createRigidArea(new Dimension(5,0)));
         pnlLabel.add(lblLabel);
@@ -1306,6 +1316,7 @@ public class TemplateItems {
         if (part.getNextPart() != null){
             txtNextPart.setText(part.getNextPart().getSerialisedName());
         }
+        addChangeListener(txtNextPart, e -> updateSlotNextPart(part, txtNextPart.getText()));
 
         pnlNextPart.add(Box.createRigidArea(new Dimension(5,0)));
         pnlNextPart.add(lblNextPart);
@@ -1326,9 +1337,27 @@ public class TemplateItems {
         return pnlSlotEditor;
     }
 
-    private void updateSlotName(String updatedText) {
-        System.out.println("Fired: " + updatedText);
-        //ToCTeditor.controller.setPartName(updatedText);
+    private void updateSlotNextPart(Slot part, String updatedText) {
+        if (ToCTeditor.dataModel.findTemplatePortion(updatedText) != null){
+            part.setNextPart(ToCTeditor.dataModel.findTemplatePortion(updatedText));
+        }
+        else if ( ToCTeditor.dataModel.findTemplatePortion(updatedText) != null ){
+            part.setNextPart(ToCTeditor.dataModel.findWordPortion(updatedText));
+        }
+        updateTurtlePanel(getPartPanelTurtle(part));
+        updateItems();
+    }
+
+    private void updateSlotLabel(Slot part, String updatedText) {
+        part.setValue(updatedText);
+        updateTurtlePanel(getPartPanelTurtle(part));
+        updateItems();
+    }
+
+    private void updateSlotName(TemplatePortion part, String updatedText) {
+        part.setSerialisedName(updatedText);
+        updateTurtlePanel(getPartPanelTurtle(part));
+        updateItems();
     }
 
     public JPanel setupUnimorphicWordEditor(Part part/**UnimorphicWord part*/){

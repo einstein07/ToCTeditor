@@ -83,12 +83,22 @@ public class TurtleCode {
         String type = getPartType(templatePortion);
         if (type.equals("Slot")) {
             turtle = "<" + templatePortion.getSerialisedName() + "> a toct:Slot\n" +
-                    "    ; toct:hasLabel \"" + ((Slot)templatePortion).getLabel() + "\"^^xsd:string\n" +
-                    "    ; toct:hasNextPart " + templatePortion.getNextPart() + " .";
+                    "    ; toct:hasLabel \"" + ((Slot)templatePortion).getLabel() + "\"^^xsd:string\n";
+            if (templatePortion.getNextPart() != null ){
+                turtle += "    ; toct:hasNextPart <" + templatePortion.getNextPart().getSerialisedName() + "> .";
+            }
+            else {
+                turtle += "    ; toct:hasNextPart <> .";
+            }
         } else if (type.equals("Unimorphic word")) {
             turtle = "<" + templatePortion.getSerialisedName() + "> a toct:UnimorphicWord\n" +
-                    "    ; toct:hasValue \"" + ((UnimorphicWord)templatePortion).getValue() + "\"^^xsd:string\n" +
-                    "    ; toct:hasNextPart <" + templatePortion.getNextPart() + "> .";
+                    "    ; toct:hasValue \"" + ((UnimorphicWord)templatePortion).getValue() + "\"^^xsd:string\n";
+            if (templatePortion.getNextPart() != null ){
+                turtle += "    ; toct:hasNextPart <" + templatePortion.getNextPart().getSerialisedName() + "> .";
+            }
+            else {
+                turtle += "    ; toct:hasNextPart <> .";
+            }
         } else if (type.equals("Polymorphic word")) {
             turtle = "<" + templatePortion.getSerialisedName() + "> a toct:PolymorphicWord\n";
             if ( ((PolymorphicWord)templatePortion).getItemsItReliesOn() != null ) {
@@ -122,8 +132,14 @@ public class TurtleCode {
         }
         else if ( type.equals("Phrase") ){
             turtle = "<" + templatePortion.getSerialisedName() + "> a toct:Phrase\n" +
-                    "    ; toct:hasValue \"" + ((Phrase)templatePortion).getValue() + "\"^^xsd:string\n" +
-                    "    ; toct:hasNextPart <" + templatePortion.getNextPart() + "> .";
+                    "    ; toct:hasValue \"" + ((Phrase)templatePortion).getValue() + "\"^^xsd:string\n";
+
+            if (templatePortion.getNextPart() != null ){
+                turtle += "    ; toct:hasNextPart <" + templatePortion.getNextPart().getSerialisedName() + "> .";
+            }
+            else {
+                turtle += "    ; toct:hasNextPart <> .";
+            }
         }
         else if (type.equals("Punctuation")) {
             turtle = "<" + templatePortion.getSerialisedName() + "> a toct:Punctuation\n" +

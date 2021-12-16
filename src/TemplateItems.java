@@ -577,7 +577,7 @@ public class TemplateItems {
             maxWidth += 116;
             pnlMorphemes.add(createItemComponent(mName, mType, true));
         }
-        System.out.println(maxWidth);
+
         pnlMorphemes.setBackground(Color.white);
         pnlKebab.setMinimumSize(new Dimension(maxWidth ,8));
         pnlKebab.setMaximumSize(new Dimension(maxWidth ,8));
@@ -1352,7 +1352,15 @@ public class TemplateItems {
             ((Slot)part).setValue(updatedText);
         }
         else if ( type.equals("Unimorphic word")){
+            ((UnimorphicWord)part).setValue(updatedText);
+        }
+        else if ( type.equals("Phrase")){
             // @TODO add set-value-functionality
+            // ((Phrase)part).setValue(updatedText);
+        }
+        else if (type.equals("Punctuation")){
+            // @TODO add set-value-functionality
+            //((Punctuation)part).setValue(updatedText);
         }
 
         updateTurtlePanel(getPartPanelTurtle(part));
@@ -2403,6 +2411,10 @@ public class TemplateItems {
         txtPartName.setFont(new Font("Sans", Font.PLAIN, 14));
         txtPartName.setMaximumSize(new Dimension(225, 30));
         txtPartName.setText(part.getSerialisedName());
+        /**
+         * Add change lister to text field to update underlying template portion according to user input
+         */
+        addChangeListener(txtPartName, e -> updateName(part, txtPartName.getText()));
 
         pnlPartName.add(Box.createRigidArea(new Dimension(5,0)));
         pnlPartName.add(lblPartName);
@@ -2427,6 +2439,10 @@ public class TemplateItems {
         txtValue.setFont(new Font("Sans", Font.PLAIN, 14));
         txtValue.setMaximumSize(new Dimension(225, 30));
         txtValue.setText(part.getValue());
+        /**
+         * Add change lister to text field to update underlying template portion according to user input
+         */
+        addChangeListener(txtValue, e -> updateValue(part, txtValue.getText()));
 
         pnlValue.add(Box.createRigidArea(new Dimension(5,0)));
         pnlValue.add(lblValue);
@@ -2453,6 +2469,12 @@ public class TemplateItems {
         if (part.getNextPart() != null) {
             txtNextPart.setText(part.getNextPart().getSerialisedName());
         }
+
+        /**
+         * Add change lister to text field to update underlying template portion according to user input
+         */
+        addChangeListener(txtNextPart, e -> updateNextPart(part, txtNextPart.getText()));
+
         pnlNextPart.add(Box.createRigidArea(new Dimension(5,0)));
         pnlNextPart.add(lblNextPart);
         pnlNextPart.add(Box.createRigidArea(new Dimension(5,0)));

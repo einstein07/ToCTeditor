@@ -1055,8 +1055,13 @@ public class TemplateItems {
         pnlScroll.setMaximumSize(new Dimension(345, 250));
         pnlScroll.setBackground(Color.lightGray);
 
-
-        String turtle = ToCTeditor.turtleGen.getPartTurtle(currentTemplatePortion);
+        String turtle;
+        if (currentTemplatePortion != null) {
+            turtle = ToCTeditor.turtleGen.getPartTurtle(currentTemplatePortion);
+        }
+        else {
+            turtle = ToCTeditor.turtleGen.getTemplateTurtle();
+        }
         if (turtle.length() > 0 ){
             txtArea.setText(turtle);
             currentPanel.add(pnlScroll);
@@ -1355,8 +1360,7 @@ public class TemplateItems {
             ((UnimorphicWord)part).setValue(updatedText);
         }
         else if ( type.equals("Phrase")){
-            // @TODO add set-value-functionality
-            // ((Phrase)part).setValue(updatedText);
+            ((Phrase)part).setValue(updatedText);
         }
         else if (type.equals("Punctuation")){
             // @TODO add set-value-functionality
@@ -2673,7 +2677,7 @@ public class TemplateItems {
      *        will be the text component
      * @throws NullPointerException if either parameter is null
      */
-    public void addChangeListener(JTextComponent text, ChangeListener changeListener) {
+    public static void addChangeListener(JTextComponent text, ChangeListener changeListener) {
         Objects.requireNonNull(text);
         Objects.requireNonNull(changeListener);
         DocumentListener dl = new DocumentListener() {

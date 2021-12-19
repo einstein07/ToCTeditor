@@ -216,7 +216,45 @@ public class TurtleCode {
         }
         return id;
     }
+    public String getTemplateTurtle() {
+        String turtle = "@base <http://people.cs.uct.ac.za/~zmahlaza/templates/owlsiz/> .\n" +
+                "@prefix toct: <https://people.cs.uct.ac.za/~zmahlaza/ontologies/ToCT#> .\n" +
+                "@prefix mola: <https://ontology.londisizwe.org/mola#> .\n" +
+                "@prefix co: <http://purl.org/co/> .\n" +
+                "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n" +
+                "@prefix cao: <http://people.cs.uct.ac.za/~zmahlaza/ontologies/ConcordAnnotationOntology#> .\n\n" +
+                "<" + ToCTeditor.dataModel.getTemplate().getSerialisedName() + "> a toct:Template\n" +
+                "    ; toct:supportsLanguage <" + ToCTeditor.dataModel.getTemplate().getLanguage().getSerialisedName() + ">\n";
+                if (ToCTeditor.dataModel.getTemplateSize() > 0) {
+                    turtle +=   "    ; toct:hasFirstPart <" + ToCTeditor.dataModel.getTemplatePortion(0).getSerialisedName() + ">\n" +
+                                "    ; toct:hasLastPart <" + ToCTeditor.dataModel.getTemplatePortion
+                                        (ToCTeditor.dataModel.getTemplatePortions().size() - 1)
+                                            .getSerialisedName() + ">";
+                }
+                else{
+                    turtle +=   "    ; toct:hasFirstPart <null>\n" +
+                                "    ; toct:hasLastPart <null>";
+                }
 
+        if (ToCTeditor.dataModel.getTemplateSize() > 2) {
+            turtle += "\n    ; toct:hasPart";
+
+            for (int i = 1; i < ToCTeditor.dataModel.getTemplateSize() - 1; i++) {
+                turtle += " <" + ToCTeditor.dataModel.getTemplatePortion(i).getSerialisedName() + ">";
+                if (i < ToCTeditor.dataModel.getTemplateSize() - 2) {
+                    turtle += ",";
+                }
+            }
+            turtle += " .\n\n";
+        }
+        else{
+            turtle += " .\n\n";
+        }
+        for (TemplatePortion part: ToCTeditor.dataModel.getTemplatePortions() ){
+            turtle += getPartTurtle(part) + "\n\n";
+        }
+        return turtle;
+    }
     public String getMorphemeId(InternalSlotRootAffix affix) {
         String id;
         if (affix  instanceof AffixChunk) {

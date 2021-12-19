@@ -48,6 +48,23 @@ public class DataModel {
         templatePortions.add(templatePortion);
     }
 
+    public void addTemplatePortion( int index, TemplatePortion templatePortion ){
+        templatePortions.add(index, templatePortion);
+    }
+
+    public void removeTemplatePortion( int index ){
+        templatePortions.remove(index);
+    }
+
+    public void updateNextPart(){
+        for ( int i = 0; i < templatePortions.size(); i++ ){
+            if (i < templatePortions.size() - 1){
+                templatePortions.get(i).setNextPart(templatePortions.get(i+1));
+            }
+        }
+        templatePortions.get(templatePortions.size() - 1).setNextPart(null);
+    }
+
     public TemplatePortion getTemplatePortion(int index){
         if (index >= 0 && index < this.templatePortions.size()){
             return templatePortions.get(index);
@@ -64,7 +81,6 @@ public class DataModel {
     public Template getTemplate(){
         return this.template;
     }
-
 
     public List<TemplatePortion> getTemplatePortions(){
         return templatePortions;

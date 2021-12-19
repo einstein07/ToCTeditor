@@ -7,6 +7,7 @@
  *
  * @(#) $Id$
  */
+import za.co.mahlaza.research.grammarengine.base.models.mola.Languoid;
 import za.co.mahlaza.research.grammarengine.base.models.template.Template;
 import za.co.mahlaza.research.grammarengine.nguni.zu.ZuluFeatureParser;
 import za.co.mahlaza.research.templateparsing.TemplateReader;
@@ -78,8 +79,8 @@ public class CreateTemplate {
         txtEntryTemplateName.setAlignmentX(Component.CENTER_ALIGNMENT);
         txtEntryTemplateName.setMaximumSize(new Dimension(400,30));
         txtEntryTemplateName.setFont(new Font("Sans", Font.PLAIN, 14));
-
-        txtEntryTemplateName.addActionListener(new ActionListener() {
+        TemplateItems.addChangeListener(txtEntryTemplateName, e -> updateTemplateName(txtEntryTemplateName.getText()));
+        /**txtEntryTemplateName.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 System.out.println("Inside action performed for textfield");
@@ -87,7 +88,7 @@ public class CreateTemplate {
                 //ToCTeditor.controller.setPartName(text);
                 System.out.println("Current text: " + text);
             }
-        });
+        });*/
 
         pnlCreateTemplate.add(Box.createRigidArea(new Dimension(0,10)));
         pnlCreateTemplate.add(txtEntryTemplateName);
@@ -121,9 +122,24 @@ public class CreateTemplate {
         btnCreate.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
 
-                ToCTeditor.gui = new ViewThread(ToCTeditor.homeScreen, ToCTeditor.templateItems, ToCTeditor.createItem, ToCTeditor.dataModel);
-                ToCTeditor.gui.setCallTemplateItems(true);
-                ToCTeditor.gui.start();
+                if (ToCTeditor.dataModel.getTemplate().getSerialisedName() == null ){
+                    JOptionPane.showMessageDialog(frame, "Template name cannot be empty.");
+                }
+                else {
+                    if (supportedLanguage.getSelectedIndex() == 0){
+                        JOptionPane.showMessageDialog(frame, "Supported language cannot be empty.");
+                    }
+                    else{
+                        Languoid languoid = new Languoid();
+                        languoid.setSerialisedName(supportedLanguage.getSelectedItem().toString());
+                        ToCTeditor.dataModel.getTemplate().setLanguage(languoid);
+                        ToCTeditor.gui = new ViewThread();
+                        ToCTeditor.gui.setCallTemplateItems(true);
+                        ToCTeditor.gui.start();
+                    }
+                }
+
+
                 //ToCTeditor.gui.start();
             }
         });
@@ -203,7 +219,7 @@ public class CreateTemplate {
                                 template = templates.iterator().next();
                                 ToCTeditor.dataModel.setTemplate(template);
 
-                                ToCTeditor.gui = new ViewThread(ToCTeditor.homeScreen, ToCTeditor.templateItems, ToCTeditor.createItem, ToCTeditor.dataModel);
+                                ToCTeditor.gui = new ViewThread();
                                 ToCTeditor.gui.setCallTemplateItems(true);
                                 ToCTeditor.gui.start();
                                 System.out.println(template.toString());  
@@ -249,5 +265,9 @@ public class CreateTemplate {
 
 
         frame.setContentPane(pnlContent);
+    }
+
+    private void updateTemplateName(String text) {
+        ToCTeditor.dataModel.getTemplate().setSerialisedName(text);
     }
 }

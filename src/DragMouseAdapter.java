@@ -1,3 +1,5 @@
+import za.co.mahlaza.research.grammarengine.base.models.template.TemplatePortion;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.dnd.DragSource;
@@ -124,6 +126,13 @@ public class DragMouseAdapter extends MouseAdapter {
         parent.repaint();
     }
 
+    private static void updateList( int startIndex, int stopIndex ) {
+        TemplatePortion templatePortion = ToCTeditor.dataModel.getTemplatePortion(startIndex);
+        ToCTeditor.dataModel.removeTemplatePortion(startIndex);
+        ToCTeditor.dataModel.addTemplatePortion(stopIndex, templatePortion);
+
+    }
+
     @Override public void mouseDragged(MouseEvent e) {
         Point pt = e.getPoint();
         JComponent parent = (JComponent) e.getComponent();
@@ -183,16 +192,22 @@ public class DragMouseAdapter extends MouseAdapter {
         for (int i = 0; i < parent.getComponentCount(); i++) {
             Component c = parent.getComponent(i);
             if (Objects.equals(c, gap)) {
+                updateList(index, i);
+                ToCTeditor.dataModel.updateNextPart();
                 swapComponentLocation(parent, gap, cmp, i);
                 return;
             }
             int tgt = getTargetIndex(c.getBounds(), pt, i);
             if (tgt >= 0) {
+                updateList(index, i);
+                ToCTeditor.dataModel.updateNextPart();
                 swapComponentLocation(parent, gap, cmp, tgt);
                 return;
             }
         }
         if (parent.getParent().getBounds().contains(pt)) {
+            updateList(index, parent.getComponentCount());
+            ToCTeditor.dataModel.updateNextPart();
             swapComponentLocation(parent, gap, cmp, parent.getComponentCount());
         } else {
             swapComponentLocation(parent, gap, cmp, index);

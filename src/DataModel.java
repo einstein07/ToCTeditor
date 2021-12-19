@@ -32,7 +32,9 @@ public class DataModel {
     public static List<Part> parts;
 
     public DataModel(){
+
         templatePortions = new ArrayList<>();
+        template = new Template(templatePortions);
         parts = new ArrayList<>();
     }
 

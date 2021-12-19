@@ -139,22 +139,21 @@ public class CreateMorpheme {
         btnCreate.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
 
-                if (templatePortion != null) {
-                    // @TODO: Set word portions. . .
-                }
-                else {
+                    ToCTeditor.dataModel.addTemplatePortion(new PolymorphicWord(wordPortions, featuresList));
                     int portionNumber = 0;
-                    if (ToCTeditor.dataModel.getTemplatePortions() != null) {
+                    if (ToCTeditor.dataModel.getTemplatePortions().size() > 1){
                         portionNumber = ToCTeditor.dataModel.getTemplatePortions().size();
+                        ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-2)
+                                .setNextPart(ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-1));
                     }
                     String id = "polyword" + portionNumber;
-                    ToCTeditor.dataModel.addTemplatePortion(new PolymorphicWord(wordPortions, featuresList));
+
                     ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size() - 1).setSerialisedName(id);
 
                     ToCTeditor.gui = new ViewThread();
                     ToCTeditor.gui.setCallTemplateItems(true);
                     ToCTeditor.gui.start();
-                }
+
             }
         });
 
@@ -163,7 +162,16 @@ public class CreateMorpheme {
          */
         JButton btnCancel = new JButton("Cancel");
         btnCancel.setFont(new Font("Sans", Font.PLAIN, 15));
-        btnCancel.setMaximumSize(new Dimension(345,30));
+
+        btnCreate.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+
+                ToCTeditor.gui = new ViewThread();
+                ToCTeditor.gui.setCallTemplateItems(true);
+                ToCTeditor.gui.start();
+
+            }
+        });
 
         /**
          * Buttons panel
@@ -177,14 +185,20 @@ public class CreateMorpheme {
          * Add buttons to buttons panel
          */
         pnlButtons.add(btnCancel);
-        pnlButtons.add(Box.createRigidArea(new Dimension(10,0)));
-        pnlButtons.add(btnCreate);
+        if (templatePortion == null ) {
+            btnCancel.setMaximumSize(new Dimension(345, 30));
+            pnlButtons.add(Box.createRigidArea(new Dimension(10,0)));
+            pnlButtons.add(btnCreate);
+        }
+        else{
+            btnCancel.setMaximumSize(new Dimension(700, 30));
+        }
 
         // Add heading label to list panel
         listPane.add(pnlItemsTitle);
         listPane.add(Box.createRigidArea(new Dimension(0,5)));
         // Add template name text field to list panel
-        listPane.add(createPartOptions());
+        listPane.add(createPartOptions(templatePortion));
         listPane.add(Box.createRigidArea(new Dimension(0,10)));
         listPane.add(pnlExistingItemTitle);
         listPane.add(Box.createRigidArea(new Dimension(0,5)));
@@ -208,7 +222,7 @@ public class CreateMorpheme {
         frame.setContentPane(g);
     }
 
-    public JComponent createTemplateItem(String type){
+    public JComponent createTemplateItem(TemplatePortion templatePortion, String type){
 
         JButton btnType = new JButton(type);
         btnType.setFont(new Font("Sans", Font.PLAIN, 13));
@@ -225,23 +239,41 @@ public class CreateMorpheme {
             btnType.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent e){
                     List<Feature> concordFeatures = new ArrayList<>();
-                    int portionNumber = 0;
-                    if (wordPortions != null){
-                        portionNumber = wordPortions.size();
-                    }
-                    String id = "concord" + portionNumber;
-                    wordPortions.add(new Concord(id, concordFeatures));
-                    wordPortions.get(wordPortions.size()-1).setSerialisedName(id);
+                    if (templatePortion == null) {
 
-                    int componentCount = pnlExistingItem.getComponentCount();
-                    for (int i = (componentCount-1); i >= 0 ; i--){
-                        pnlExistingItem.remove(i);
-                    }
+                        wordPortions.add(new Concord("", concordFeatures));
+                        int portionNumber = 0;
+                        if (wordPortions.size() > 1) {
+                            portionNumber = wordPortions.size();
+                            wordPortions.get(wordPortions.size() - 2)
+                                    .setNextPart(wordPortions.get(wordPortions.size() - 1));
+                        }
+                        String id = "concord" + portionNumber;
 
-                    pnlExistingItem.add(Box.createRigidArea(new Dimension(0,5)));
-                    pnlExistingItem.add(setupSearchField());
-                    pnlExistingItem.add(setupExistingItems(wordPortions));
-                    pnlExistingItem.getParent().revalidate();
+                        wordPortions.get(wordPortions.size() - 1).setSerialisedName(id);
+
+                        int componentCount = pnlExistingItem.getComponentCount();
+                        for (int i = (componentCount - 1); i >= 0; i--) {
+                            pnlExistingItem.remove(i);
+                        }
+
+                        pnlExistingItem.add(Box.createRigidArea(new Dimension(0, 5)));
+                        pnlExistingItem.add(setupSearchField());
+                        pnlExistingItem.add(setupExistingItems(wordPortions));
+                        pnlExistingItem.getParent().revalidate();
+                    }
+                    else{
+                        ((PolymorphicWord)templatePortion).addMorpheme(new Concord("", concordFeatures));
+                        int portionNumber = 0;
+                        if (((PolymorphicWord)templatePortion).getAllMorphemes().size() > 1) {
+                            portionNumber = ((PolymorphicWord)templatePortion).getAllMorphemes().size();
+                            ((PolymorphicWord)templatePortion).getAllMorphemes().get(((PolymorphicWord)templatePortion).getAllMorphemes().size() - 2)
+                                    .setNextPart( ((PolymorphicWord)templatePortion).getAllMorphemes().get(((PolymorphicWord)templatePortion).getAllMorphemes().size() - 1) );
+                        }
+                        String id = "concord" + portionNumber;
+
+                        ((PolymorphicWord)templatePortion).getAllMorphemes().get(((PolymorphicWord)templatePortion).getAllMorphemes().size() - 1).setSerialisedName(id);
+                    }
 
                 }
             });
@@ -353,7 +385,7 @@ public class CreateMorpheme {
         return btnType;
     }
 
-    public JPanel createPartOptions(){
+    public JPanel createPartOptions(TemplatePortion templatePortion){
         JPanel pnlItems = new JPanel();
         pnlItems.setLayout(new BoxLayout(pnlItems, BoxLayout.Y_AXIS));
         pnlItems.setMaximumSize(new Dimension(700,120/**170*/));
@@ -368,16 +400,16 @@ public class CreateMorpheme {
         pnlRow1.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         pnlRow1.add(Box.createRigidArea(new Dimension(43,0)));
-        pnlRow1.add(createTemplateItem("Concord"));
+        pnlRow1.add(createTemplateItem(templatePortion,"Concord"));
         pnlRow1.add(Box.createRigidArea(new Dimension(5,0)));
 
-        pnlRow1.add(createTemplateItem("Copula"));
+        pnlRow1.add(createTemplateItem(templatePortion,"Copula"));
         pnlRow1.add(Box.createRigidArea(new Dimension(5,0)));
 
-        pnlRow1.add(createTemplateItem("Locative"));
+        pnlRow1.add(createTemplateItem(templatePortion,"Locative"));
         pnlRow1.add(Box.createRigidArea(new Dimension(5,0)));
 
-        pnlRow1.add(createTemplateItem("Root"));
+        pnlRow1.add(createTemplateItem(templatePortion,"Root"));
         pnlRow1.add(Box.createRigidArea(new Dimension(5,0)));
 
         JPanel pnlRow2 = new JPanel();
@@ -388,7 +420,7 @@ public class CreateMorpheme {
 
 
         pnlRow2.add(Box.createRigidArea(new Dimension(43,0)));
-        pnlRow2.add(createTemplateItem("Unimorphic affix"));
+        pnlRow2.add(createTemplateItem(templatePortion,"Unimorphic affix"));
         pnlRow2.add(Box.createRigidArea(new Dimension(5,0)));
 
         /**

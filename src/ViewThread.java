@@ -107,7 +107,7 @@ public class ViewThread extends Thread {
     public void run() {
         //System.out.println("ToCTeditor v 1.0");
         //while (true) {
-            currentPart = ToCTeditor.dataModel.getPart(index);
+        currentTemplatePortion = ToCTeditor.dataModel.getTemplatePortion(index);
 
             //System.out.println(callTemplateItems);
             if (callCreateTemplate) {
@@ -117,7 +117,7 @@ public class ViewThread extends Thread {
                 callCreateTemplate = false;
             }
             else if (callTemplateItems) {
-                currentTemplatePortion = ToCTeditor.dataModel.getTemplatePortion(index);
+
 
                 //templateItems.setupGUI(templateItems.getPartPanelEditor(currentPart), templateItems.getPartPanelTurtle(currentPart));
                 //templateItems.setupGUI(templateItems.getPartPanelEditor(currentPart), templateItems.getPartPanelTurtle(currentPart));
@@ -131,7 +131,7 @@ public class ViewThread extends Thread {
                 callCreateItem = false;
             }
             else if (callCreateMorpheme) {
-                currentTemplatePortion = ToCTeditor.dataModel.getTemplatePortion(index);
+                //currentTemplatePortion = ToCTeditor.dataModel.getTemplatePortion(index);
                 ToCTeditor.createMorpheme.setupGUI(currentTemplatePortion);
                 callCreateItem = false;
             }

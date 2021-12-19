@@ -137,7 +137,7 @@ public class CreateItem {
         btnBack.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
 
-                ToCTeditor.gui = new ViewThread(ToCTeditor.homeScreen, ToCTeditor.templateItems, ToCTeditor.createItem, ToCTeditor.dataModel);
+                ToCTeditor.gui = new ViewThread();
                 ToCTeditor.gui.setCallTemplateItems(true);
                 ToCTeditor.gui.start();
             }

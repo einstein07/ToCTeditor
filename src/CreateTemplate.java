@@ -123,11 +123,21 @@ public class CreateTemplate {
             public void actionPerformed(ActionEvent e){
 
                 if (ToCTeditor.dataModel.getTemplate().getSerialisedName() == null ){
-                    JOptionPane.showMessageDialog(frame, "Template name cannot be empty.");
+                    JOptionPane.showMessageDialog(
+                                                frame,
+                                        "Template name cannot be empty.",
+                                            "Template Name Error",
+                                            JOptionPane.ERROR_MESSAGE
+                                            );
                 }
                 else {
                     if (supportedLanguage.getSelectedIndex() == 0){
-                        JOptionPane.showMessageDialog(frame, "Supported language cannot be empty.");
+                        JOptionPane.showMessageDialog(
+                                                frame,
+                                        "Supported language cannot be empty.",
+                                            "Supported Language Error",
+                                                JOptionPane.ERROR_MESSAGE
+                                            );
                     }
                     else{
                         Languoid languoid = new Languoid();

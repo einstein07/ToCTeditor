@@ -24,6 +24,7 @@ import za.co.mahlaza.research.grammarengine.base.models.template.UnimorphicWord;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class DataModel {
     private List<TemplatePortion> templatePortions;
@@ -56,6 +57,25 @@ public class DataModel {
 
     public void removeTemplatePortion( int index ){
         templatePortions.remove(index);
+    }
+
+    public void removeTemplatePortion( String serialisedName ){
+        for (int i = 0; i < templatePortions.size(); i ++ ){
+            if (templatePortions.get(i).getSerialisedName().equals(serialisedName)){
+                templatePortions.remove(i);
+            }
+        }
+    }
+
+    public void duplicateTemplatePortion( String serialisedName ){
+        for (int i = 0; i < templatePortions.size(); i ++ ){
+            if (templatePortions.get(i).getSerialisedName().equals(serialisedName)){
+                TemplatePortion copy = new TemplatePortion();
+                copy = templatePortions.get(i);
+                templatePortions.add(copy);
+                templatePortions.get(getTemplatePortions().size()-1).setSerialisedName(templatePortions.get(i).getSerialisedName() + "-(copy)");
+            }
+        }
     }
 
     public void updateNextPart(){

@@ -763,9 +763,19 @@ public class TemplateItems {
 
         JPopupMenu menu = new JPopupMenu();
         menu.setMaximumSize(new Dimension(200, 100));
-        menu.add(new JMenuItem("Duplicate"));
+        menu.add("Duplicate").addActionListener(
+            e -> {
+                /**ToCTeditor.dataModel.duplicateTemplatePortion(((JLabel)name).getText().trim());
+                ToCTeditor.dataModel.updateNextPart();
+                updateItems();*/
+            }
+        );
         menu.add(new JMenuItem("Change type"));
-        menu.add(new JMenuItem("Remove"));
+        menu.add("Remove").addActionListener( e -> {
+            ToCTeditor.dataModel.removeTemplatePortion(((JLabel)name).getText().trim());
+            ToCTeditor.dataModel.updateNextPart();
+            updateItems();
+        });
 
         final JButton button = new JButton();
         /**

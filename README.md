@@ -10,7 +10,7 @@ To compile on linux:
 cd to the root directory (ToCTeditor):
 make
 make run
-'''
+```
 
 ## People
 

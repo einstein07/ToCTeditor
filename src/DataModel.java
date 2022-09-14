@@ -67,6 +67,10 @@ public class DataModel {
         }
     }
 
+    public void clearTemplatePortions(){
+        this.templatePortions.clear();
+    }
+
     public void duplicateTemplatePortion( String serialisedName ){
         for (int i = 0; i < templatePortions.size(); i ++ ){
             if (templatePortions.get(i).getSerialisedName().equals(serialisedName)){

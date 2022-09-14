@@ -8,13 +8,23 @@
  * @(#) $Id$
  */
 
+import za.co.mahlaza.research.grammarengine.base.interfaces.SlotFiller;
 import za.co.mahlaza.research.grammarengine.base.models.interfaces.InternalSlotRootAffix;
+import za.co.mahlaza.research.grammarengine.base.models.interfaces.Word;
+import za.co.mahlaza.research.grammarengine.base.models.template.*;
+import za.co.mahlaza.research.grammarengine.base.models.template.Concord;
+import za.co.mahlaza.research.grammarengine.base.models.template.Copula;
 import za.co.mahlaza.research.grammarengine.base.models.template.Phrase;
 import za.co.mahlaza.research.grammarengine.base.models.template.PolymorphicWord;
 import za.co.mahlaza.research.grammarengine.base.models.template.Punctuation;
+import za.co.mahlaza.research.grammarengine.base.models.template.Root;
 import za.co.mahlaza.research.grammarengine.base.models.template.Slot;
-import za.co.mahlaza.research.grammarengine.base.models.template.TemplatePortion;
+import za.co.mahlaza.research.grammarengine.base.models.template.UnimorphicAffix;
 import za.co.mahlaza.research.grammarengine.base.models.template.UnimorphicWord;
+import za.co.mahlaza.research.grammarengine.nguni.zu.ZuluFeatureParser;
+import za.co.mahlaza.research.templateparsing.TemplateReader;
+import za.co.mahlaza.research.templateparsing.TemplateWriter;
+import za.co.mahlaza.research.templateparsing.URIS;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -30,8 +40,13 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Objects;
+
 
 
 public class TemplateItems {
@@ -99,8 +114,8 @@ public class TemplateItems {
         //ArrayList<TemplatePart> templateItems = new ArrayList<>();
 
         /**templateItems.add(new Slot("slot1", "s1", "concord1"));
-        templateItems.add(new Concord("concord1", "c1", "subjectVerb", "root1"));
-        templateItems.add(new Root("root1", "nke"));*/
+         templateItems.add(new Concord("concord1", "c1", "subjectVerb", "root1"));
+         templateItems.add(new Root("root1", "nke"));*/
 
         //pnlItems.add(setupTemplateItems(ToCTeditor.dataModel.getData()));
         if (ToCTeditor.DEBUG){
@@ -135,20 +150,20 @@ public class TemplateItems {
         tbtnTurtle.setSelected(ToCTeditor.gui.getToggleBtnState() == 1);
         pnlToggleButton.add(tbtnTurtle);
         /**pnlToggleButton.add(Box.createRigidArea(new Dimension(10,0)));
-        pnlToggleButton.add(btnSaveTemplate);*/
+         pnlToggleButton.add(btnSaveTemplate);*/
 
         ItemListener itemListener = new ItemListener() {
             public void itemStateChanged(ItemEvent itemEvent) {
                 int state = itemEvent.getStateChange();
                 //if (state == ItemEvent.SELECTED) {
-                    ToCTeditor.gui = new ViewThread();
-                    ToCTeditor.gui.setToggleBtnState(state);
-                    ToCTeditor.gui.start();
+                ToCTeditor.gui = new ViewThread();
+                ToCTeditor.gui.setToggleBtnState(state);
+                ToCTeditor.gui.start();
                 System.out.println("State: " + state);
                 /**} else {
-                    ToCTeditor.gui.setToggleBtnState(state);
-                    //System.out.println("Deselected: " + state);
-                }*/
+                 ToCTeditor.gui.setToggleBtnState(state);
+                 //System.out.println("Deselected: " + state);
+                 }*/
             }
         };
 
@@ -184,11 +199,15 @@ public class TemplateItems {
         // add the listener to the jbutton to handle the "pressed" event
         btnBack.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
+                int dialogButton = JOptionPane.YES_NO_OPTION;
+                int dialogResult = JOptionPane.showConfirmDialog (null, "Any unsaved changes will be lost. Do you want to continue?","Warning",dialogButton);
+                if(dialogResult == JOptionPane.YES_OPTION){
+                    ToCTeditor.dataModel.clearTemplatePortions();
+                    ToCTeditor.gui = new ViewThread();
+                    ToCTeditor.gui.setCallCreateTemplate(true);
+                    ToCTeditor.gui.start();
+                }
 
-
-                ToCTeditor.gui = new ViewThread();
-                ToCTeditor.gui.setCallCreateTemplate(true);
-                ToCTeditor.gui.start();
             }
         });
 
@@ -209,16 +228,16 @@ public class TemplateItems {
 
                 ToCTeditor.gui.start();
                 /**if (ToCTeditor.gui.isAlive()){
-                    try {
-                        ToCTeditor.gui.join();
-                        ToCTeditor.gui.start();
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
-                }
-                else{
-                    ToCTeditor.gui.start();
-                }*/
+                 try {
+                 ToCTeditor.gui.join();
+                 ToCTeditor.gui.start();
+                 } catch (InterruptedException ex) {
+                 ex.printStackTrace();
+                 }
+                 }
+                 else{
+                 ToCTeditor.gui.start();
+                 }*/
 
             }
         });
@@ -231,11 +250,47 @@ public class TemplateItems {
         btnSaveTemplate.setMaximumSize(new Dimension(226,30));
 
         // add the listener to the jbutton to handle the "pressed" event
-        /**btnSaveTemplate.addActionListener(new ActionListener(){
-         public void actionPerformed(ActionEvent e){
-         ToCTeditor.gui.setCallCreateTemplate(true);
-         }
-         });*/
+        btnSaveTemplate.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                /**String templatePath = "";
+                 try {
+                 // Create a file object
+                 File f = new File("program");
+                 // Get the absolute path of file f
+                 String absolute = f.getAbsolutePath();
+                 TemplateWriter.Init(new ZuluFeatureParser());
+                 TemplateWriter.saveTemplate(ToCTeditor.dataModel.getTemplate(), ToCTeditor.dataModel.getTemplate().getURI(), ToCTeditor.dataModel.getTemplate().getSerialisedName());
+                 JOptionPane.showMessageDialog(null, "File saved successfully!");
+                 }
+                 catch(Exception err){
+                 System.err.println(err.getMessage());
+                 }*/
+                PrintWriter writer = null;
+                try {
+                    String templateName = ToCTeditor.dataModel.getTemplate().getSerialisedName() + ".ttl";
+                    System.out.println(templateName);
+                    writer = new PrintWriter(templateName, "UTF-8");
+                    if (ToCTeditor.dataModel.getTemplate() != null){
+                        System.out.println("template: " + ToCTeditor.dataModel.getTemplate().toString());
+                        System.out.println("template language: " + ToCTeditor.dataModel.getTemplate().getLanguage().getSerialisedName());
+                    }
+                    else{
+                        System.out.println("template null");
+                    }
+                    writer.println(ToCTeditor.turtleGen.getTemplateTurtle().trim());
+                    writer.close();
+
+                    JOptionPane.showMessageDialog(null, "File saved successfully!");
+
+                } catch (FileNotFoundException ex) {
+                    throw new RuntimeException(ex);
+                } catch (UnsupportedEncodingException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+
+            }
+        });
 
         /**
          * Buttons panel
@@ -453,14 +508,14 @@ public class TemplateItems {
 
 
             /**if (type.getText().equals("Polymorphic word")){
-                List<InternalSlotRootAffix> morphemes = ((PolymorphicWord)part).getAllMorphemes();
-                //System.out.println("Polymophic type: " + ((PolymorphicWord)part).getIdentification() + "Affix boxes: " + morphemes.size());
-                for (InternalSlotRootAffix affix : morphemes) {
-                    JLabel morphemeName = new JLabel(ToCTeditor.turtleGen.getMorphemeId(affix));
-                    JLabel morphemeType = new JLabel(ToCTeditor.turtleGen.getMorphemeType(affix));
-                    box.add(createItemComponent(morphemeName, morphemeType));
-                }
-            }*/
+             List<InternalSlotRootAffix> morphemes = ((PolymorphicWord)part).getAllMorphemes();
+             //System.out.println("Polymophic type: " + ((PolymorphicWord)part).getIdentification() + "Affix boxes: " + morphemes.size());
+             for (InternalSlotRootAffix affix : morphemes) {
+             JLabel morphemeName = new JLabel(ToCTeditor.turtleGen.getMorphemeId(affix));
+             JLabel morphemeType = new JLabel(ToCTeditor.turtleGen.getMorphemeType(affix));
+             box.add(createItemComponent(morphemeName, morphemeType));
+             }
+             }*/
         }
         JPanel p = new JPanel();
         p.setMaximumSize(new Dimension(700, 145));
@@ -485,7 +540,7 @@ public class TemplateItems {
             String type = ToCTeditor.turtleGen.getPartType(templatePortion);
 
             if ( type.equals("Polymorphic word") && ((PolymorphicWord)templatePortion).getAllMorphemes().size() > 0){
-                box.add(createPortionComponent(templatePortion, type));
+                box.add(createPortionComponent(templatePortion, type, box));
             }
             else{
                 JLabel name = new JLabel(templatePortion.getSerialisedName());
@@ -501,7 +556,7 @@ public class TemplateItems {
         return p;
     }
 
-    private JPanel createPortionComponent(TemplatePortion templatePortion, String type) {
+    private JPanel createPortionComponent(TemplatePortion templatePortion, String type, JComponent box) {
 
         JPanel p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
@@ -566,7 +621,7 @@ public class TemplateItems {
          */
         JPanel pnlMorphemes = new JPanel();
         pnlMorphemes.setLayout(new BoxLayout(pnlMorphemes, BoxLayout.LINE_AXIS));
-        DragMouseAdapter dh = new DragMouseAdapter();
+        DragMouseAdapter dh = new DragMouseAdapter(box, p);
         pnlMorphemes.addMouseListener(dh);
         int maxWidth = 0;
         pnlMorphemes.addMouseMotionListener(dh);
@@ -764,11 +819,11 @@ public class TemplateItems {
         JPopupMenu menu = new JPopupMenu();
         menu.setMaximumSize(new Dimension(200, 100));
         menu.add("Duplicate").addActionListener(
-            e -> {
-                /**ToCTeditor.dataModel.duplicateTemplatePortion(((JLabel)name).getText().trim());
-                ToCTeditor.dataModel.updateNextPart();
-                updateItems();*/
-            }
+                e -> {
+                    /**ToCTeditor.dataModel.duplicateTemplatePortion(((JLabel)name).getText().trim());
+                     ToCTeditor.dataModel.updateNextPart();
+                     updateItems();*/
+                }
         );
         menu.add(new JMenuItem("Change type"));
         menu.add("Remove").addActionListener( e -> {
@@ -862,8 +917,13 @@ public class TemplateItems {
         }
     }
 
+    /**
+     * Working get part editor method
+     * @param currentTemplatePortion
+     * @return
+     */
     public JPanel getPartPanelEditor(TemplatePortion currentTemplatePortion) {
-        
+
         String type = ToCTeditor.turtleGen.getPartType(currentTemplatePortion);
         JPanel currentPanel;
 
@@ -888,21 +948,21 @@ public class TemplateItems {
             currentPanel = setupPhraseEditor(part);
         }
         /**else if ( type.equals("Phrase") ){
-            Phrase part = (Phrase)currentTemplatePortion;
-            currentPanel = setupPhraseEditor(part);
-        }
-        else if ( type.equals("Copula") ){
-            Copula part = (Copula)currentPart;
-            currentPanel = setupCopulaEditor(part);
-        }
-        else if ( type.equals("Unimorphic affix")){
-            UnimorphicAffix part = (UnimorphicAffix)currentPart;
-            currentPanel = setupUnimorphicAffixEditor(part);
-        }
-        else if (type.equals("Root")){
-            Root part = (Root)currentPart;
-            currentPanel = setupRootEditor(part);
-        }*/
+         Phrase part = (Phrase)currentTemplatePortion;
+         currentPanel = setupPhraseEditor(part);
+         }
+         else if ( type.equals("Copula") ){
+         Copula part = (Copula)currentPart;
+         currentPanel = setupCopulaEditor(part);
+         }
+         else if ( type.equals("Unimorphic affix")){
+         UnimorphicAffix part = (UnimorphicAffix)currentPart;
+         currentPanel = setupUnimorphicAffixEditor(part);
+         }
+         else if (type.equals("Root")){
+         Root part = (Root)currentPart;
+         currentPanel = setupRootEditor(part);
+         }*/
         else{
             //System.out.println("No current item selected");
             currentPanel = new JPanel();
@@ -911,6 +971,36 @@ public class TemplateItems {
         return currentPanel;
     }
 
+    public JPanel getInternalElementPanelEditor(InternalSlotRootAffix currentInternalElement) {
+        String type = ToCTeditor.turtleGen.getInternalElementType(currentInternalElement);
+        JPanel currentPanel;
+        if (type.equals("Slot")){
+            Slot part = (Slot)currentInternalElement;
+            currentPanel = setupSlotEditor(part);
+        }
+        else if ( type.equals("Concord") ){
+            Concord part = (Concord) currentInternalElement;
+            currentPanel = setupConcordEditor(part);
+        }
+        else if ( type.equals("Copula") ){
+            Copula part = (Copula)currentInternalElement;
+            currentPanel = setupCopulaEditor(part);
+        }
+        else if ( type.equals("UnimorphicAffix")){
+            UnimorphicAffix part = (UnimorphicAffix)currentInternalElement;
+            currentPanel = setupUnimorphicAffixEditor(part);
+        }
+        else if (type.equals("Root")){
+            Root part = (Root)currentInternalElement;
+            currentPanel = setupRootEditor(part);
+        }
+        else{
+            //System.out.println("No current item selected");
+            currentPanel = new JPanel();
+            currentPanel.setBackground(Color.lightGray);
+        }
+        return currentPanel;
+    }
     public JPanel getPartPanelEditor(Part currentPart/**TemplatePortion currentPart*/) {
 
         //String type = ToCTeditor.turtleGen.getPartType(currentPart);
@@ -938,15 +1028,15 @@ public class TemplateItems {
                  currentPanel = setupPhraseEditor(part);*/
                 currentPanel = setupPhraseEditor(currentPart);
             }
-            else if (currentPart.getType().equals("Concord")) {
-                currentPanel = setupConcordEditor(currentPart);
-            }
-            else if (currentPart.getType().equals("Copula")) {
-                currentPanel = setupCopulaEditor(currentPart);
-            }
-            else if (currentPart.getType().equals("Unimorphic affix")) {
-                currentPanel = setupUnimorphicAffixEditor(currentPart);
-            }
+            /** else if (currentPart.getType().equals("Concord")) {
+             currentPanel = setupConcordEditor(currentPart);
+             }
+             else if (currentPart.getType().equals("Copula")) {
+             currentPanel = setupCopulaEditor(currentPart);
+             }
+             else if (currentPart.getType().equals("Unimorphic affix")) {
+             currentPanel = setupUnimorphicAffixEditor(currentPart);
+             }*/
             else{
                 currentPanel = new JPanel();
                 currentPanel.setBackground(Color.lightGray);
@@ -961,69 +1051,69 @@ public class TemplateItems {
     }
 
     /**public JPanel getPartPanelTurtle(TemplatePart currentPart) {
-        String type = getPartType(currentPart);
-        JPanel currentPanel = new JPanel();
-        currentPanel.setLayout(new BoxLayout(currentPanel, BoxLayout.Y_AXIS));
-        currentPanel.setBackground(Color.lightGray);
-        currentPanel.setMaximumSize(new Dimension(345, 250));
-        JTextArea txtArea = new JTextArea();
-        txtArea.setEditable(false);
-        txtArea.setMaximumSize(new Dimension(345, 250));
-        txtArea.setAlignmentX(Component.CENTER_ALIGNMENT);
-        txtArea.setFont(new Font("Sans", Font.PLAIN, 12));
-        txtArea.setForeground(Color.blue);
-        if (type.equals("Slot")){
-            Slot part = (Slot)currentPart;
-            txtArea.setText(part.getTurtle());
-            currentPanel.add(txtArea);
-        }
-        else if (type.equals("Unimorphic word")){
-            UnimorphicWord part = (UnimorphicWord)currentPart;
-            txtArea.setText(part.getTurtle());
-            currentPanel.add(txtArea);
-        }
-        else if (type.equals("Punctuation")){
-            Punctuation part = (Punctuation)currentPart;
-            txtArea.setText(part.getTurtle());
-            currentPanel.add(txtArea);
-        }
-        else if (type.equals("Root")){
-            Root part = (Root)currentPart;
-            txtArea.setText(part.getTurtle());
-            currentPanel.add(txtArea);
-        }
-        else if (type.equals("Polymorphic word")){
-            PolymorphicWord part = (PolymorphicWord)currentPart;
-            txtArea.setText(part.getTurtle());
-            currentPanel.add(txtArea);
-        }
-        else if ( type.equals("Concord") ){
-            Concord part = (Concord)currentPart;
-            txtArea.setText(part.getTurtle());
-            currentPanel.add(txtArea);
-        }
-        else if ( type.equals("Phrase") ){
-            Phrase part = (Phrase)currentPart;
-            txtArea.setText(part.getTurtle());
-            currentPanel.add(txtArea);
-        }
-        else if ( type.equals("Copula") ){
-            Copula part = (Copula)currentPart;
-            txtArea.setText(part.getTurtle());
-            currentPanel.add(txtArea);
-        }
-        else if ( type.equals("Unimorphic affix")){
-            UnimorphicAffix part = (UnimorphicAffix)currentPart;
-            txtArea.setText(part.getTurtle());
-            currentPanel.add(txtArea);
-        }
-        else{
-            //System.out.println("No current item selected");
-            currentPanel = new JPanel();
-            currentPanel.setBackground(Color.lightGray);
-        }
-        return currentPanel;
-    }*/
+     String type = getPartType(currentPart);
+     JPanel currentPanel = new JPanel();
+     currentPanel.setLayout(new BoxLayout(currentPanel, BoxLayout.Y_AXIS));
+     currentPanel.setBackground(Color.lightGray);
+     currentPanel.setMaximumSize(new Dimension(345, 250));
+     JTextArea txtArea = new JTextArea();
+     txtArea.setEditable(false);
+     txtArea.setMaximumSize(new Dimension(345, 250));
+     txtArea.setAlignmentX(Component.CENTER_ALIGNMENT);
+     txtArea.setFont(new Font("Sans", Font.PLAIN, 12));
+     txtArea.setForeground(Color.blue);
+     if (type.equals("Slot")){
+     Slot part = (Slot)currentPart;
+     txtArea.setText(part.getTurtle());
+     currentPanel.add(txtArea);
+     }
+     else if (type.equals("Unimorphic word")){
+     UnimorphicWord part = (UnimorphicWord)currentPart;
+     txtArea.setText(part.getTurtle());
+     currentPanel.add(txtArea);
+     }
+     else if (type.equals("Punctuation")){
+     Punctuation part = (Punctuation)currentPart;
+     txtArea.setText(part.getTurtle());
+     currentPanel.add(txtArea);
+     }
+     else if (type.equals("Root")){
+     Root part = (Root)currentPart;
+     txtArea.setText(part.getTurtle());
+     currentPanel.add(txtArea);
+     }
+     else if (type.equals("Polymorphic word")){
+     PolymorphicWord part = (PolymorphicWord)currentPart;
+     txtArea.setText(part.getTurtle());
+     currentPanel.add(txtArea);
+     }
+     else if ( type.equals("Concord") ){
+     Concord part = (Concord)currentPart;
+     txtArea.setText(part.getTurtle());
+     currentPanel.add(txtArea);
+     }
+     else if ( type.equals("Phrase") ){
+     Phrase part = (Phrase)currentPart;
+     txtArea.setText(part.getTurtle());
+     currentPanel.add(txtArea);
+     }
+     else if ( type.equals("Copula") ){
+     Copula part = (Copula)currentPart;
+     txtArea.setText(part.getTurtle());
+     currentPanel.add(txtArea);
+     }
+     else if ( type.equals("Unimorphic affix")){
+     UnimorphicAffix part = (UnimorphicAffix)currentPart;
+     txtArea.setText(part.getTurtle());
+     currentPanel.add(txtArea);
+     }
+     else{
+     //System.out.println("No current item selected");
+     currentPanel = new JPanel();
+     currentPanel.setBackground(Color.lightGray);
+     }
+     return currentPanel;
+     }*/
 
     public JPanel getPartPanelTurtle(/**TemplatePortion currentPart*/Part currentPart) {
         //String type = ToCTeditor.turtleGen.getPartType(currentPart);
@@ -1045,10 +1135,16 @@ public class TemplateItems {
         String turtle = ToCTeditor.turtleGen.getPartTurtle(currentPart);
         if (turtle.length() > 0 ){
             txtArea.setText(turtle);
-                currentPanel.add(pnlScroll);
+            currentPanel.add(pnlScroll);
         }
         return currentPanel;
     }
+
+    /**
+     * Working getPartPanelTurtle method
+     * @param currentTemplatePortion
+     * @return
+     */
     public JPanel getPartPanelTurtle(TemplatePortion currentTemplatePortion) {
         //String type = ToCTeditor.turtleGen.getPartType(currentPart);
         JPanel currentPanel = new JPanel();
@@ -1079,40 +1175,69 @@ public class TemplateItems {
         return currentPanel;
     }
 
+    public JPanel getInternalElementPanelTurtle(InternalSlotRootAffix currentInternalElement) {
+        //String type = ToCTeditor.turtleGen.getPartType(currentPart);
+        JPanel currentPanel = new JPanel();
+        currentPanel.setLayout(new BoxLayout(currentPanel, BoxLayout.Y_AXIS));
+        currentPanel.setBackground(Color.lightGray);
+        currentPanel.setMaximumSize(new Dimension(345, 250));
+        JTextArea txtArea = new JTextArea();
+        txtArea.setEditable(false);
+        txtArea.setMaximumSize(new Dimension(345, 250));
+        txtArea.setAlignmentX(Component.CENTER_ALIGNMENT);
+        txtArea.setFont(new Font("Sans", Font.PLAIN, 12));
+        txtArea.setForeground(Color.blue);
+        JScrollPane pnlScroll = new JScrollPane(txtArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        pnlScroll.setMaximumSize(new Dimension(345, 250));
+        pnlScroll.setBackground(Color.lightGray);
+
+        String turtle;
+        if (currentInternalElement != null) {
+            turtle = ToCTeditor.turtleGen.getInternalElementTurtle(currentInternalElement);
+        }
+        else {
+            turtle = ToCTeditor.turtleGen.getTemplateTurtle();
+        }
+        if (turtle.length() > 0 ){
+            txtArea.setText(turtle);
+            currentPanel.add(pnlScroll);
+        }
+        return currentPanel;
+    }
     /**public String getPartType(TemplatePart part){
-        String type;
-        if (part instanceof Slot){
-            type = "Slot";
-        }
-        else if ( part instanceof UnimorphicWord){
-            type = "Unimorphic word";
-        }
-        else if ( part instanceof Punctuation){
-            type = "Punctuation";
-        }
-        else if ( part instanceof Root){
-            type = "Root";
-        }
-        else if ( part instanceof  PolymorphicWord ){
-            type = "Polymorphic word";
-        }
-        else if (part instanceof Concord ){
-            type = "Concord";
-        }
-        else if ( part instanceof Phrase ){
-            type = "Phrase";
-        }
-        else if ( part instanceof Copula ){
-            type = "Copula";
-        }
-        else if ( part instanceof UnimorphicAffix ){
-            type = "Unimorphic affix";
-        }
-        else{
-            type = "Unknown type";
-        }
-        return type;
-    }*/
+     String type;
+     if (part instanceof Slot){
+     type = "Slot";
+     }
+     else if ( part instanceof UnimorphicWord){
+     type = "Unimorphic word";
+     }
+     else if ( part instanceof Punctuation){
+     type = "Punctuation";
+     }
+     else if ( part instanceof Root){
+     type = "Root";
+     }
+     else if ( part instanceof  PolymorphicWord ){
+     type = "Polymorphic word";
+     }
+     else if (part instanceof Concord ){
+     type = "Concord";
+     }
+     else if ( part instanceof Phrase ){
+     type = "Phrase";
+     }
+     else if ( part instanceof Copula ){
+     type = "Copula";
+     }
+     else if ( part instanceof UnimorphicAffix ){
+     type = "Unimorphic affix";
+     }
+     else{
+     type = "Unknown type";
+     }
+     return type;
+     }*/
 
     public JPanel setupSlotEditor(Part part/**Slot part*/){
         /**
@@ -1149,19 +1274,19 @@ public class TemplateItems {
 
 
         /**txtPartName.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                System.out.println("Inside action performed for textfield");
-                String text = txtPartName.getText();
-                ToCTeditor.controller.setPartName(text);
-                System.out.println("Current text: " + text);
-            }
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+        System.out.println("Inside action performed for textfield");
+        String text = txtPartName.getText();
+        ToCTeditor.controller.setPartName(text);
+        System.out.println("Current text: " + text);
+        }
         });*/
         /**txtPartName.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent evt) {
+         public void actionPerformed(ActionEvent evt) {
 
-            }
-        });*/
+         }
+         });*/
 
         pnlPartName.add(Box.createRigidArea(new Dimension(5,0)));
         pnlPartName.add(lblPartName);
@@ -1230,6 +1355,12 @@ public class TemplateItems {
 
         return pnlSlotEditor;
     }
+
+    /**
+     * Working Slot editor method
+     * @param part
+     * @return panel which consists of all the fields that represent a Slot
+     */
     public JPanel setupSlotEditor(Slot part){
         /**
          * Slot Editor Panel
@@ -1272,7 +1403,7 @@ public class TemplateItems {
         System.out.println("Current text: " + text);
         }
         });
-        /**txtPartName.addActionListener(new ActionListener(){
+         /**txtPartName.addActionListener(new ActionListener(){
          public void actionPerformed(ActionEvent evt) {
 
          }
@@ -1300,7 +1431,10 @@ public class TemplateItems {
         JTextField txtLabel = new JTextField();
         txtLabel.setFont(new Font("Sans", Font.PLAIN, 14));
         txtLabel.setMaximumSize(new Dimension(225, 30));
-        if (part.getValue() != null) {
+        if ( part.getLabel() != null){
+            txtLabel.setText(part.getLabel());
+        }
+        else if (part.getValue() != null) {
             txtLabel.setText(part.getValue());
         }
         addChangeListener(txtLabel, e -> updateValue(part, txtLabel.getText()));
@@ -1347,7 +1481,7 @@ public class TemplateItems {
         pnlSlotEditor.add(Box.createRigidArea(new Dimension(0,10)));
         pnlSlotEditor.add(pnlLabel);
         pnlSlotEditor.add(Box.createRigidArea(new Dimension(0,10)));
-        pnlSlotEditor.add(pnlNextPart);
+        //pnlSlotEditor.add(pnlNextPart);
 
         return pnlSlotEditor;
     }
@@ -1356,15 +1490,17 @@ public class TemplateItems {
             part.setNextPart(ToCTeditor.dataModel.findTemplatePortion(updatedText));
         }
         /**else if ( ToCTeditor.dataModel.findTemplatePortion(updatedText) != null ){
-            part.setNextPart(ToCTeditor.dataModel.findWordPortion(updatedText));
-        }*/
+         part.setNextPart(ToCTeditor.dataModel.findWordPortion(updatedText));
+         }*/
         updateTurtlePanel(getPartPanelTurtle(part));
         updateItems();
     }
     private void updateValue(TemplatePortion part, String updatedText) {
         String type = ToCTeditor.turtleGen.getPartType(part);
         if (type.equals("Slot")){
-            ((Slot)part).setValue(updatedText);
+            UnimorphicWord sf = new UnimorphicWord(updatedText);
+
+            ((Slot)part).insertValue(sf);
         }
         else if ( type.equals("Unimorphic word")){
             ((UnimorphicWord)part).setValue(updatedText);
@@ -1373,8 +1509,7 @@ public class TemplateItems {
             ((Phrase)part).setValue(updatedText);
         }
         else if (type.equals("Punctuation")){
-            // @TODO add set-value-functionality
-            //((Punctuation)part).setValue(updatedText);
+            ((Punctuation)part).setValue(updatedText);
         }
 
         updateTurtlePanel(getPartPanelTurtle(part));
@@ -1482,6 +1617,12 @@ public class TemplateItems {
 
         return pnlUnimorphicWordEditor;
     }
+
+    /**
+     * Working Unimorphic word editor
+     * @param part
+     * @return
+     */
     public JPanel setupUnimorphicWordEditor(UnimorphicWord part){
         /**
          * Unimorphic Word Editor Panel
@@ -1584,7 +1725,7 @@ public class TemplateItems {
         pnlUnimorphicWordEditor.add(Box.createRigidArea(new Dimension(0,10)));
         pnlUnimorphicWordEditor.add(pnlValue);
         pnlUnimorphicWordEditor.add(Box.createRigidArea(new Dimension(0,10)));
-        pnlUnimorphicWordEditor.add(pnlNextPart);
+        //pnlUnimorphicWordEditor.add(pnlNextPart);
 
         return pnlUnimorphicWordEditor;
     }
@@ -1658,6 +1799,12 @@ public class TemplateItems {
 
         return pnlPunctuationEditor;
     }
+
+    /**
+     * Working Punctuation editor method
+     * @param part
+     * @return
+     */
     public JPanel setupPunctuationEditor(Punctuation part){
         /**
          * Punctuation Editor Panel
@@ -1731,7 +1878,7 @@ public class TemplateItems {
         return pnlPunctuationEditor;
     }
 
-    public JPanel setupRootEditor(Part part/***Root part*/){
+    public JPanel setupRootEditor(Root part){
         /**
          * Root Editor Panel
          */
@@ -1757,7 +1904,7 @@ public class TemplateItems {
         JTextField txtPartName = new JTextField();
         txtPartName.setFont(new Font("Sans", Font.PLAIN, 14));
         txtPartName.setMaximumSize(new Dimension(225, 30));
-        txtPartName.setText(part.getPartName());
+        txtPartName.setText(part.getSerialisedName());
 
         pnlPartName.add(Box.createRigidArea(new Dimension(5,0)));
         pnlPartName.add(lblPartName);
@@ -1954,6 +2101,12 @@ public class TemplateItems {
 
         return pnlPolymorphicWordEditor;
     }
+
+    /**
+     * Working Polymorphic word editor
+     * @param part
+     * @return
+     */
     public JPanel setupPolymorphicWordEditor(PolymorphicWord part){
         /**
          * Polymorphic Word Editor Panel
@@ -2171,7 +2324,7 @@ public class TemplateItems {
         pnlPolymorphicWordEditor.add(Box.createRigidArea(new Dimension(0,10)));
         pnlPolymorphicWordEditor.add(pnlLastPart);
         pnlPolymorphicWordEditor.add(Box.createRigidArea(new Dimension(0,10)));
-        pnlPolymorphicWordEditor.add(pnlNextPart);
+        //pnlPolymorphicWordEditor.add(pnlNextPart);
         pnlPolymorphicWordEditor.add(Box.createRigidArea(new Dimension(0,10)));
         pnlPolymorphicWordEditor.add(pnlAddMorpheme);
 
@@ -2301,7 +2454,125 @@ public class TemplateItems {
 
         return pnlConcordEditor;
     }
+    public JPanel setupConcordEditor(Concord part){
+        /**
+         * Concord Editor Panel
+         */
+        JPanel pnlConcordEditor = new JPanel();
+        pnlConcordEditor.setLayout(new BoxLayout(pnlConcordEditor, BoxLayout.Y_AXIS));
+        pnlConcordEditor.setMaximumSize(new Dimension(345,250));
+        pnlConcordEditor.setBackground(Color.lightGray);
 
+        /**
+         * Create part name panel and add components to panel
+         */
+        JPanel pnlPartName = new JPanel();
+        pnlPartName.setLayout(new BoxLayout(pnlPartName, BoxLayout.LINE_AXIS));
+        pnlPartName.setMaximumSize(new Dimension(340,30));
+        pnlPartName.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pnlPartName.setBackground(Color.lightGray);
+
+
+        JLabel lblPartName = new JLabel("Part name:");
+        lblPartName.setFont(new Font("Sans", Font.PLAIN, 14));
+        lblPartName.setMaximumSize(new Dimension(100, 30));
+
+
+        JTextField txtPartName = new JTextField();
+        txtPartName.setFont(new Font("Sans", Font.PLAIN, 14));
+        txtPartName.setMaximumSize(new Dimension(225, 30));
+        txtPartName.setText(part.getSerialisedName());
+
+        pnlPartName.add(Box.createRigidArea(new Dimension(5,0)));
+        pnlPartName.add(lblPartName);
+        pnlPartName.add(Box.createRigidArea(new Dimension(5,0)));
+        pnlPartName.add(txtPartName);
+        pnlPartName.add(Box.createRigidArea(new Dimension(5,0)));
+
+        /**
+         * Create label panel and add components to panel
+         */
+        JPanel pnlLabel = new JPanel();
+        pnlLabel.setLayout(new BoxLayout(pnlLabel, BoxLayout.LINE_AXIS));
+        pnlLabel.setMaximumSize(new Dimension(340,30));
+        pnlLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pnlLabel.setBackground(Color.lightGray);
+
+        JLabel lblLabel = new JLabel("Label:");
+        lblLabel.setFont(new Font("Sans", Font.PLAIN, 14));
+        lblLabel.setMaximumSize(new Dimension(100, 30));
+
+        JTextField txtLabel = new JTextField();
+        txtLabel.setFont(new Font("Sans", Font.PLAIN, 14));
+        txtLabel.setMaximumSize(new Dimension(225, 30));
+        txtLabel.setText(part.getLabel());
+
+        pnlLabel.add(Box.createRigidArea(new Dimension(5,0)));
+        pnlLabel.add(lblLabel);
+        pnlLabel.add(Box.createRigidArea(new Dimension(5,0)));
+        pnlLabel.add(txtLabel);
+        pnlLabel.add(Box.createRigidArea(new Dimension(5,0)));
+
+        /**
+         * Create concord type panel and add components to panel
+         */
+        JPanel pnlType = new JPanel();
+        pnlType.setLayout(new BoxLayout(pnlType, BoxLayout.LINE_AXIS));
+        pnlType.setMaximumSize(new Dimension(340,30));
+        pnlType.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pnlType.setBackground(Color.lightGray);
+
+
+        JLabel lblType = new JLabel("Concord type:");
+        lblType.setFont(new Font("Sans", Font.PLAIN, 14));
+        lblType.setMaximumSize(new Dimension(100, 30));
+
+        JTextField txtType = new JTextField();
+        txtType.setFont(new Font("Sans", Font.PLAIN, 14));
+        txtType.setMaximumSize(new Dimension(225, 30));
+        txtType.setText(part.getConcordType().getTypeString());
+
+        pnlType.add(Box.createRigidArea(new Dimension(5,0)));
+        pnlType.add(lblType);
+        pnlType.add(Box.createRigidArea(new Dimension(5,0)));
+        pnlType.add(txtType);
+        pnlType.add(Box.createRigidArea(new Dimension(5,0)));
+
+        /**
+         * Create next part name panel and add components to panel
+         */
+        JPanel pnlNextPart = new JPanel();
+        pnlNextPart.setLayout(new BoxLayout(pnlNextPart, BoxLayout.LINE_AXIS));
+        pnlNextPart.setMaximumSize(new Dimension(340,30));
+        pnlNextPart.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pnlNextPart.setBackground(Color.lightGray);
+
+
+        JLabel lblNextPart = new JLabel("Next Part:");
+        lblNextPart.setFont(new Font("Sans", Font.PLAIN, 14));
+        lblNextPart.setMaximumSize(new Dimension(100, 30));
+
+
+
+        pnlNextPart.add(Box.createRigidArea(new Dimension(5,0)));
+        pnlNextPart.add(lblNextPart);
+        pnlNextPart.add(Box.createRigidArea(new Dimension(5,0)));
+        pnlNextPart.add(Box.createRigidArea(new Dimension(5,0)));
+
+        /***
+         * Add all panels to main panel - i.e. Slot editor panel
+         */
+        pnlConcordEditor.add(Box.createRigidArea(new Dimension(0,10)));
+        pnlConcordEditor.add(pnlPartName);
+        pnlConcordEditor.add(Box.createRigidArea(new Dimension(0,10)));
+        pnlConcordEditor.add(pnlLabel);
+        pnlConcordEditor.add(Box.createRigidArea(new Dimension(0,10)));
+        pnlConcordEditor.add(pnlType);
+        pnlConcordEditor.add(Box.createRigidArea(new Dimension(0,10)));
+        //pnlConcordEditor.add(pnlNextPart);
+
+        return pnlConcordEditor;
+    }
     public JPanel setupPhraseEditor(Part part/**Phrase part*/){
         /**
          * Phrase Editor Panel
@@ -2509,7 +2780,7 @@ public class TemplateItems {
     }
 
 
-    public JPanel setupCopulaEditor(Part part){
+    public JPanel setupCopulaEditor(Copula part){
         /**
          * Copula Editor Panel
          */
@@ -2535,7 +2806,7 @@ public class TemplateItems {
         JTextField txtPartName = new JTextField();
         txtPartName.setFont(new Font("Sans", Font.PLAIN, 14));
         txtPartName.setMaximumSize(new Dimension(225, 30));
-        txtPartName.setText(part.getPartName());
+        txtPartName.setText(part.getSerialisedName());
 
         pnlPartName.add(Box.createRigidArea(new Dimension(5,0)));
         pnlPartName.add(lblPartName);
@@ -2559,7 +2830,7 @@ public class TemplateItems {
         JTextField txtLabel = new JTextField();
         txtLabel.setFont(new Font("Sans", Font.PLAIN, 14));
         txtLabel.setMaximumSize(new Dimension(225, 30));
-        txtLabel.setText(part.getLabel());
+        txtLabel.setText(part.getValue());
 
         pnlLabel.add(Box.createRigidArea(new Dimension(5,0)));
         pnlLabel.add(lblLabel);
@@ -2580,16 +2851,16 @@ public class TemplateItems {
         lblNextPart.setFont(new Font("Sans", Font.PLAIN, 14));
         lblNextPart.setMaximumSize(new Dimension(100, 30));
 
-        JTextField txtNextPart = new JTextField();
-        txtNextPart.setFont(new Font("Sans", Font.PLAIN, 14));
-        txtNextPart.setMaximumSize(new Dimension(225, 30));
-        txtNextPart.setText(part.getNextPart());
+        /**JTextField txtNextPart = new JTextField();
+         txtNextPart.setFont(new Font("Sans", Font.PLAIN, 14));
+         txtNextPart.setMaximumSize(new Dimension(225, 30));
+         txtNextPart.setText(part.getNextPart());
 
-        pnlNextPart.add(Box.createRigidArea(new Dimension(5,0)));
-        pnlNextPart.add(lblNextPart);
-        pnlNextPart.add(Box.createRigidArea(new Dimension(5,0)));
-        pnlNextPart.add(txtNextPart);
-        pnlNextPart.add(Box.createRigidArea(new Dimension(5,0)));
+         pnlNextPart.add(Box.createRigidArea(new Dimension(5,0)));
+         pnlNextPart.add(lblNextPart);
+         pnlNextPart.add(Box.createRigidArea(new Dimension(5,0)));
+         pnlNextPart.add(txtNextPart);
+         pnlNextPart.add(Box.createRigidArea(new Dimension(5,0)));*/
 
         /***
          * Add all panels to main panel - i.e. Slot editor panel
@@ -2599,12 +2870,12 @@ public class TemplateItems {
         pnlCopulaEditor.add(Box.createRigidArea(new Dimension(0,10)));
         pnlCopulaEditor.add(pnlLabel);
         pnlCopulaEditor.add(Box.createRigidArea(new Dimension(0,10)));
-        pnlCopulaEditor.add(pnlNextPart);
+        //pnlCopulaEditor.add(pnlNextPart);
 
         return pnlCopulaEditor;
     }
 
-    public JPanel setupUnimorphicAffixEditor(Part part/**UnimorphicAffix part*/){
+    public JPanel setupUnimorphicAffixEditor(UnimorphicAffix part){
         /**
          * Unimorphic Affix Editor Panel
          */
@@ -2630,7 +2901,7 @@ public class TemplateItems {
         JTextField txtPartName = new JTextField();
         txtPartName.setFont(new Font("Sans", Font.PLAIN, 14));
         txtPartName.setMaximumSize(new Dimension(225, 30));
-        txtPartName.setText(part.getPartName());
+        txtPartName.setText(part.getSerialisedName());
 
         pnlPartName.add(Box.createRigidArea(new Dimension(5,0)));
         pnlPartName.add(lblPartName);

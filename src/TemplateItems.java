@@ -1431,12 +1431,16 @@ public class TemplateItems {
         JTextField txtLabel = new JTextField();
         txtLabel.setFont(new Font("Sans", Font.PLAIN, 14));
         txtLabel.setMaximumSize(new Dimension(225, 30));
-        if ( part.getLabel() != null){
-            txtLabel.setText(part.getLabel());
+
+        String word = "";
+        if (part.getValue().length() == 0 || part.getValue() == null){
+            if (part.getLabel().length() != 0 || part.getLabel() != null ){
+                word = part.getLabel();
+            }
+        }else{
+            word = part.getValue();
         }
-        else if (part.getValue() != null) {
-            txtLabel.setText(part.getValue());
-        }
+        txtLabel.setText(word);
         addChangeListener(txtLabel, e -> updateValue(part, txtLabel.getText()));
 
         pnlLabel.add(Box.createRigidArea(new Dimension(5,0)));
@@ -2774,7 +2778,7 @@ public class TemplateItems {
         pnlPhraseEditor.add(Box.createRigidArea(new Dimension(0,10)));
         pnlPhraseEditor.add(pnlValue);
         pnlPhraseEditor.add(Box.createRigidArea(new Dimension(0,10)));
-        pnlPhraseEditor.add(pnlNextPart);
+        //pnlPhraseEditor.add(pnlNextPart);
 
         return pnlPhraseEditor;
     }

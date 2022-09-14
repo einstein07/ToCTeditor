@@ -81,13 +81,13 @@ public class CreateTemplate {
         txtEntryTemplateName.setFont(new Font("Sans", Font.PLAIN, 14));
         TemplateItems.addChangeListener(txtEntryTemplateName, e -> updateTemplateName(txtEntryTemplateName.getText()));
         /**txtEntryTemplateName.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                System.out.println("Inside action performed for textfield");
-                String text = txtEntryTemplateName.getText().trim();
-                //ToCTeditor.controller.setPartName(text);
-                System.out.println("Current text: " + text);
-            }
+        @Override
+        public void actionPerformed(ActionEvent actionEvent) {
+        System.out.println("Inside action performed for textfield");
+        String text = txtEntryTemplateName.getText().trim();
+        //ToCTeditor.controller.setPartName(text);
+        System.out.println("Current text: " + text);
+        }
         });*/
 
         pnlCreateTemplate.add(Box.createRigidArea(new Dimension(0,10)));
@@ -97,7 +97,7 @@ public class CreateTemplate {
         /**
          * Supported language dropdown button
          */
-        String[] languages = { "Supported language", "Zulu", "Xhosa", "Swati", "Ndebele" };
+        String[] languages = { "Supported language", "isiZulu", "Xhosa", "Swati", "Ndebele" };
         JComboBox supportedLanguage = new JComboBox(languages);
         supportedLanguage.setSelectedIndex(0);
         supportedLanguage.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -124,20 +124,20 @@ public class CreateTemplate {
 
                 if (ToCTeditor.dataModel.getTemplate().getSerialisedName() == null ){
                     JOptionPane.showMessageDialog(
-                                                frame,
-                                        "Template name cannot be empty.",
-                                            "Template Name Error",
-                                            JOptionPane.ERROR_MESSAGE
-                                            );
+                            frame,
+                            "Template name cannot be empty.",
+                            "Template Name Error",
+                            JOptionPane.ERROR_MESSAGE
+                    );
                 }
                 else {
                     if (supportedLanguage.getSelectedIndex() == 0){
                         JOptionPane.showMessageDialog(
-                                                frame,
-                                        "Supported language cannot be empty.",
-                                            "Supported Language Error",
-                                                JOptionPane.ERROR_MESSAGE
-                                            );
+                                frame,
+                                "Supported language cannot be empty.",
+                                "Supported Language Error",
+                                JOptionPane.ERROR_MESSAGE
+                        );
                     }
                     else{
                         Languoid languoid = new Languoid();
@@ -219,30 +219,28 @@ public class CreateTemplate {
                     TemplateReader.IS_DEBUG_ENABLED = true;
                     Template template;
                     try {
-
                         Collection<String> templateURIs = TemplateReader.getTemplateURIs(templatePath);
                         if (templateURIs.size() == 1) {
                             templateURI = templateURIs.iterator().next();
-
                             Collection<Template> templates = TemplateReader.parseTemplates(templateURI, templatePath);
                             if (templates.size() == 1) {
                                 template = templates.iterator().next();
                                 ToCTeditor.dataModel.setTemplate(template);
-
                                 ToCTeditor.gui = new ViewThread();
                                 ToCTeditor.gui.setCallTemplateItems(true);
                                 ToCTeditor.gui.start();
-                                System.out.println(template.toString());  
+                                System.out.println("Template: " + template.toString());
+                                System.out.println("Language: " + template.getLanguage().getSerialisedName());
                             }
                             else if (templates.size() == 0) {
                                 throw new UnsupportedOperationException("No template found in file.");
-   
+
                             }
                             else {
                                 throw new UnsupportedOperationException("Support for opening a file with multiple templates not added yet. Please seperate the templates into seperate files.");
 
                             }
- 
+
                         }
                         else {
                             throw new UnsupportedOperationException("Support for opening a file with multiple templates not added yet. Please seperate the templates into seperate files.");
@@ -251,20 +249,21 @@ public class CreateTemplate {
 
                     }
                     catch(Exception error) {
+                        System.out.println("error message:");
                         System.out.println(error.getMessage());
                     }
 
                 }
                 /**String templateURI = "http://people.cs.uct.ac.za/~zmahlaza/templates/owlsiz/";
-                String templatePath = "/home/root07/Documents/Academics/Templates/template1.1.ttl";
-                String templateName = "templ1.1";
-                System.out.println("Name:" + templateName + " Path: " + templatePath);
+                 String templatePath = "/home/root07/Documents/Academics/Templates/template1.1.ttl";
+                 String templateName = "templ1.1";
+                 System.out.println("Name:" + templateName + " Path: " + templatePath);
 
-                TemplateReader.Init(new ZuluFeatureParser());
-                TemplateReader.setTemplateOntologyNamespace(URIS.ToCT_NS);
-                TemplateReader.IS_DEBUG_ENABLED = true;
-                Template template = TemplateReader.parseTemplate(templateName, templateURI, templatePath);
-                System.out.println("Template parsed.");*/
+                 TemplateReader.Init(new ZuluFeatureParser());
+                 TemplateReader.setTemplateOntologyNamespace(URIS.ToCT_NS);
+                 TemplateReader.IS_DEBUG_ENABLED = true;
+                 Template template = TemplateReader.parseTemplate(templateName, templateURI, templatePath);
+                 System.out.println("Template parsed.");*/
             }
         });
 

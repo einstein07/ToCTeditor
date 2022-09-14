@@ -35,16 +35,16 @@ public class TurtleCode {
                         "    ; toct:hasNextPart <" + part.getNextPart() + "> .";
             } else if (part.getType().equals("Polymorphic word")) {
                 turtle = "<" + part.getPartName() + "> a toct:PolymorphicWord\n" +
-                        "    ; toct:relies on <" + part.getReliesOn() + ">\n" +
+                        "    ; toct:reliesOn <" + part.getReliesOn() + ">\n" +
                         "    ; toct:hasFirstPart <" + part.getFirstPart()  + ">\n" +
                         "    ; toct:hasLastPart <" + part.getLastPart() + ">\n" +
                         "    ; toct:hasNextPart <" + part.getNextPart() + "> .";
             }
             else if ( part.getType().equals("Phrase") ){
-                 turtle = "<" + part.getPartName() + "> a toct:Phrase\n" +
-                         "    ; toct:hasValue \"" + part.getValue() + "\"^^xsd:string\n" +
-                         "    ; toct:hasNextPart <" + part.getNextPart() + "> .";
-             }
+                turtle = "<" + part.getPartName() + "> a toct:Phrase\n" +
+                        "    ; toct:hasValue \"" + part.getValue() + "\"^^xsd:string\n" +
+                        "    ; toct:hasNextPart <" + part.getNextPart() + "> .";
+            }
             else if (part.getType().equals("Punctuation")) {
                 turtle = "<" + part.getPartName() + "> a toct:Punctuation\n" +
                         "    ; toct:hasValue \"" + part.getValue()  + "^^xsd:string .";
@@ -78,12 +78,26 @@ public class TurtleCode {
         }
         return turtle;
     }
+
+    /**
+     * Working get turtle method
+     * @param templatePortion
+     * @return
+     */
     public String getPartTurtle(TemplatePortion templatePortion){
         String turtle = "";
         String type = getPartType(templatePortion);
         if (type.equals("Slot")) {
+            String word = "";
+            if (((Slot)templatePortion).getValue().length() == 0 || ((Slot)templatePortion).getValue() == null){
+                if (((Slot)templatePortion).getLabel().length() != 0 || ((Slot)templatePortion).getLabel() != null ){
+                    word = ((Slot)templatePortion).getLabel();
+                }
+            }else{
+                word = ((Slot)templatePortion).getValue();
+            }
             turtle = "<" + templatePortion.getSerialisedName() + "> a toct:Slot\n" +
-                    "    ; toct:hasLabel \"" + ((Slot)templatePortion).getLabel() + "\"^^xsd:string\n";
+                    "    ; toct:hasLabel \"" + word + "\"^^xsd:string\n";
             if (templatePortion.getNextPart() != null ){
                 turtle += "    ; toct:hasNextPart <" + templatePortion.getNextPart().getSerialisedName() + "> .";
             }
@@ -143,33 +157,51 @@ public class TurtleCode {
         }
         else if (type.equals("Punctuation")) {
             turtle = "<" + templatePortion.getSerialisedName() + "> a toct:Punctuation\n" +
-                    "    ; toct:hasValue \"" + ((Punctuation)templatePortion).getValue()  + "^^xsd:string .";
+                    "    ; toct:hasValue \"" + ((Punctuation)templatePortion).getValue()  + "\"^^xsd:string .";
         }
-        /**else if (part.getType().equals("Concord")){
-            turtle = "<" + part.getPartName() + "> a toct:Concord\n" +
-                    "    ; cao:hasConcordType <" + part.getType() + ">\n" +
-                    "    ; toct:hasLabel \"" + part.getLabel() + "\"^^xsd:string\n" +
-                    "    ; toct:hasNextPart <" + part.getNextPart() + "> .";
+        return turtle;
+    }
+
+    public String getInternalElementTurtle(InternalSlotRootAffix internalElement) {
+        String turtle = "";
+        String type = getInternalElementType(internalElement);
+        if (type.equals("Slot")) {
+            String word = "";
+            if (((Slot) internalElement).getValue().length() == 0 || ((Slot) internalElement).getValue() == null) {
+                if (((Slot) internalElement).getLabel().length() != 0 || ((Slot) internalElement).getLabel() != null) {
+                    word = ((Slot) internalElement).getLabel();
+                }
+            } else {
+                word = ((Slot) internalElement).getValue();
+            }
+            turtle = "<" + internalElement.getSerialisedName() + "> a toct:Slot\n" +
+                    "    ; toct:hasLabel \"" + word + "\"^^xsd:string\n";
         }
-        else if (part.getType().equals("Copula")){
-            turtle = "<" + part.getPartName() + "> a toct:Copula\n" +
-                    "    ; toct:hasLabel \"" + part.getLabel() + "\"^^xsd:string\n" +
-                    "    ; toct:hasNextPart <" + part.getNextPart() + "> .";
+        else if (internalElement.getType().equals("Concord")){
+            turtle = "<" + internalElement.getSerialisedName() + "> a toct:Concord\n" +
+                    "    ; cao:hasConcordType <" + ((Concord)internalElement).getConcordType().getTypeString() + ">\n" +
+                    "    ; toct:hasLabel \"" + ((Concord) internalElement).getLabel() + "\"^^xsd:string\n" +
+                    "    ; toct:hasNextPart <\"  \"> .";
         }
-        else if (part.getType().equals("Locative")){
-            turtle = "<" + part.getPartName() + "> a toct:Locative\n" +
-                    "    ; toct:hasLabel \"" + part.getLabel() + "\"\n" +
-                    "    ; toct:hasNextPart <" + part.getNextPart() + "> .";
+        else if (internalElement.getType().equals("Copula")){
+            turtle = "<" + internalElement.getSerialisedName() + "> a toct:Copula\n" +
+                    "    ; toct:hasLabel \"" + internalElement.getValue()  + "\"^^xsd:string\n" +
+                    "    ; toct:hasNextPart <" /*+ part.getNextPart()*/ + "> .";
         }
-        else if (part.getType().equals("Unimorphic affix")){
-            turtle = "<" + part.getPartName() + "> a toct:UnimorphicAffix\n" +
-                    "    ; toct:hasValue \"" + part.getValue() + "\"^^xsd:string\n" +
-                    "    ; toct:hasNextPart <" + part.getNextPart() + "> .";
+        else if (internalElement.getType().equals("Locative")){
+            turtle = "<" + internalElement.getSerialisedName() + "> a toct:Locative\n" +
+                    "    ; toct:hasLabel \"" + internalElement.getValue()  + "\"\n" +
+                    "    ; toct:hasNextPart <\"  \"> .";
         }
-        else if (part.getType().equals("Root")){
-            turtle = "<" + part.getPartName() + "> a toct:Root\n" +
-                    "    ; toct:hasValue \"" + part.getValue() + "\"^^xsd:string .";
-        }*/
+        else if (internalElement.getType().equals("UnimorphicAffix")){
+            turtle = "<" + internalElement.getSerialisedName() + "> a toct:UnimorphicAffix\n" +
+                    "    ; toct:hasValue \"" + internalElement.getValue()  + "\"^^xsd:string\n" +
+                    "    ; toct:hasNextPart <\"  \"> .";
+        }
+        else if (internalElement.getType().equals("Root")){
+            turtle = "<" + internalElement.getSerialisedName() + "> a toct:Root\n" +
+                    "    ; toct:hasValue \"" + internalElement.getValue()  + "\"^^xsd:string .";
+        }
         return turtle;
     }
     public String getPartType(TemplatePortion part){
@@ -188,6 +220,28 @@ public class TurtleCode {
         }
         else if (part instanceof Punctuation){
             type = "Punctuation";
+        }
+        else{
+            type = "Unknown type";
+        }
+        return type;
+    }
+    public String getInternalElementType(InternalSlotRootAffix element){
+        String type;
+        if (element instanceof Slot){
+            type = "Slot";
+        }
+        else if (element instanceof Concord){
+            type = "Concord";
+        }
+        else if (element instanceof Root){
+            type = "Root";
+        }
+        else if (element instanceof Copula){
+            type = "Copula";
+        }
+        else if (element instanceof UnimorphicAffix){
+            type = "UnimorphicAffix";
         }
         else{
             type = "Unknown type";
@@ -224,17 +278,18 @@ public class TurtleCode {
                 "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n" +
                 "@prefix cao: <http://people.cs.uct.ac.za/~zmahlaza/ontologies/ConcordAnnotationOntology#> .\n\n" +
                 "<" + ToCTeditor.dataModel.getTemplate().getSerialisedName() + "> a toct:Template\n" +
-                "    ; toct:supportsLanguage <" + ToCTeditor.dataModel.getTemplate().getLanguage().getSerialisedName() + ">\n";
-                if (ToCTeditor.dataModel.getTemplateSize() > 0) {
-                    turtle +=   "    ; toct:hasFirstPart <" + ToCTeditor.dataModel.getTemplatePortion(0).getSerialisedName() + ">\n" +
-                                "    ; toct:hasLastPart <" + ToCTeditor.dataModel.getTemplatePortion
-                                        (ToCTeditor.dataModel.getTemplatePortions().size() - 1)
-                                            .getSerialisedName() + ">";
-                }
-                else{
-                    turtle +=   "    ; toct:hasFirstPart <null>\n" +
-                                "    ; toct:hasLastPart <null>";
-                }
+                "    ; toct:supportsLanguage <lang>\n";
+
+        if (ToCTeditor.dataModel.getTemplateSize() > 0) {
+            turtle +=   "    ; toct:hasFirstPart <" + ToCTeditor.dataModel.getTemplatePortion(0).getSerialisedName() + ">\n" +
+                    "    ; toct:hasLastPart <" + ToCTeditor.dataModel.getTemplatePortion
+                            (ToCTeditor.dataModel.getTemplatePortions().size() - 1)
+                    .getSerialisedName() + ">";
+        }
+        else{
+            turtle +=   "    ; toct:hasFirstPart <null>\n" +
+                    "    ; toct:hasLastPart <null>";
+        }
 
         if (ToCTeditor.dataModel.getTemplateSize() > 2) {
             turtle += "\n    ; toct:hasPart";
@@ -250,6 +305,10 @@ public class TurtleCode {
         else{
             turtle += " .\n\n";
         }
+
+        turtle +=   "<lang> a mola:Dialect\n" +
+                "    ; mola:isFamily <" + ToCTeditor.dataModel.getTemplate().getLanguage().getSerialisedName() +"> .\n\n";
+
         for (TemplatePortion part: ToCTeditor.dataModel.getTemplatePortions() ){
             turtle += getPartTurtle(part) + "\n\n";
         }

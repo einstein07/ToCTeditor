@@ -42,10 +42,10 @@ public class DragMouseAdapter extends MouseAdapter {
 
     @Override public void mousePressed(MouseEvent e) {
         JComponent parent = (JComponent) e.getComponent();
-        if (parent.getComponentCount() <= 1) {
+        /**if (parent.getComponentCount() <= 1) {
             startPt = null;
             return;
-        }
+        }*/
 
         startPt = e.getPoint();
 
@@ -58,10 +58,10 @@ public class DragMouseAdapter extends MouseAdapter {
         index = parent.getComponentZOrder(c);
         if (superParent != null && parent2 != null) {
             int in = superParent.getComponentZOrder(parent2);
-            //System.out.println("Template portions size: " + ToCTeditor.dataModel.getTemplatePortions().size() + " Index of super element: " + in + " Index of pressed element: " + index);
+            System.out.println("Template portions size: " + ToCTeditor.dataModel.getTemplatePortions().size() + " Index of super element: " + in + " Index of pressed element: " + index);
             if (in >= 0) {
                 List<InternalSlotRootAffix> morphemes = ((PolymorphicWord) ToCTeditor.dataModel.getTemplatePortion(in)).getAllMorphemes();
-                //System.out.println("morphemes size: " + morphemes.size());
+                System.out.println("morphemes size: " + morphemes.size());
                 ToCTeditor.templateItems.updateEditorPanel(ToCTeditor.templateItems.getInternalElementPanelEditor(morphemes.get(index)));
                 ToCTeditor.templateItems.updateTurtlePanel(ToCTeditor.templateItems.getInternalElementPanelTurtle(morphemes.get(index)));
             }
@@ -69,18 +69,9 @@ public class DragMouseAdapter extends MouseAdapter {
         else{
 
             //System.out.println("Super parent is null");
-            if (ToCTeditor.gui.getIndex() != index){
                 ToCTeditor.gui.setIndex(index);
-                if (ToCTeditor.DEBUG){
-                    ToCTeditor.templateItems.updateEditorPanel(ToCTeditor.templateItems.getPartPanelEditor(ToCTeditor.gui.getCurrentTemplatePortion()));
-                    ToCTeditor.templateItems.updateTurtlePanel(ToCTeditor.templateItems.getPartPanelTurtle(ToCTeditor.gui.getCurrentTemplatePortion()));
-                }
-                else {
-                    ToCTeditor.templateItems.updateEditorPanel(ToCTeditor.templateItems.getPartPanelEditor(ToCTeditor.gui.getCurrentPart()));
-                    ToCTeditor.templateItems.updateTurtlePanel(ToCTeditor.templateItems.getPartPanelTurtle(ToCTeditor.gui.getCurrentPart()));
-                }
-
-            }
+                ToCTeditor.templateItems.updateEditorPanel(ToCTeditor.templateItems.getPartPanelEditor(ToCTeditor.gui.getCurrentTemplatePortion()));
+                ToCTeditor.templateItems.updateTurtlePanel(ToCTeditor.templateItems.getPartPanelTurtle(ToCTeditor.gui.getCurrentTemplatePortion()));
         }
 
 

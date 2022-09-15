@@ -178,25 +178,28 @@ public class TurtleCode {
                     "    ; toct:hasLabel \"" + word + "\"^^xsd:string\n";
         }
         else if (internalElement.getType().equals("Concord")){
-            turtle = "<" + internalElement.getSerialisedName() + "> a toct:Concord\n" +
-                    "    ; cao:hasConcordType <" + ((Concord)internalElement).getConcordType().getTypeString() + ">\n" +
-                    "    ; toct:hasLabel \"" + ((Concord) internalElement).getLabel() + "\"^^xsd:string\n" +
-                    "    ; toct:hasNextPart <\"  \"> .";
+            turtle = "<" + internalElement.getSerialisedName() + "> a toct:Concord\n";
+            if (((Concord)internalElement).getConcordType() != null)
+                turtle += "    ; cao:hasConcordType <" + ((Concord)internalElement).getConcordType().getTypeString() + ">\n";
+            else
+                turtle += "    ; cao:hasConcordType <>\n";
+            turtle +=   "    ; toct:hasLabel \"" + ((Concord) internalElement).getLabel() + "\"^^xsd:string .";// +
+            //            "    ; toct:hasNextPart <> .";
         }
         else if (internalElement.getType().equals("Copula")){
             turtle = "<" + internalElement.getSerialisedName() + "> a toct:Copula\n" +
-                    "    ; toct:hasLabel \"" + internalElement.getValue()  + "\"^^xsd:string\n" +
-                    "    ; toct:hasNextPart <" /*+ part.getNextPart()*/ + "> .";
+                    "    ; toct:hasLabel \"" + internalElement.getValue()  + "\"^^xsd:string .";// +
+            //        "    ; toct:hasNextPart <" /*+ part.getNextPart()*/ + "> .";
         }
         else if (internalElement.getType().equals("Locative")){
             turtle = "<" + internalElement.getSerialisedName() + "> a toct:Locative\n" +
-                    "    ; toct:hasLabel \"" + internalElement.getValue()  + "\"\n" +
-                    "    ; toct:hasNextPart <\"  \"> .";
+                    "    ; toct:hasLabel \"" + internalElement.getValue()  + "\" .";// +
+            //        "    ; toct:hasNextPart <\"  \"> .";
         }
         else if (internalElement.getType().equals("UnimorphicAffix")){
             turtle = "<" + internalElement.getSerialisedName() + "> a toct:UnimorphicAffix\n" +
-                    "    ; toct:hasValue \"" + internalElement.getValue()  + "\"^^xsd:string\n" +
-                    "    ; toct:hasNextPart <\"  \"> .";
+                    "    ; toct:hasValue \"" + internalElement.getValue()  + "\"^^xsd:string .";// +
+            //        "    ; toct:hasNextPart <\"  \"> .";
         }
         else if (internalElement.getType().equals("Root")){
             turtle = "<" + internalElement.getSerialisedName() + "> a toct:Root\n" +
@@ -242,6 +245,9 @@ public class TurtleCode {
         }
         else if (element instanceof UnimorphicAffix){
             type = "UnimorphicAffix";
+        }
+        else if (element instanceof Locative){
+            type = "Locative";
         }
         else{
             type = "Unknown type";

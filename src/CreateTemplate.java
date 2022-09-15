@@ -97,7 +97,7 @@ public class CreateTemplate {
         /**
          * Supported language dropdown button
          */
-        String[] languages = { "Supported language", "isiZulu", "Xhosa", "Swati", "Ndebele" };
+        String[] languages = { "Select language", "isiZulu", "Xhosa", "siSwati", "isiNdebele" };
         JComboBox supportedLanguage = new JComboBox(languages);
         supportedLanguage.setSelectedIndex(0);
         supportedLanguage.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -273,7 +273,11 @@ public class CreateTemplate {
         pnlContent.add(pnlOpenTemplate);
 
 
+
         frame.setContentPane(pnlContent);
+        /********************************/
+        frame.repaint();
+        /*****************************/
     }
 
     private void updateTemplateName(String text) {

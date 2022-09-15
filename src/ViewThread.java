@@ -121,6 +121,7 @@ public class ViewThread extends Thread {
 
                 //templateItems.setupGUI(templateItems.getPartPanelEditor(currentPart), templateItems.getPartPanelTurtle(currentPart));
                 //templateItems.setupGUI(templateItems.getPartPanelEditor(currentPart), templateItems.getPartPanelTurtle(currentPart));
+                System.out.println("Create template items called");
                 ToCTeditor.templateItems.setupGUI(ToCTeditor.templateItems.getPartPanelEditor(currentTemplatePortion), ToCTeditor.templateItems.getPartPanelTurtle(currentTemplatePortion));
                 callTemplateItems = false;
             }

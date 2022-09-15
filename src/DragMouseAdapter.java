@@ -58,10 +58,10 @@ public class DragMouseAdapter extends MouseAdapter {
         index = parent.getComponentZOrder(c);
         if (superParent != null && parent2 != null) {
             int in = superParent.getComponentZOrder(parent2);
-            System.out.println("Template portions size: " + ToCTeditor.dataModel.getTemplatePortions().size() + " Index of super element: " + in + " Index of pressed element: " + index);
+            //System.out.println("Template portions size: " + ToCTeditor.dataModel.getTemplatePortions().size() + " Index of super element: " + in + " Index of pressed element: " + index);
             if (in >= 0) {
                 List<InternalSlotRootAffix> morphemes = ((PolymorphicWord) ToCTeditor.dataModel.getTemplatePortion(in)).getAllMorphemes();
-                System.out.println("morphemes size: " + morphemes.size());
+                //System.out.println("morphemes size: " + morphemes.size());
                 ToCTeditor.templateItems.updateEditorPanel(ToCTeditor.templateItems.getInternalElementPanelEditor(morphemes.get(index)));
                 ToCTeditor.templateItems.updateTurtlePanel(ToCTeditor.templateItems.getInternalElementPanelTurtle(morphemes.get(index)));
             }

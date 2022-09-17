@@ -45,6 +45,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -54,6 +55,7 @@ public class TemplateItems {
     private int frameX;
     private int frameY;
     private ToCTeditorFrame frame;
+
 
     JPanel pnlItems;
 
@@ -66,10 +68,9 @@ public class TemplateItems {
         this.frameX = frame.getFrameX();
         this.frameY = frame.getFrameY();
         this.frame = frame;
-
-
         //this.controlThread = controlThread;
     }
+
     public void setupGUI(JPanel currentPartProperties, JPanel turtlePreview){
 
         // Frame init and dimensions
@@ -1072,6 +1073,12 @@ public class TemplateItems {
         updateItems();
     }
 
+    private void updateComboVals(TemplatePortion part, String updatedText) {
+        /**part.setSerialisedName(updatedText);
+        updateTurtlePanel(getPartPanelTurtle(part));
+        updateItems();*/
+        System.out.println(updatedText);
+    }
     /**
      * Working Unimorphic word editor
      * @param part
@@ -1422,44 +1429,50 @@ public class TemplateItems {
         pnlReliesOn.setAlignmentX(Component.CENTER_ALIGNMENT);
         pnlReliesOn.setBackground(Color.lightGray);
 
+        JLabel lblReliesOn = new JLabel("Relies on:");
+        lblReliesOn.setFont(new Font("Sans", Font.PLAIN, 14));
+        lblReliesOn.setMaximumSize(new Dimension(100, 30));
 
-        if (part.getItemsItReliesOn() != null) {
-            for (int i = 0; i < part.getItemsItReliesOn().size(); i++) {
+        List<String> reliesOnList = new ArrayList<>();
+        if (part.getItemsItReliesOn() != null && part.getItemsItReliesOn().size() > 0) {
+            reliesOnList = part.getItemsItReliesOn();
+        }
+        List<String> morphemeNames = new ArrayList<>();
+        for (int i = 0; i < part.getAllMorphemes().size(); i++) {
+            morphemeNames.add(part.getAllMorphemes().get(i).getSerialisedName());
+        }
 
-                JLabel lblReliesOn = new JLabel("Relies on:");
-                lblReliesOn.setFont(new Font("Sans", Font.PLAIN, 14));
-                lblReliesOn.setMaximumSize(new Dimension(100, 30));
-
-                JTextField txtReliesOn = new JTextField();
-                txtReliesOn.setFont(new Font("Sans", Font.PLAIN, 14));
-                txtReliesOn.setMaximumSize(new Dimension(225, 30));
-
-                txtReliesOn.setText(part.getItemsItReliesOn().get(i));
-
-                pnlReliesOn.add(Box.createRigidArea(new Dimension(5, 0)));
-                pnlReliesOn.add(lblReliesOn);
-                pnlReliesOn.add(Box.createRigidArea(new Dimension(5, 0)));
-                pnlReliesOn.add(txtReliesOn);
-                pnlReliesOn.add(Box.createRigidArea(new Dimension(5, 0)));
+        JComboBox txtReliesOn = new CheckCombo().getContent(morphemeNames, reliesOnList);
+        txtReliesOn.setFont(new Font("Sans", Font.PLAIN, 14));
+        txtReliesOn.setMaximumSize(new Dimension(225, 30));
+        txtReliesOn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        //txtReliesOn.addActionListener(new ItemChangeListener(part));
+        txtReliesOn.addActionListener(e -> {
+            JComboBox cb = (JComboBox)e.getSource();
+            CheckComboStore store = (CheckComboStore)cb.getSelectedItem();
+            CheckComboRenderer ccr = (CheckComboRenderer)cb.getRenderer();
+            ccr.checkBox.setSelected((store.state = !store.state));
+            List<String> newReliesOnList = new ArrayList<>();
+            //System.out.println("Item count: " + cb.getItemCount() + ". Selected items: ");
+            for (int i = 0; i < cb.getItemCount(); i++){
+                if (((CheckComboStore)cb.getItemAt(i)).getState() == Boolean.TRUE){
+                    System.out.println(((CheckComboStore)cb.getItemAt(i)).getId() +" "+((CheckComboStore)cb.getItemAt(i)).getState());
+                    newReliesOnList.add(((CheckComboStore)cb.getItemAt(i)).getId());
+                }
             }
-        }
-        else {
-            JLabel lblReliesOn = new JLabel("Relies on:");
-            lblReliesOn.setFont(new Font("Sans", Font.PLAIN, 14));
-            lblReliesOn.setMaximumSize(new Dimension(100, 30));
+            part.setReliesOnLabels(newReliesOnList);
+            updateTurtlePanel(getPartPanelTurtle(part));
+            updateItems();
+        });
 
-            JTextField txtReliesOn = new JTextField();
-            txtReliesOn.setFont(new Font("Sans", Font.PLAIN, 14));
-            txtReliesOn.setMaximumSize(new Dimension(225, 30));
+        //txtReliesOn.addItemListener(new ItemChangeListener());
 
 
-
-            pnlReliesOn.add(Box.createRigidArea(new Dimension(5, 0)));
-            pnlReliesOn.add(lblReliesOn);
-            pnlReliesOn.add(Box.createRigidArea(new Dimension(5, 0)));
-            pnlReliesOn.add(txtReliesOn);
-            pnlReliesOn.add(Box.createRigidArea(new Dimension(5, 0)));
-        }
+        pnlReliesOn.add(Box.createRigidArea(new Dimension(5, 0)));
+        pnlReliesOn.add(lblReliesOn);
+        pnlReliesOn.add(Box.createRigidArea(new Dimension(5, 0)));
+        pnlReliesOn.add(txtReliesOn);
+        pnlReliesOn.add(Box.createRigidArea(new Dimension(5, 0)));
 
 
         /**
@@ -1569,8 +1582,9 @@ public class TemplateItems {
             public void actionPerformed(ActionEvent e){
 
                 //ToCTeditor.gui = new ViewThread(ToCTeditor.homeScreen, ToCTeditor.templateItems, ToCTeditor.createItem, ToCTeditor.dataModel);
+                int currIndex = ToCTeditor.gui.getIndex();
                 ToCTeditor.gui = new ViewThread();
-
+                ToCTeditor.gui.setIndex(currIndex);
                 ToCTeditor.gui.setCallCreateMorpheme(true);
 
                 ToCTeditor.gui.start();
@@ -2120,4 +2134,5 @@ public class TemplateItems {
         Document d = text.getDocument();
         if (d != null) d.addDocumentListener(dl);
     }
+
 }

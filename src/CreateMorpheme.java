@@ -148,13 +148,11 @@ public class CreateMorpheme {
                                 .setNextPart(ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-1));
                     }
                     String id = "polyword" + portionNumber;
-
                     ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size() - 1).setSerialisedName(id);
-                    ToCTeditor.gui.setIndex(ToCTeditor.dataModel.getTemplatePortions().size() - 1);
-                    //ToCTeditor.templateItems.updateEditorPanel(ToCTeditor.templateItems.getPartPanelEditor(ToCTeditor.gui.getCurrentTemplatePortion()));
-                    //ToCTeditor.templateItems.updateTurtlePanel(ToCTeditor.templateItems.getPartPanelTurtle(ToCTeditor.gui.getCurrentTemplatePortion()));
 
+                    int currIndex = ToCTeditor.dataModel.getTemplatePortions().size() - 1;
                     ToCTeditor.gui = new ViewThread();
+                    ToCTeditor.gui.setIndex(currIndex);
                     ToCTeditor.gui.setCallTemplateItems(true);
                     ToCTeditor.gui.start();
                 }
@@ -185,16 +183,15 @@ public class CreateMorpheme {
             public void actionPerformed(ActionEvent e){
 
                 if (wordPortions.size() != ((PolymorphicWord) templatePortion).getAllMorphemes().size()){
-                    int i = ((PolymorphicWord) templatePortion).getAllMorphemes().size() - 1;
+                    int i = ((PolymorphicWord) templatePortion).getAllMorphemes().size();// - 1;
                     for (; i < wordPortions.size(); i++){
                         ((PolymorphicWord) templatePortion).addMorpheme(wordPortions.get(i));
                     }
 
-                    ToCTeditor.gui.setIndex(ToCTeditor.dataModel.getTemplatePortions().size() - 1);
-                    //ToCTeditor.templateItems.updateEditorPanel(ToCTeditor.templateItems.getPartPanelEditor(ToCTeditor.gui.getCurrentTemplatePortion()));
-                    //ToCTeditor.templateItems.updateTurtlePanel(ToCTeditor.templateItems.getPartPanelTurtle(ToCTeditor.gui.getCurrentTemplatePortion()));
-
+                    int currIndex = ToCTeditor.dataModel.getTemplatePortions().size() - 1;
                     ToCTeditor.gui = new ViewThread();
+                    ToCTeditor.gui.setIndex(currIndex);
+
                     ToCTeditor.gui.setCallTemplateItems(true);
                     ToCTeditor.gui.start();
                 }

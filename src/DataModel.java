@@ -85,10 +85,10 @@ public class DataModel {
     public void updateNextPart(){
         for ( int i = 0; i < templatePortions.size(); i++ ){
             if (i < templatePortions.size() - 1){
-                templatePortions.get(i).setNextPart(templatePortions.get(i+1));
+                templatePortions.get(i).setNextWordPart(templatePortions.get(i+1));
             }
         }
-        templatePortions.get(templatePortions.size() - 1).setNextPart(null);
+        templatePortions.get(templatePortions.size() - 1).setNextWordPart(null);
     }
 
     public TemplatePortion getTemplatePortion(int index){

@@ -98,8 +98,8 @@ public class TurtleCode {
             }
             turtle = "<" + templatePortion.getSerialisedName() + "> a toct:Slot\n" +
                     "    ; toct:hasLabel \"" + word + "\"^^xsd:string\n";
-            if (templatePortion.getNextPart() != null ){
-                turtle += "    ; toct:hasNextPart <" + templatePortion.getNextPart().getSerialisedName() + "> .";
+            if (((Slot) templatePortion).getNextMorphPart() != null ){
+                turtle += "    ; toct:hasNextPart <" + ((Slot) templatePortion).getNextMorphPart().getSerialisedName() + "> .";
             }
             else {
                 turtle += "    ; toct:hasNextPart <> .";
@@ -107,8 +107,8 @@ public class TurtleCode {
         } else if (type.equals("Unimorphic word")) {
             turtle = "<" + templatePortion.getSerialisedName() + "> a toct:UnimorphicWord\n" +
                     "    ; toct:hasValue \"" + ((UnimorphicWord)templatePortion).getValue() + "\"^^xsd:string\n";
-            if (templatePortion.getNextPart() != null ){
-                turtle += "    ; toct:hasNextPart <" + templatePortion.getNextPart().getSerialisedName() + "> .";
+            if (templatePortion.getNextWordPart() != null ){
+                turtle += "    ; toct:hasNextPart <" + templatePortion.getNextWordPart().getSerialisedName() + "> .";
             }
             else {
                 turtle += "    ; toct:hasNextPart <> .";
@@ -142,12 +142,14 @@ public class TurtleCode {
             else {
                 turtle += "    ; toct:hasLastPart <>\n";
             }
-            if (((PolymorphicWord)templatePortion).getNextPart() != null ){
-                turtle += "    ; toct:hasNextPart <" + ((PolymorphicWord)templatePortion).getNextPart().getSerialisedName() + "> .";
+            if (((PolymorphicWord)templatePortion).getNextWordPart() != null ){
+                turtle += "    ; toct:hasNextPart <" + ((PolymorphicWord)templatePortion).getNextWordPart().getSerialisedName() + "> .";
             }
             else {
                 turtle += "    ; toct:hasNextPart <> .";
             }
+            turtle +=   "\n\n" + getInternalElementTurtle(((PolymorphicWord)templatePortion).getFirstItem()) +
+                        "\n\n" + getInternalElementTurtle(((PolymorphicWord)templatePortion).getLastItem());
 
 
         }
@@ -155,8 +157,8 @@ public class TurtleCode {
             turtle = "<" + templatePortion.getSerialisedName() + "> a toct:Phrase\n" +
                     "    ; toct:hasValue \"" + ((Phrase)templatePortion).getValue() + "\"^^xsd:string\n";
 
-            if (templatePortion.getNextPart() != null ){
-                turtle += "    ; toct:hasNextPart <" + templatePortion.getNextPart().getSerialisedName() + "> .";
+            if (templatePortion.getNextWordPart() != null ){
+                turtle += "    ; toct:hasNextPart <" + templatePortion.getNextWordPart().getSerialisedName() + "> .";
             }
             else {
                 turtle += "    ; toct:hasNextPart <> .";
@@ -182,7 +184,11 @@ public class TurtleCode {
                 word = ((Slot) internalElement).getValue();
             }
             turtle = "<" + internalElement.getSerialisedName() + "> a toct:Slot\n" +
-                    "    ; toct:hasLabel \"" + word + "\"^^xsd:string\n";
+                    "    ; toct:hasLabel \"" + word + "\"^^xsd:string";
+            if (internalElement.getNextMorphPart() != null)
+                turtle +=   "\n    ; toct:hasNextPart <" + internalElement.getNextMorphPart().getSerialisedName() + "> .";
+            else
+                turtle += " .";
         }
         else if (internalElement.getType().equals("Concord")){
             turtle = "<" + internalElement.getSerialisedName() + "> a toct:Concord\n";
@@ -190,27 +196,44 @@ public class TurtleCode {
                 turtle += "    ; cao:hasConcordType <" + ((Concord)internalElement).getConcordType().getTypeString() + ">\n";
             else
                 turtle += "    ; cao:hasConcordType <>\n";
-            turtle +=   "    ; toct:hasLabel \"" + ((Concord) internalElement).getLabel() + "\"^^xsd:string .";// +
-            //            "    ; toct:hasNextPart <> .";
+            turtle +=   "    ; toct:hasLabel \"" + ((Concord) internalElement).getLabel() + "\"^^xsd:string";
+            if (internalElement.getNextMorphPart() != null)
+                turtle +=   "\n    ; toct:hasNextPart <" + internalElement.getNextMorphPart().getSerialisedName() + "> .";
+            else
+                turtle += " .";
         }
         else if (internalElement.getType().equals("Copula")){
             turtle = "<" + internalElement.getSerialisedName() + "> a toct:Copula\n" +
-                    "    ; toct:hasLabel \"" + internalElement.getValue()  + "\"^^xsd:string .";// +
-            //        "    ; toct:hasNextPart <" /*+ part.getNextPart()*/ + "> .";
+                    "    ; toct:hasLabel \"" + internalElement.getValue()  + "\"^^xsd:string";
+            if (internalElement.getNextMorphPart() != null)
+                turtle +=   "\n    ; toct:hasNextPart <" + internalElement.getNextMorphPart().getSerialisedName() + "> .";
+            else
+                turtle += " .";
         }
         else if (internalElement.getType().equals("Locative")){
             turtle = "<" + internalElement.getSerialisedName() + "> a toct:Locative\n" +
-                    "    ; toct:hasLabel \"" + internalElement.getValue()  + "\" .";// +
-            //        "    ; toct:hasNextPart <\"  \"> .";
+                    "    ; toct:hasLabel \"" + internalElement.getValue()  + "\"";
+            if (internalElement.getNextMorphPart() != null)
+                turtle +=   "\n    ; toct:hasNextPart <" + internalElement.getNextMorphPart().getSerialisedName() + "> .";
+            else
+                turtle += " .";
         }
         else if (internalElement.getType().equals("UnimorphicAffix")){
             turtle = "<" + internalElement.getSerialisedName() + "> a toct:UnimorphicAffix\n" +
-                    "    ; toct:hasValue \"" + internalElement.getValue()  + "\"^^xsd:string .";// +
-            //        "    ; toct:hasNextPart <\"  \"> .";
+                    "    ; toct:hasValue \"" + internalElement.getValue()  + "\"^^xsd:string";
+            if (internalElement.getNextMorphPart() != null)
+                turtle +=   "\n    ; toct:hasNextPart <" + internalElement.getNextMorphPart().getSerialisedName() + "> .";
+            else
+                turtle += " .";
         }
         else if (internalElement.getType().equals("Root")){
             turtle = "<" + internalElement.getSerialisedName() + "> a toct:Root\n" +
-                    "    ; toct:hasValue \"" + internalElement.getValue()  + "\"^^xsd:string .";
+                    "    ; toct:hasValue \"" + internalElement.getValue()  + "\"^^xsd:string";
+            if (internalElement.getNextMorphPart() != null)
+                turtle +=   "\n    ; toct:hasNextPart <" + internalElement.getNextMorphPart().getSerialisedName() + "> .";
+            else
+                turtle += " .";
+
         }
         return turtle;
     }

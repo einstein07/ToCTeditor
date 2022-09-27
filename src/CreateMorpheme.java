@@ -145,7 +145,7 @@ public class CreateMorpheme {
                     if (ToCTeditor.dataModel.getTemplatePortions().size() > 1){
                         portionNumber = ToCTeditor.dataModel.getTemplatePortions().size();
                         ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-2)
-                                .setNextPart(ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-1));
+                                .setNextWordPart(ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-1));
                     }
                     String id = "polyword" + portionNumber;
                     ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size() - 1).setSerialisedName(id);

@@ -138,6 +138,19 @@ public class DragMouseAdapter extends MouseAdapter {
 
     }
 
+    private static void updateMorphesList( int in, int startIndex, int stopIndex ) {
+        List <InternalSlotRootAffix> morphemes = ((PolymorphicWord) ToCTeditor.dataModel.getTemplatePortion(in)).getAllMorphemes();
+        InternalSlotRootAffix moved = morphemes.remove(startIndex);
+        morphemes.add(stopIndex, moved);
+        for (int i = morphemes.size()-1; i >= 0 ; i--){
+            ((PolymorphicWord) ToCTeditor.dataModel.getTemplatePortion(in)).removeMorpheme(i);
+        }
+        for (int i = 0; i < morphemes.size(); i++){
+            ((PolymorphicWord) ToCTeditor.dataModel.getTemplatePortion(in)).addMorpheme(morphemes.get(i));
+        }
+
+    }
+
     @Override public void mouseDragged(MouseEvent e) {
         Point pt = e.getPoint();
         JComponent parent = (JComponent) e.getComponent();
@@ -197,22 +210,57 @@ public class DragMouseAdapter extends MouseAdapter {
         for (int i = 0; i < parent.getComponentCount(); i++) {
             Component c = parent.getComponent(i);
             if (Objects.equals(c, gap)) {
-                updateList(index, i);
-                ToCTeditor.dataModel.updateNextPart();
+                if (superParent != null && parent2 != null) {
+                    int in = superParent.getComponentZOrder(parent2);
+                    System.out.println("Template portions size: " + ToCTeditor.dataModel.getTemplatePortions().size() + " Index of super element: " + in + " Index of pressed element: " + index);
+                    if (in >= 0) {
+                        updateMorphesList( in, index, i );
+                    }
+                    System.out.println("Morphes");
+                }
+                else{
+                    updateList(index, i);
+                    ToCTeditor.dataModel.updateNextPart();
+                    System.out.println("NOT Morphes");
+                }
                 swapComponentLocation(parent, gap, cmp, i);
                 return;
             }
             int tgt = getTargetIndex(c.getBounds(), pt, i);
             if (tgt >= 0) {
-                updateList(index, i);
-                ToCTeditor.dataModel.updateNextPart();
+                if (superParent != null && parent2 != null) {
+
+                    int in = superParent.getComponentZOrder(parent2);
+                    System.out.println("Template portions size: " + ToCTeditor.dataModel.getTemplatePortions().size() + " Index of super element: " + in + " Index of pressed element: " + index);
+                    if (in >= 0) {
+                        updateMorphesList( in, index, i );
+                    }
+                    System.out.println("Morphes");
+                }
+                else{
+                    updateList(index, i);
+                    ToCTeditor.dataModel.updateNextPart();
+                    System.out.println("NOT Morphes");
+                }
                 swapComponentLocation(parent, gap, cmp, tgt);
                 return;
             }
         }
         if (parent.getParent().getBounds().contains(pt)) {
-            updateList(index, parent.getComponentCount());
-            ToCTeditor.dataModel.updateNextPart();
+            if (superParent != null && parent2 != null) {
+                int in = superParent.getComponentZOrder(parent2);
+                System.out.println("Template portions size: " + ToCTeditor.dataModel.getTemplatePortions().size() + " Index of super element: " + in + " Index of pressed element: " + index);
+                if (in >= 0) {
+                    updateMorphesList( in, index, parent.getComponentCount() );
+                }
+                System.out.println("Morphes");
+            }
+            else{
+                updateList(index, parent.getComponentCount());
+                ToCTeditor.dataModel.updateNextPart();
+                System.out.println("NOT Morphes");
+            }
+
             swapComponentLocation(parent, gap, cmp, parent.getComponentCount());
         } else {
             swapComponentLocation(parent, gap, cmp, index);

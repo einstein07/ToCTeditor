@@ -148,8 +148,9 @@ public class TurtleCode {
             else {
                 turtle += "    ; toct:hasNextPart <> .";
             }
-            turtle +=   "\n\n" + getInternalElementTurtle(((PolymorphicWord)templatePortion).getFirstItem()) +
-                        "\n\n" + getInternalElementTurtle(((PolymorphicWord)templatePortion).getLastItem());
+            if (((PolymorphicWord)templatePortion).getAllMorphemes().size() > 0)
+                turtle +=   "\n\n" + getInternalElementTurtle(((PolymorphicWord)templatePortion).getFirstItem()) +
+                            "\n\n" + getInternalElementTurtle(((PolymorphicWord)templatePortion).getLastItem());
 
 
         }

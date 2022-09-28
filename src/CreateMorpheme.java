@@ -122,7 +122,7 @@ public class CreateMorpheme {
             pnlExistingItem.add(setupExistingItems(wordPortions));
 
         }
-        else {
+        if (wordPortions == null){
             this.wordPortions = new ArrayList<>();
             this.featuresList = new ArrayList<>();
         }
@@ -583,11 +583,14 @@ public class CreateMorpheme {
          box.addMouseMotionListener(dh);*/
 
 
-        for (InternalSlotRootAffix part : list) {
-            JLabel name = new JLabel(ToCTeditor.turtleGen.getMorphemeId(part));
-            JLabel type = new JLabel(ToCTeditor.turtleGen.getMorphemeType(part));
-            box.add(createItemComponent(name, type));
+        if (list != null /**&& list.size() > 0*/){
+            for (InternalSlotRootAffix part : list) {
+                JLabel name = new JLabel(ToCTeditor.turtleGen.getMorphemeId(part));
+                JLabel type = new JLabel(ToCTeditor.turtleGen.getMorphemeType(part));
+                box.add(createItemComponent(name, type));
+            }
         }
+
         JPanel p = new JPanel();
         p.setMaximumSize(new Dimension(700, 200));
         p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));

@@ -221,7 +221,7 @@ public class CreateItem {
                     if (ToCTeditor.dataModel.getTemplatePortions().size() > 1){
                         portionNumber = ToCTeditor.dataModel.getTemplatePortions().size();
                         ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-2)
-                                .setNextPart(ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-1));
+                                .setNextWordPart(ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-1));
                     }
                     String id = "slot" + portionNumber;
 
@@ -245,7 +245,7 @@ public class CreateItem {
                     if (ToCTeditor.dataModel.getTemplatePortions().size() > 1){
                         portionNumber = ToCTeditor.dataModel.getTemplatePortions().size();
                         ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-2)
-                                .setNextPart(ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-1));
+                                .setNextWordPart(ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-1));
                     }
                     String id = "uniword" + portionNumber;
 
@@ -281,7 +281,7 @@ public class CreateItem {
                     if (ToCTeditor.dataModel.getTemplatePortions().size() > 1){
                         portionNumber = ToCTeditor.dataModel.getTemplatePortions().size();
                         ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-2)
-                                .setNextPart(ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-1));
+                                .setNextWordPart(ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-1));
                     }
                     String id = "punct" + portionNumber;
 
@@ -304,7 +304,7 @@ public class CreateItem {
                     if (ToCTeditor.dataModel.getTemplatePortions().size() > 1){
                         portionNumber = ToCTeditor.dataModel.getTemplatePortions().size();
                         ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-2)
-                                .setNextPart(ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-1));
+                                .setNextWordPart(ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size()-1));
                     }
                     String id = "phrase" + portionNumber;
 

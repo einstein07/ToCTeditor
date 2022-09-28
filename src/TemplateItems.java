@@ -66,6 +66,9 @@ public class TemplateItems {
     JPanel pnlEditorTurtleTitle;
     JPanel pnlAnnotateTurtle;
 
+
+    JComponent superParent;
+    JComponent parent2;
     public TemplateItems(ToCTeditorFrame frame/**, ControlThread controlThread*/) {
         this.frameX = frame.getFrameX();
         this.frameY = frame.getFrameY();
@@ -571,7 +574,7 @@ public class TemplateItems {
             else{
                 JLabel name = new JLabel(templatePortion.getSerialisedName());
                 JLabel lblType = new JLabel(type);
-                box.add(createItemComponent(name, lblType, false));
+                box.add(createItemComponent(templatePortion, name, lblType, false));
             }
         }
         JPanel p = new JPanel();
@@ -656,7 +659,7 @@ public class TemplateItems {
             JLabel mName = new JLabel(morphemesList.get(i).getSerialisedName());
             JLabel mType = new JLabel(ToCTeditor.turtleGen.getMorphemeType(morphemesList.get(i)));
             maxWidth += 116;
-            pnlMorphemes.add(createItemComponent(mName, mType, true));
+            pnlMorphemes.add(createItemComponent(templatePortion, mName, mType, true));
         }
 
         pnlMorphemes.setBackground(Color.white);
@@ -696,7 +699,7 @@ public class TemplateItems {
         return p;
     }
 
-    private JPanel createItemComponent(JComponent name, JComponent type, boolean isMorpheme) {
+    private JPanel createItemComponent(TemplatePortion portion, JComponent name, JComponent type, boolean isMorpheme) {
 
         JPanel p = new JPanel();
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
@@ -736,9 +739,21 @@ public class TemplateItems {
         menu.add(new JMenuItem("Change type"));
 
         menu.add("Remove").addActionListener( e -> {
-            ToCTeditor.dataModel.removeTemplatePortion(((JLabel)name).getText().trim());
-            ToCTeditor.dataModel.updateNextPart();
-            updateItems();
+            if (isMorpheme){
+                List <InternalSlotRootAffix> morphemes = ((PolymorphicWord)portion).getAllMorphemes();
+                for (int i = 0; i < morphemes.size(); i++){
+                    if (morphemes.get(i).getSerialisedName().equals(((JLabel)name).getText().trim())){
+                        ((PolymorphicWord)ToCTeditor.dataModel.getTemplatePortion(portion)).removeMorpheme(i);
+                        updateItems();
+                        break;
+                    }
+                }
+            }
+            else{
+                ToCTeditor.dataModel.removeTemplatePortion(((JLabel)name).getText().trim());
+                ToCTeditor.dataModel.updateNextPart();
+                updateItems();
+            }
         });
 
         final JButton button = new JButton();
@@ -904,7 +919,7 @@ public class TemplateItems {
             currentPanel = setupRootEditor(part);
         }
         else if (currentInternalElement.getType().equals("Locative")){
-            System.out.println("Editor is locative panel");
+            //System.out.println("Editor is locative panel");
             Locative part = (Locative)currentInternalElement;
             currentPanel = setupLocativeEditor(part);
         }

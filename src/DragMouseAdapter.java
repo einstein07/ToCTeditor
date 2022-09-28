@@ -212,16 +212,16 @@ public class DragMouseAdapter extends MouseAdapter {
             if (Objects.equals(c, gap)) {
                 if (superParent != null && parent2 != null) {
                     int in = superParent.getComponentZOrder(parent2);
-                    System.out.println("Template portions size: " + ToCTeditor.dataModel.getTemplatePortions().size() + " Index of super element: " + in + " Index of pressed element: " + index);
+                    //System.out.println("Template portions size: " + ToCTeditor.dataModel.getTemplatePortions().size() + " Index of super element: " + in + " Index of pressed element: " + index);
                     if (in >= 0) {
                         updateMorphesList( in, index, i );
                     }
-                    System.out.println("Morphes");
+                    //System.out.println("Morphes");
                 }
                 else{
                     updateList(index, i);
                     ToCTeditor.dataModel.updateNextPart();
-                    System.out.println("NOT Morphes");
+                    //System.out.println("NOT Morphes");
                 }
                 swapComponentLocation(parent, gap, cmp, i);
                 return;
@@ -231,16 +231,16 @@ public class DragMouseAdapter extends MouseAdapter {
                 if (superParent != null && parent2 != null) {
 
                     int in = superParent.getComponentZOrder(parent2);
-                    System.out.println("Template portions size: " + ToCTeditor.dataModel.getTemplatePortions().size() + " Index of super element: " + in + " Index of pressed element: " + index);
+                    //System.out.println("Template portions size: " + ToCTeditor.dataModel.getTemplatePortions().size() + " Index of super element: " + in + " Index of pressed element: " + index);
                     if (in >= 0) {
                         updateMorphesList( in, index, i );
                     }
-                    System.out.println("Morphes");
+                    //System.out.println("Morphes");
                 }
                 else{
                     updateList(index, i);
                     ToCTeditor.dataModel.updateNextPart();
-                    System.out.println("NOT Morphes");
+                    //System.out.println("NOT Morphes");
                 }
                 swapComponentLocation(parent, gap, cmp, tgt);
                 return;
@@ -249,16 +249,16 @@ public class DragMouseAdapter extends MouseAdapter {
         if (parent.getParent().getBounds().contains(pt)) {
             if (superParent != null && parent2 != null) {
                 int in = superParent.getComponentZOrder(parent2);
-                System.out.println("Template portions size: " + ToCTeditor.dataModel.getTemplatePortions().size() + " Index of super element: " + in + " Index of pressed element: " + index);
+                //System.out.println("Template portions size: " + ToCTeditor.dataModel.getTemplatePortions().size() + " Index of super element: " + in + " Index of pressed element: " + index);
                 if (in >= 0) {
                     updateMorphesList( in, index, parent.getComponentCount() );
                 }
-                System.out.println("Morphes");
+                //System.out.println("Morphes");
             }
             else{
                 updateList(index, parent.getComponentCount());
                 ToCTeditor.dataModel.updateNextPart();
-                System.out.println("NOT Morphes");
+                //System.out.println("NOT Morphes");
             }
 
             swapComponentLocation(parent, gap, cmp, parent.getComponentCount());

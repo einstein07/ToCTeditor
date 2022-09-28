@@ -99,6 +99,15 @@ public class DataModel {
             return null;
         }
     }
+    public TemplatePortion getTemplatePortion(TemplatePortion templatePortion){
+        int index = templatePortions.indexOf((TemplatePortion)templatePortion);
+        if (index >=0 && index < templatePortions.size()){
+            return templatePortions.get(index);
+        }
+        else{
+            return null;
+        }
+    }
 
     public int getTemplateSize(){
         return this.templatePortions.size();

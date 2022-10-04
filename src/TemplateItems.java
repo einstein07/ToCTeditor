@@ -182,7 +182,7 @@ public class TemplateItems {
 
                 ToCTeditor.gui = new ViewThread(ToCTeditor.homeScreen, ToCTeditor.templateItems, ToCTeditor.createItem, ToCTeditor.dataModel);
 
-                ToCTeditor.gui.setCallCreateItem(true);
+                ToCTeditor.gui.setCallCreateItem(true, false);
 
                 ToCTeditor.gui.start();
                 /**if (ToCTeditor.gui.isAlive()){
@@ -235,7 +235,6 @@ public class TemplateItems {
                  JOptionPane.showMessageDialog(null, "File saved successfully!");
                  }
                  catch(Exception err){
-                 System.err.println(err.getMessage());
                  }*/
                 PrintWriter writer = null;
                 try {
@@ -603,9 +602,26 @@ public class TemplateItems {
 
         JPopupMenu menu = new JPopupMenu();
         menu.setMaximumSize(new Dimension(200, 100));
-        menu.add(new JMenuItem("Duplicate"));
-        menu.add(new JMenuItem("Change type"));
-        menu.add(new JMenuItem("Remove"));
+        menu.add("Duplicate").addActionListener(e -> {
+                    ToCTeditor.dataModel.duplicateTemplatePortion(templatePortion.getSerialisedName());
+                    ToCTeditor.dataModel.updateNextPart();
+                    updateItems();
+                }
+        );
+        //menu.add(new JMenuItem("Change type"));
+        menu.add("Change type").addActionListener(e -> {
+            ToCTeditor.gui = new ViewThread(ToCTeditor.homeScreen, ToCTeditor.templateItems, ToCTeditor.createItem, ToCTeditor.dataModel);
+            ToCTeditor.gui.setIndex(ToCTeditor.dataModel.getTemplatePortionIndex(templatePortion));
+            ToCTeditor.gui.setCallCreateItem(true, true);
+            ToCTeditor.gui.start();
+            }
+        );
+
+        menu.add("Remove").addActionListener( e -> {
+                ToCTeditor.dataModel.removeTemplatePortion(templatePortion.getSerialisedName());
+                ToCTeditor.dataModel.updateNextPart();
+                updateItems();
+        });
 
         final JButton button = new JButton();
         /**
@@ -715,8 +731,8 @@ public class TemplateItems {
             p.setBorder(BorderFactory.createCompoundBorder(
                     BorderFactory.createEmptyBorder(0, 2, 0, 2),
                     BorderFactory.createLineBorder(Color.BLUE, 2)));
-            pnlKebab.setMinimumSize(new Dimension(100,8));
-            pnlKebab.setMaximumSize(new Dimension(100,8));
+            pnlKebab.setMinimumSize(new Dimension(92,8));
+            pnlKebab.setMaximumSize(new Dimension(92,8));
         }
         else{
             p.setBorder(BorderFactory.createCompoundBorder(
@@ -729,28 +745,53 @@ public class TemplateItems {
 
         JPopupMenu menu = new JPopupMenu();
         menu.setMaximumSize(new Dimension(200, 100));
-        menu.add("Duplicate").addActionListener(
-                e -> {
-                    /**ToCTeditor.dataModel.duplicateTemplatePortion(((JLabel)name).getText().trim());
-                     ToCTeditor.dataModel.updateNextPart();
-                     updateItems();*/
-                }
+        menu.add("Duplicate").addActionListener(e -> {
+
+                ToCTeditor.dataModel.duplicateTemplatePortion(((JLabel)name).getText().trim());
+                ToCTeditor.dataModel.updateNextPart();
+                updateItems();
+            }
         );
-        menu.add(new JMenuItem("Change type"));
+        //menu.add(new JMenuItem("Change type"));
+        menu.add("Change type").addActionListener(e -> {
+            if (isMorpheme){
+                List <InternalSlotRootAffix> morphemes = ((PolymorphicWord)portion).getAllMorphemes();
+                for (int i = 0; i < morphemes.size(); i++){
+                    if (morphemes.get(i).getSerialisedName().equals(((JLabel)name).getText().trim())){
+                        ToCTeditor.gui = new ViewThread();
+
+                        ToCTeditor.createMorpheme.setMorphemeIndex(i);
+                        ToCTeditor.createMorpheme.setChangeType(true);
+                        ToCTeditor.gui.setIndex(ToCTeditor.dataModel.getTemplatePortionIndex(portion));
+                        ToCTeditor.gui.setCallCreateMorpheme(true);
+
+                        ToCTeditor.gui.start();
+                        break;
+                    }
+                }
+            } else{
+                ToCTeditor.gui = new ViewThread();
+
+                ToCTeditor.gui.setIndex(ToCTeditor.dataModel.getTemplatePortionIndex(portion));
+                ToCTeditor.gui.setCallCreateItem(true, true);
+
+                ToCTeditor.gui.start();
+            }
+        });
 
         menu.add("Remove").addActionListener( e -> {
             if (isMorpheme){
                 List <InternalSlotRootAffix> morphemes = ((PolymorphicWord)portion).getAllMorphemes();
                 for (int i = 0; i < morphemes.size(); i++){
                     if (morphemes.get(i).getSerialisedName().equals(((JLabel)name).getText().trim())){
-                        ((PolymorphicWord)ToCTeditor.dataModel.getTemplatePortion(portion)).removeMorpheme(i);
+                        /**((PolymorphicWord)ToCTeditor.dataModel.getTemplatePortion(portion))*/((PolymorphicWord)portion).removeMorpheme(i);
                         updateItems();
                         break;
                     }
                 }
             }
             else{
-                ToCTeditor.dataModel.removeTemplatePortion(((JLabel)name).getText().trim());
+                ToCTeditor.dataModel.removeTemplatePortion(portion.getSerialisedName());
                 ToCTeditor.dataModel.updateNextPart();
                 updateItems();
             }
@@ -790,8 +831,8 @@ public class TemplateItems {
         JPanel pnlName = new JPanel();
         pnlName.setLayout(new BoxLayout(pnlName, BoxLayout.Y_AXIS));
         if (isMorpheme){
-            pnlName.setMinimumSize(new Dimension(100,15));
-            pnlName.setMaximumSize(new Dimension(100,15));
+            pnlName.setMinimumSize(new Dimension(92,15));
+            pnlName.setMaximumSize(new Dimension(92,15));
         }
         else{
             pnlName.setMaximumSize(new Dimension(100,50));
@@ -812,9 +853,9 @@ public class TemplateItems {
 
 
         if (isMorpheme){
-            pnlType.setMinimumSize(new Dimension(100,8));
-            pnlType.setMaximumSize(new Dimension(100,8));
-            p.setMaximumSize(new Dimension(100, 42));
+            pnlType.setMinimumSize(new Dimension(92,8));
+            pnlType.setMaximumSize(new Dimension(92,8));
+            p.setMaximumSize(new Dimension(92, 42));
         }
         else{
             pnlType.setMaximumSize(new Dimension(100,30));
@@ -888,7 +929,6 @@ public class TemplateItems {
          currentPanel = setupRootEditor(part);
          }*/
         else{
-            //System.out.println("No current item selected");
             currentPanel = new JPanel();
             currentPanel.setMaximumSize(new Dimension(345,250));
             currentPanel.setBackground(Color.lightGray);
@@ -919,12 +959,10 @@ public class TemplateItems {
             currentPanel = setupRootEditor(part);
         }
         else if (currentInternalElement.getType().equals("Locative")){
-            //System.out.println("Editor is locative panel");
             Locative part = (Locative)currentInternalElement;
             currentPanel = setupLocativeEditor(part);
         }
         else{
-            //System.out.println("No current item selected");
             currentPanel = new JPanel();
             currentPanel.setBackground(Color.lightGray);
         }
@@ -952,7 +990,7 @@ public class TemplateItems {
         JScrollPane pnlScroll = new JScrollPane(txtArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         pnlScroll.setMinimumSize(new Dimension(345, 180));
         pnlScroll.setMaximumSize(new Dimension(345, 180));
-        pnlScroll.setBackground(Color.green);
+        pnlScroll.setBackground(Color.lightGray);
 
         String turtle;
         if (currentTemplatePortion != null) {
@@ -1035,21 +1073,6 @@ public class TemplateItems {
         }
 
         addChangeListener(txtPartName, e -> updateName(part, txtPartName.getText()));
-
-        /**txtPartName.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent actionEvent) {
-        System.out.println("Inside action performed for textfield");
-        String text = txtPartName.getText();
-        part.setSerialisedName(text);
-        System.out.println("Current text: " + text);
-        }
-        });
-         /**txtPartName.addActionListener(new ActionListener(){
-         public void actionPerformed(ActionEvent evt) {
-
-         }
-         });*/
 
         pnlPartName.add(Box.createRigidArea(new Dimension(5,0)));
         pnlPartName.add(lblPartName);
@@ -1171,7 +1194,6 @@ public class TemplateItems {
         /**part.setSerialisedName(updatedText);
         updateTurtlePanel(getPartPanelTurtle(part));
         updateItems();*/
-        System.out.println(updatedText);
     }
     /**
      * Working Unimorphic word editor
@@ -1548,10 +1570,8 @@ public class TemplateItems {
             CheckComboRenderer ccr = (CheckComboRenderer)cb.getRenderer();
             ccr.checkBox.setSelected((store.state = !store.state));
             List<String> newReliesOnList = new ArrayList<>();
-            //System.out.println("Item count: " + cb.getItemCount() + ". Selected items: ");
             for (int i = 0; i < cb.getItemCount(); i++){
                 if (((CheckComboStore)cb.getItemAt(i)).getState() == Boolean.TRUE){
-                    //System.out.println(((CheckComboStore)cb.getItemAt(i)).getId() +" "+((CheckComboStore)cb.getItemAt(i)).getState());
                     newReliesOnList.add(((CheckComboStore)cb.getItemAt(i)).getId());
                 }
             }

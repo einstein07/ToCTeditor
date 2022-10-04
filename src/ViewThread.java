@@ -18,6 +18,7 @@ public class ViewThread extends Thread {
     boolean callCreateTemplate;
     boolean callTemplateItems;
     boolean callCreateItem;
+    boolean isChangeType;
     boolean callCreateMorpheme;
 
     private Part currentPart;
@@ -31,7 +32,7 @@ public class ViewThread extends Thread {
 
         this.callCreateTemplate = false;
         this.callTemplateItems = false;
-        this.callCreateItem = false;
+        this.callCreateItem = false; this.isChangeType = false;
         this.callCreateMorpheme = false;
 
         // By default, set the gui to show the turtle preview
@@ -96,20 +97,20 @@ public class ViewThread extends Thread {
         this.callTemplateItems = callTemplateItems;
     }
 
-    public void setCallCreateItem(boolean callCreateItem) {
+    public void setCallCreateItem(boolean callCreateItem, boolean isChangeType) {
         this.callCreateItem = callCreateItem;
+        this.isChangeType = isChangeType;
     }
+
     public void setCallCreateMorpheme(boolean callCreateMorpheme) {
         this.callCreateMorpheme = callCreateMorpheme;
     }
 
     @Override
     public void run() {
-        //System.out.println("ToCTeditor v 1.0");
         //while (true) {
         currentTemplatePortion = ToCTeditor.dataModel.getTemplatePortion(index);
 
-            //System.out.println(callTemplateItems);
             if (callCreateTemplate) {
                 //currentPart = dataModel.getPart(index);
                 //homeScreen.setupGUI();
@@ -121,14 +122,13 @@ public class ViewThread extends Thread {
 
                 //templateItems.setupGUI(templateItems.getPartPanelEditor(currentPart), templateItems.getPartPanelTurtle(currentPart));
                 //templateItems.setupGUI(templateItems.getPartPanelEditor(currentPart), templateItems.getPartPanelTurtle(currentPart));
-                //System.out.println("Create template items called");
                 ToCTeditor.templateItems.setupGUI(ToCTeditor.templateItems.getPartPanelEditor(currentTemplatePortion), ToCTeditor.templateItems.getPartPanelTurtle(currentTemplatePortion));
                 callTemplateItems = false;
             }
             else if (callCreateItem) {
                 //currentPart = ToCTeditor.dataModel.getPart(index);
                 //createItem.setupGUI();
-                ToCTeditor.createItem.setupGUI();
+                ToCTeditor.createItem.setupGUI(isChangeType);
                 callCreateItem = false;
             }
             else if (callCreateMorpheme) {

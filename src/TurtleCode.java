@@ -98,8 +98,8 @@ public class TurtleCode {
             }
             turtle = "<" + templatePortion.getSerialisedName() + "> a toct:Slot\n" +
                     "    ; toct:hasLabel \"" + word + "\"^^xsd:string\n";
-            if (((Slot) templatePortion).getNextMorphPart() != null ){
-                turtle += "    ; toct:hasNextPart <" + ((Slot) templatePortion).getNextMorphPart().getSerialisedName() + "> .";
+            if (((Slot) templatePortion).getNextWordPart() != null ){
+                turtle += "    ; toct:hasNextPart <" + ((Slot) templatePortion).getNextWordPart().getSerialisedName() + "> .";
             }
             else {
                 turtle += "    ; toct:hasNextPart <> .";
@@ -349,7 +349,7 @@ public class TurtleCode {
         for (TemplatePortion part: ToCTeditor.dataModel.getTemplatePortions() ){
             turtle += getPartTurtle(part) + "\n\n";
         }
-        return turtle;
+        return turtle.trim();
     }
     public String getMorphemeId(InternalSlotRootAffix affix) {
         String id;

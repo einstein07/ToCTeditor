@@ -68,10 +68,12 @@ class CheckComboRenderer implements ListCellRenderer
                                                   boolean cellHasFocus)
     {
         CheckComboStore store = (CheckComboStore)value;
-        checkBox.setText(store.id);
-        checkBox.setSelected(((Boolean)store.state).booleanValue());
-        checkBox.setBackground(isSelected ? Color.red : Color.white);
-        checkBox.setForeground(isSelected ? Color.white : Color.black);
+        if (store != null) {
+            checkBox.setText(store.id);
+            checkBox.setSelected(((Boolean) store.state).booleanValue());
+            checkBox.setBackground(isSelected ? Color.red : Color.white);
+            checkBox.setForeground(isSelected ? Color.white : Color.black);
+        }
         return checkBox;
     }
 }

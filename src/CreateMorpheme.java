@@ -36,6 +36,8 @@ public class CreateMorpheme {
     List<InternalSlotRootAffix> wordPortions;
     List<Feature> featuresList;
 
+    private int morphemeIndex;
+    private  boolean isChangeType;
 
     /**
      * Existing Item panel
@@ -47,6 +49,8 @@ public class CreateMorpheme {
         this.frameY = frame.getFrameY();
         this.frame = frame;
 
+        this.morphemeIndex = -1;
+        this.isChangeType = false;
 
     }
 
@@ -72,7 +76,13 @@ public class CreateMorpheme {
         pnlItemsTitle.setLayout(new BoxLayout(pnlItemsTitle, BoxLayout.LINE_AXIS));
         pnlItemsTitle.setMaximumSize(new Dimension(700,15));
         pnlItemsTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-        JLabel label = new JLabel("Create morpheme");
+        JLabel label;
+        if (isChangeType){
+            label = new JLabel("Change morpheme");
+        } else{
+            label = new JLabel("Create morpheme");
+        }
+
         pnlItemsTitle.setBackground(Color.lightGray);
         label.setFont(new Font("Sans", Font.PLAIN, 15));
 
@@ -82,50 +92,55 @@ public class CreateMorpheme {
          * Panel for Existing item selection title
          */
         JPanel pnlExistingItemTitle = new JPanel();
-        pnlExistingItemTitle.setLayout(new BoxLayout(pnlExistingItemTitle, BoxLayout.LINE_AXIS));
-        pnlExistingItemTitle.setMaximumSize(new Dimension(700,15));
-        pnlExistingItemTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-        pnlExistingItemTitle.setBackground(Color.lightGray);
+        if ( !isChangeType ){
+
+            pnlExistingItemTitle.setLayout(new BoxLayout(pnlExistingItemTitle, BoxLayout.LINE_AXIS));
+            pnlExistingItemTitle.setMaximumSize(new Dimension(700,15));
+            pnlExistingItemTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+            pnlExistingItemTitle.setBackground(Color.lightGray);
 
 
-        JLabel lblExistingItemTitle = new JLabel("Select from existing morphemes");
-        lblExistingItemTitle.setFont(new Font("Sans", Font.PLAIN, 15));
-        lblExistingItemTitle.setMaximumSize(new Dimension(345,15));
+            JLabel lblExistingItemTitle = new JLabel("Select from existing morphemes");
+            lblExistingItemTitle.setFont(new Font("Sans", Font.PLAIN, 15));
+            lblExistingItemTitle.setMaximumSize(new Dimension(345,15));
 
 
 
-        /**
-         * Add title labels to labels panel
-         */
-        pnlExistingItemTitle.add(lblExistingItemTitle);
+            /**
+             * Add title labels to labels panel
+             */
+            pnlExistingItemTitle.add(lblExistingItemTitle);
 
 
-        /**
-         * Existing Item panel
-         */
-        //JPanel pnlExistingItem = new JPanel();
-        pnlExistingItem = new JPanel();
-        pnlExistingItem.setLayout(new BoxLayout(pnlExistingItem, BoxLayout.Y_AXIS));
-        pnlExistingItem.setMaximumSize(new Dimension(700,250));
-        pnlExistingItem.setAlignmentX(Component.CENTER_ALIGNMENT);
-        pnlExistingItem.setBackground(Color.lightGray);
-        pnlExistingItem.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+            /**
+             * Existing Item panel
+             */
+            //JPanel pnlExistingItem = new JPanel();
+            pnlExistingItem = new JPanel();
+            pnlExistingItem.setLayout(new BoxLayout(pnlExistingItem, BoxLayout.Y_AXIS));
+            pnlExistingItem.setMaximumSize(new Dimension(700,250));
+            pnlExistingItem.setAlignmentX(Component.CENTER_ALIGNMENT);
+            pnlExistingItem.setBackground(Color.lightGray);
+            pnlExistingItem.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        }
 
         //pnlExistingItem.add(setupExistingItems(ToCTeditor.dataModel.getData()));
         //pnlExistingItem.add(setupExistingItems(ToCTeditor.dataModel.getTemplatePortions()));
         //List<InternalSlotRootAffix> wordPortions = new ArrayList<>();
-
+        this.wordPortions = new ArrayList<>();
+        this.featuresList = new ArrayList<>();
         if (templatePortion != null) {
             if (((PolymorphicWord) templatePortion).getAllMorphemes().size() > 0) {
                 wordPortions = ((PolymorphicWord) templatePortion).getAllMorphemes();
             }
-            pnlExistingItem.add(setupExistingItems(wordPortions));
+            if ( ((PolymorphicWord) templatePortion).getFeatures().size() > 0 ){
+                featuresList = ((PolymorphicWord) templatePortion).getFeatures();
+            }
+            if ( !isChangeType ){
+                pnlExistingItem.add(setupExistingItems(wordPortions));
+            }
+        }
 
-        }
-        if (wordPortions == null){
-            this.wordPortions = new ArrayList<>();
-            this.featuresList = new ArrayList<>();
-        }
         /**
          * Create button set visible when template portion is null - i.e. creating new polymorphic word
          */
@@ -151,6 +166,7 @@ public class CreateMorpheme {
                     ToCTeditor.dataModel.getTemplatePortion(ToCTeditor.dataModel.getTemplatePortions().size() - 1).setSerialisedName(id);
 
                     int currIndex = ToCTeditor.dataModel.getTemplatePortions().size() - 1;
+
                     ToCTeditor.gui = new ViewThread();
                     ToCTeditor.gui.setIndex(currIndex);
                     ToCTeditor.gui.setCallTemplateItems(true);
@@ -188,7 +204,8 @@ public class CreateMorpheme {
                         ((PolymorphicWord) templatePortion).addMorpheme(wordPortions.get(i));
                     }
 
-                    int currIndex = ToCTeditor.dataModel.getTemplatePortions().size() - 1;
+                    int currIndex = ToCTeditor.dataModel.getTemplatePortions().indexOf(templatePortion);/**ToCTeditor.dataModel.getTemplatePortions().size() - 1;*/
+                    //wordPortions.clear();
                     ToCTeditor.gui = new ViewThread();
                     ToCTeditor.gui.setIndex(currIndex);
 
@@ -217,7 +234,10 @@ public class CreateMorpheme {
 
         btnCancel.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
+                int currIndex = ToCTeditor.dataModel.getTemplatePortions().indexOf(templatePortion);/**ToCTeditor.dataModel.getTemplatePortions().size() - 1;*/
+                //wordPortions.clear();
                 ToCTeditor.gui = new ViewThread();
+                ToCTeditor.gui.setIndex(currIndex);
                 ToCTeditor.gui.setCallTemplateItems(true);
                 ToCTeditor.gui.start();
 
@@ -233,9 +253,10 @@ public class CreateMorpheme {
 
         btnBack.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
+                //wordPortions.clear();
                 ToCTeditor.gui = new ViewThread(ToCTeditor.homeScreen, ToCTeditor.templateItems, ToCTeditor.createItem, ToCTeditor.dataModel);
 
-                ToCTeditor.gui.setCallCreateItem(true);
+                ToCTeditor.gui.setCallCreateItem(true, false);
 
                 ToCTeditor.gui.start();
             }
@@ -274,14 +295,17 @@ public class CreateMorpheme {
         // Add template name text field to list panel
         listPane.add(createPartOptions(templatePortion));
         listPane.add(Box.createRigidArea(new Dimension(0,10)));
-        listPane.add(pnlExistingItemTitle);
-        listPane.add(Box.createRigidArea(new Dimension(0,5)));
-        // Add supported language dropdown button to list panel
-        listPane.add(pnlExistingItem);
-        listPane.add(Box.createRigidArea(new Dimension(0,10)));
-        // Add create button to list panel
-        listPane.add(pnlButtons);
-        listPane.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        if ( !isChangeType ){
+            listPane.add(pnlExistingItemTitle);
+            listPane.add(Box.createRigidArea(new Dimension(0,5)));
+            // Add supported language dropdown button to list panel
+            listPane.add(pnlExistingItem);
+            listPane.add(Box.createRigidArea(new Dimension(0,10)));
+
+            // Add create button to list panel
+            listPane.add(pnlButtons);
+            listPane.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        }
         listPane.setBackground(Color.LIGHT_GRAY);
 
         // Add list panel to main panel
@@ -313,158 +337,326 @@ public class CreateMorpheme {
          */
 
         if (type.equals("Concord")){
-            btnType.addActionListener(new ActionListener(){
-                public void actionPerformed(ActionEvent e){
-                    List<Feature> featureList = new ArrayList<>();
-                    int portionNumber = 0;
-                    if ( wordPortions != null){
-                        portionNumber = wordPortions.size();
+
+            if (isChangeType){
+                btnType.addActionListener(new ActionListener(){
+                    public void actionPerformed(ActionEvent e){
+                        Concord newMorpheme = new Concord("", new ArrayList<Feature>());
+                        newMorpheme.setSerialisedName(wordPortions.get(morphemeIndex).getSerialisedName());
+                        newMorpheme.setNextMorphPart(wordPortions.get(morphemeIndex).getNextMorphPart());
+                        newMorpheme.setValue(wordPortions.get(morphemeIndex).getValue());
+                        wordPortions.remove(morphemeIndex);
+                        wordPortions.add(morphemeIndex, newMorpheme);
+                        /** @TODO A more elegant way of doing this is needed.
+                         * A method to insert a morpheme at a specific index is required in the Polymorphic class
+                        */
+                        for ( int i = ((PolymorphicWord)templatePortion).getAllMorphemes().size()-1; i >= 0; i-- ){
+                            ((PolymorphicWord)templatePortion).removeMorpheme(i);
+                        }
+                        for ( int i = 0; i < wordPortions.size(); i++ ){
+                            ((PolymorphicWord)templatePortion).addMorpheme(wordPortions.get(i));
+                        }
+
+                        isChangeType = false;
+                        ToCTeditor.gui = new ViewThread();
+                        ToCTeditor.gui.setCallTemplateItems(true);
+                        ToCTeditor.gui.setIndex(ToCTeditor.dataModel.getTemplatePortionIndex(templatePortion));
+                        ToCTeditor.gui.start();
                     }
-                    String id = "concord" + portionNumber;
-                    wordPortions.add(new Concord("", featureList));
-                    wordPortions.get(wordPortions.size()-1).setSerialisedName(id);
+                });
+            } else{
+                btnType.addActionListener(new ActionListener(){
+                    public void actionPerformed(ActionEvent e){
+                        List<Feature> featureList = new ArrayList<>();
+                        int portionNumber = 0;
+                        if ( wordPortions != null){
+                            portionNumber = wordPortions.size();
+                        }
+                        String id = "concord" + portionNumber;
+                        wordPortions.add(new Concord("", featureList));
+                        wordPortions.get(wordPortions.size()-1).setSerialisedName(id);
 
-                    int componentCount = pnlExistingItem.getComponentCount();
-                    for (int i = (componentCount-1); i >= 0 ; i--){
-                        pnlExistingItem.remove(i);
+                        int componentCount = pnlExistingItem.getComponentCount();
+                        for (int i = (componentCount-1); i >= 0 ; i--){
+                            pnlExistingItem.remove(i);
+                        }
+
+                        pnlExistingItem.add(Box.createRigidArea(new Dimension(0,5)));
+                        pnlExistingItem.add(setupSearchField());
+                        pnlExistingItem.add(setupExistingItems(wordPortions));
+                        pnlExistingItem.getParent().revalidate();
+
                     }
-
-                    pnlExistingItem.add(Box.createRigidArea(new Dimension(0,5)));
-                    pnlExistingItem.add(setupSearchField());
-                    pnlExistingItem.add(setupExistingItems(wordPortions));
-                    pnlExistingItem.getParent().revalidate();
-
-                }
-            });
+                });
+            }
         }
         else if (type.equals("Copula")){
-            btnType.addActionListener(new ActionListener(){
-                public void actionPerformed(ActionEvent e){
-                    List<Feature> featureList = new ArrayList<>();
-                    int portionNumber = 0;
-                    if ( wordPortions != null){
-                        portionNumber = wordPortions.size();
+            if (isChangeType){
+                btnType.addActionListener(new ActionListener(){
+                    public void actionPerformed(ActionEvent e){
+                        Copula newMorpheme = new Copula("", new ArrayList<Feature>());
+                        newMorpheme.setSerialisedName(wordPortions.get(morphemeIndex).getSerialisedName());
+                        newMorpheme.setNextMorphPart(wordPortions.get(morphemeIndex).getNextMorphPart());
+                        newMorpheme.setValue(wordPortions.get(morphemeIndex).getValue());
+                        wordPortions.remove(morphemeIndex);
+                        wordPortions.add(morphemeIndex, newMorpheme);
+                        /** @TODO A more elegant way of doing this is needed.
+                         * A method to insert a morpheme at a specific index is required in the Polymorphic class
+                         */
+                        for ( int i = ((PolymorphicWord)templatePortion).getAllMorphemes().size()-1; i >= 0; i-- ){
+                            ((PolymorphicWord)templatePortion).removeMorpheme(i);
+                        }
+                        for ( int i = 0; i < wordPortions.size(); i++ ){
+                            ((PolymorphicWord)templatePortion).addMorpheme(wordPortions.get(i));
+                        }
+
+                        isChangeType = false;
+                        ToCTeditor.gui = new ViewThread();
+                        ToCTeditor.gui.setCallTemplateItems(true);
+                        ToCTeditor.gui.setIndex(ToCTeditor.dataModel.getTemplatePortionIndex(templatePortion));
+                        ToCTeditor.gui.start();
                     }
-                    String id = "copula" + portionNumber;
-                    wordPortions.add(new Copula("", featureList));
-                    wordPortions.get(wordPortions.size()-1).setSerialisedName(id);
+                });
+            } else{
+                btnType.addActionListener(new ActionListener(){
+                    public void actionPerformed(ActionEvent e){
+                        List<Feature> featureList = new ArrayList<>();
+                        int portionNumber = 0;
+                        if ( wordPortions != null){
+                            portionNumber = wordPortions.size();
+                        }
+                        String id = "copula" + portionNumber;
+                        wordPortions.add(new Copula("", featureList));
+                        wordPortions.get(wordPortions.size()-1).setSerialisedName(id);
 
-                    int componentCount = pnlExistingItem.getComponentCount();
-                    for (int i = (componentCount-1); i >= 0 ; i--){
-                        pnlExistingItem.remove(i);
+                        int componentCount = pnlExistingItem.getComponentCount();
+                        for (int i = (componentCount-1); i >= 0 ; i--){
+                            pnlExistingItem.remove(i);
+                        }
+
+                        pnlExistingItem.add(Box.createRigidArea(new Dimension(0,5)));
+                        pnlExistingItem.add(setupSearchField());
+                        pnlExistingItem.add(setupExistingItems(wordPortions));
+                        pnlExistingItem.getParent().revalidate();
+
                     }
-
-                    pnlExistingItem.add(Box.createRigidArea(new Dimension(0,5)));
-                    pnlExistingItem.add(setupSearchField());
-                    pnlExistingItem.add(setupExistingItems(wordPortions));
-                    pnlExistingItem.getParent().revalidate();
-
-                }
-            });
+                });
+            }
         }
         else if (type.equals("Locative")){
-            btnType.addActionListener(new ActionListener(){
-                public void actionPerformed(ActionEvent e){
+            if (isChangeType){
+                btnType.addActionListener(new ActionListener(){
+                    public void actionPerformed(ActionEvent e){
+                        Locative newMorpheme = new Locative("", new ArrayList<Feature>());
+                        newMorpheme.setSerialisedName(wordPortions.get(morphemeIndex).getSerialisedName());
+                        newMorpheme.setNextMorphPart(wordPortions.get(morphemeIndex).getNextMorphPart());
+                        newMorpheme.setValue(wordPortions.get(morphemeIndex).getValue());
+                        wordPortions.remove(morphemeIndex);
+                        wordPortions.add(morphemeIndex, newMorpheme);
+                        /** @TODO A more elegant way of doing this is needed.
+                         * A method to insert a morpheme at a specific index is required in the Polymorphic class
+                         */
+                        for ( int i = ((PolymorphicWord)templatePortion).getAllMorphemes().size()-1; i >= 0; i-- ){
+                            ((PolymorphicWord)templatePortion).removeMorpheme(i);
+                        }
+                        for ( int i = 0; i < wordPortions.size(); i++ ){
+                            ((PolymorphicWord)templatePortion).addMorpheme(wordPortions.get(i));
+                        }
 
-                    List<Feature> featureList = new ArrayList<>();
-                    int portionNumber = 0;
-                    if ( wordPortions != null){
-                        portionNumber = wordPortions.size();
+                        isChangeType = false;
+                        ToCTeditor.gui = new ViewThread();
+                        ToCTeditor.gui.setCallTemplateItems(true);
+                        ToCTeditor.gui.setIndex(ToCTeditor.dataModel.getTemplatePortionIndex(templatePortion));
+                        ToCTeditor.gui.start();
                     }
-                    String id = "locative" + portionNumber;
-                    wordPortions.add(new Locative("", featureList));
-                    wordPortions.get(wordPortions.size()-1).setSerialisedName(id);
+                });
+            } else{
+                btnType.addActionListener(new ActionListener(){
+                    public void actionPerformed(ActionEvent e){
 
-                    int componentCount = pnlExistingItem.getComponentCount();
-                    for (int i = (componentCount-1); i >= 0 ; i--){
-                        pnlExistingItem.remove(i);
+                        List<Feature> featureList = new ArrayList<>();
+                        int portionNumber = 0;
+                        if ( wordPortions != null){
+                            portionNumber = wordPortions.size();
+                        }
+                        String id = "locative" + portionNumber;
+                        wordPortions.add(new Locative("", featureList));
+                        wordPortions.get(wordPortions.size()-1).setSerialisedName(id);
+
+                        int componentCount = pnlExistingItem.getComponentCount();
+                        for (int i = (componentCount-1); i >= 0 ; i--){
+                            pnlExistingItem.remove(i);
+                        }
+
+                        pnlExistingItem.add(Box.createRigidArea(new Dimension(0,5)));
+                        pnlExistingItem.add(setupSearchField());
+                        pnlExistingItem.add(setupExistingItems(wordPortions));
+                        pnlExistingItem.getParent().revalidate();
+
                     }
-
-                    pnlExistingItem.add(Box.createRigidArea(new Dimension(0,5)));
-                    pnlExistingItem.add(setupSearchField());
-                    pnlExistingItem.add(setupExistingItems(wordPortions));
-                    pnlExistingItem.getParent().revalidate();
-
-                }
-            });
+                });
+            }
         }
         else if (type.equals("Root")){
-            btnType.addActionListener(new ActionListener(){
-                public void actionPerformed(ActionEvent e){
+            if (isChangeType){
+                btnType.addActionListener(new ActionListener(){
+                    public void actionPerformed(ActionEvent e){
+                        Root newMorpheme = new Root(wordPortions.get(morphemeIndex).getValue(), new ArrayList<Feature>());
+                        newMorpheme.setSerialisedName(wordPortions.get(morphemeIndex).getSerialisedName());
+                        newMorpheme.setNextMorphPart(wordPortions.get(morphemeIndex).getNextMorphPart());
+                        wordPortions.remove(morphemeIndex);
+                        wordPortions.add(morphemeIndex, newMorpheme);
+                        /** @TODO A more elegant way of doing this is needed.
+                         * A method to insert a morpheme at a specific index is required in the Polymorphic class
+                         */
+                        for ( int i = ((PolymorphicWord)templatePortion).getAllMorphemes().size()-1; i >= 0; i-- ){
+                            ((PolymorphicWord)templatePortion).removeMorpheme(i);
+                        }
+                        for ( int i = 0; i < wordPortions.size(); i++ ){
+                            ((PolymorphicWord)templatePortion).addMorpheme(wordPortions.get(i));
+                        }
 
-                    List<Feature> featureList = new ArrayList<>();
-                    int portionNumber = 0;
-                    if ( wordPortions != null){
-                        portionNumber = wordPortions.size();
+                        isChangeType = false;
+                        ToCTeditor.gui = new ViewThread();
+                        ToCTeditor.gui.setCallTemplateItems(true);
+                        ToCTeditor.gui.setIndex(ToCTeditor.dataModel.getTemplatePortionIndex(templatePortion));
+                        ToCTeditor.gui.start();
                     }
-                    String id = "root" + portionNumber;
-                    wordPortions.add(new Root("", featureList));
-                    wordPortions.get(wordPortions.size()-1).setSerialisedName(id);
+                });
+            } else{
+                btnType.addActionListener(new ActionListener(){
+                    public void actionPerformed(ActionEvent e){
 
-                    int componentCount = pnlExistingItem.getComponentCount();
-                    for (int i = (componentCount-1); i >= 0 ; i--){
-                        pnlExistingItem.remove(i);
+                        List<Feature> featureList = new ArrayList<>();
+                        int portionNumber = 0;
+                        if ( wordPortions != null){
+                            portionNumber = wordPortions.size();
+                        }
+                        String id = "root" + portionNumber;
+                        wordPortions.add(new Root("", featureList));
+                        wordPortions.get(wordPortions.size()-1).setSerialisedName(id);
+
+                        int componentCount = pnlExistingItem.getComponentCount();
+                        for (int i = (componentCount-1); i >= 0 ; i--){
+                            pnlExistingItem.remove(i);
+                        }
+
+                        pnlExistingItem.add(Box.createRigidArea(new Dimension(0,5)));
+                        pnlExistingItem.add(setupSearchField());
+                        pnlExistingItem.add(setupExistingItems(wordPortions));
+                        pnlExistingItem.getParent().revalidate();
+
                     }
-
-                    pnlExistingItem.add(Box.createRigidArea(new Dimension(0,5)));
-                    pnlExistingItem.add(setupSearchField());
-                    pnlExistingItem.add(setupExistingItems(wordPortions));
-                    pnlExistingItem.getParent().revalidate();
-
-                }
-            });
+                });
+            }
         }
         else if (type.equals("UnimorphicAffix")){
-            btnType.addActionListener(new ActionListener(){
-                public void actionPerformed(ActionEvent e){
+            if (isChangeType){
+                btnType.addActionListener(new ActionListener(){
+                    public void actionPerformed(ActionEvent e){
+                        UnimorphicAffix newMorpheme = new UnimorphicAffix(
+                                wordPortions.get(morphemeIndex).getValue(),
+                                new ArrayList<Feature>());
+                        newMorpheme.setSerialisedName(wordPortions.get(morphemeIndex).getSerialisedName());
+                        newMorpheme.setNextMorphPart(wordPortions.get(morphemeIndex).getNextMorphPart());
+                        wordPortions.remove(morphemeIndex);
+                        wordPortions.add(morphemeIndex, newMorpheme);
+                        /** @TODO A more elegant way of doing this is needed.
+                         * A method to insert a morpheme at a specific index is required in the Polymorphic class
+                         */
+                        for ( int i = ((PolymorphicWord)templatePortion).getAllMorphemes().size()-1; i >= 0; i-- ){
+                            ((PolymorphicWord)templatePortion).removeMorpheme(i);
+                        }
+                        for ( int i = 0; i < wordPortions.size(); i++ ){
+                            ((PolymorphicWord)templatePortion).addMorpheme(wordPortions.get(i));
+                        }
 
-                    List<Feature> featureList = new ArrayList<>();
-                    int portionNumber = 0;
-                    if ( wordPortions != null){
-                        portionNumber = wordPortions.size();
+                        isChangeType = false;
+                        ToCTeditor.gui = new ViewThread();
+                        ToCTeditor.gui.setCallTemplateItems(true);
+                        ToCTeditor.gui.setIndex(ToCTeditor.dataModel.getTemplatePortionIndex(templatePortion));
+                        ToCTeditor.gui.start();
                     }
-                    String id = "uniaffix" + portionNumber;
-                    wordPortions.add(new UnimorphicAffix("", featureList));
-                    wordPortions.get(wordPortions.size()-1).setSerialisedName(id);
+                });
+            } else{
+                btnType.addActionListener(new ActionListener(){
+                    public void actionPerformed(ActionEvent e){
 
-                    int componentCount = pnlExistingItem.getComponentCount();
-                    for (int i = (componentCount-1); i >= 0 ; i--){
-                        pnlExistingItem.remove(i);
+                        List<Feature> featureList = new ArrayList<>();
+                        int portionNumber = 0;
+                        if ( wordPortions != null){
+                            portionNumber = wordPortions.size();
+                        }
+                        String id = "uniaffix" + portionNumber;
+                        wordPortions.add(new UnimorphicAffix("", featureList));
+                        wordPortions.get(wordPortions.size()-1).setSerialisedName(id);
+
+                        int componentCount = pnlExistingItem.getComponentCount();
+                        for (int i = (componentCount-1); i >= 0 ; i--){
+                            pnlExistingItem.remove(i);
+                        }
+
+                        pnlExistingItem.add(Box.createRigidArea(new Dimension(0,5)));
+                        pnlExistingItem.add(setupSearchField());
+                        pnlExistingItem.add(setupExistingItems(wordPortions));
+                        pnlExistingItem.getParent().revalidate();
+
                     }
-
-                    pnlExistingItem.add(Box.createRigidArea(new Dimension(0,5)));
-                    pnlExistingItem.add(setupSearchField());
-                    pnlExistingItem.add(setupExistingItems(wordPortions));
-                    pnlExistingItem.getParent().revalidate();
-
-                }
-            });
+                });
+            }
         }
         else if (type.equals("Slot")){
-            btnType.addActionListener(new ActionListener(){
-                public void actionPerformed(ActionEvent e){
+            if (isChangeType){
+                btnType.addActionListener(new ActionListener(){
+                    public void actionPerformed(ActionEvent e){
+                        Slot newMorpheme = new Slot(wordPortions.get(morphemeIndex).getValue(), new ArrayList<Feature>());
+                        newMorpheme.setSerialisedName(wordPortions.get(morphemeIndex).getSerialisedName());
+                        newMorpheme.setNextMorphPart(wordPortions.get(morphemeIndex).getNextMorphPart());
+                        wordPortions.remove(morphemeIndex);
+                        wordPortions.add(morphemeIndex, newMorpheme);
+                        /** @TODO A more elegant way of doing this is needed.
+                         * A method to insert a morpheme at a specific index is required in the Polymorphic class
+                         */
+                        for ( int i = ((PolymorphicWord)templatePortion).getAllMorphemes().size()-1; i >= 0; i-- ){
+                            ((PolymorphicWord)templatePortion).removeMorpheme(i);
+                        }
+                        for ( int i = 0; i < wordPortions.size(); i++ ){
+                            ((PolymorphicWord)templatePortion).addMorpheme(wordPortions.get(i));
+                        }
 
-                    List<Feature> featureList = new ArrayList<>();
-                    int portionNumber = 0;
-                    if ( wordPortions != null){
-                        portionNumber = wordPortions.size();
+                        isChangeType = false;
+                        ToCTeditor.gui = new ViewThread();
+                        ToCTeditor.gui.setCallTemplateItems(true);
+                        ToCTeditor.gui.setIndex(ToCTeditor.dataModel.getTemplatePortionIndex(templatePortion));
+                        ToCTeditor.gui.start();
                     }
-                    String id = "slot" + portionNumber;
-                    wordPortions.add(new Slot("", featureList));
-                    wordPortions.get(wordPortions.size()-1).setSerialisedName(id);
+                });
+            } else{
+                btnType.addActionListener(new ActionListener(){
+                    public void actionPerformed(ActionEvent e){
 
-                    int componentCount = pnlExistingItem.getComponentCount();
-                    for (int i = (componentCount-1); i >= 0 ; i--){
-                        pnlExistingItem.remove(i);
+                        List<Feature> featureList = new ArrayList<>();
+                        int portionNumber = 0;
+                        if ( wordPortions != null){
+                            portionNumber = wordPortions.size();
+                        }
+                        String id = "slot" + portionNumber;
+                        wordPortions.add(new Slot("", featureList));
+                        wordPortions.get(wordPortions.size()-1).setSerialisedName(id);
+
+                        int componentCount = pnlExistingItem.getComponentCount();
+                        for (int i = (componentCount-1); i >= 0 ; i--){
+                            pnlExistingItem.remove(i);
+                        }
+
+                        pnlExistingItem.add(Box.createRigidArea(new Dimension(0,5)));
+                        pnlExistingItem.add(setupSearchField());
+                        pnlExistingItem.add(setupExistingItems(wordPortions));
+                        pnlExistingItem.getParent().revalidate();
+
                     }
-
-                    pnlExistingItem.add(Box.createRigidArea(new Dimension(0,5)));
-                    pnlExistingItem.add(setupSearchField());
-                    pnlExistingItem.add(setupExistingItems(wordPortions));
-                    pnlExistingItem.getParent().revalidate();
-
-                }
-            });
+                });
+            }
         }
 
         return btnType;
@@ -544,6 +736,14 @@ public class CreateMorpheme {
         //pnlItems.add(Box.createRigidArea(new Dimension(0,5)));
         //pnlItems.add(pnlRow3);
         return pnlItems;
+    }
+
+    public void setMorphemeIndex(int morphemeIndex) {
+        this.morphemeIndex = morphemeIndex;
+    }
+
+    public void setChangeType(boolean isChangeType){
+        this.isChangeType = isChangeType;
     }
 
     /**public JComponent setupExistingItems(List<TemplatePart> list) {

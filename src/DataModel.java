@@ -8,6 +8,7 @@
  * @(#) $Id$
  */
 
+import za.co.mahlaza.research.grammarengine.base.models.feature.Feature;
 import za.co.mahlaza.research.grammarengine.base.models.interfaces.InternalSlotRootAffix;
 import za.co.mahlaza.research.grammarengine.base.models.template.*;
 import za.co.mahlaza.research.grammarengine.base.models.template.Concord;
@@ -20,6 +21,7 @@ import za.co.mahlaza.research.grammarengine.base.models.template.Root;
 import za.co.mahlaza.research.grammarengine.base.models.template.Slot;
 import za.co.mahlaza.research.grammarengine.base.models.template.UnimorphicAffix;
 import za.co.mahlaza.research.grammarengine.base.models.template.UnimorphicWord;
+import org.apache.commons.lang3.SerializationUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -74,10 +76,38 @@ public class DataModel {
     public void duplicateTemplatePortion( String serialisedName ){
         for (int i = 0; i < templatePortions.size(); i ++ ){
             if (templatePortions.get(i).getSerialisedName().equals(serialisedName)){
-                TemplatePortion copy = new TemplatePortion();
-                copy = templatePortions.get(i);
-                templatePortions.add(copy);
-                templatePortions.get(getTemplatePortions().size()-1).setSerialisedName(templatePortions.get(i).getSerialisedName() + "-(copy)");
+                TemplatePortion original = templatePortions.get(i);
+                String type = ToCTeditor.turtleGen.getPartType(original);
+                if ( type.equals("Phrase") ){
+                    Phrase copy = new Phrase(((Phrase)original).getWords(), ((Phrase)original).getValue());
+                    copy.setSerialisedName(original.getSerialisedName()+"-copy");
+                    copy.setNextWordPart(original.getNextWordPart());
+                    addTemplatePortion((i+1),copy);
+                } else if ( type.equals("Slot") ){
+                    List<Feature> featureList = new ArrayList<>();
+                    Slot copy= new Slot(((Slot)original).getValue(), ((Slot)original).getLabel(), featureList);
+                    copy.setSerialisedName(original.getSerialisedName()+"-copy");
+                    copy.setNextWordPart(original.getNextWordPart());
+                    addTemplatePortion((i+1),copy);
+                } else if ( type.equals("Punctuation") ) {
+                    Punctuation copy = new Punctuation(((Punctuation)original).getValue());
+                    copy.setSerialisedName(original.getSerialisedName()+"-copy");
+                    copy.setNextWordPart(original.getNextWordPart());
+                    addTemplatePortion((i+1),copy);
+                } else if ( type.equals("Unimorphic word") ) {
+                    UnimorphicWord copy = new UnimorphicWord(((UnimorphicWord)original).getValue());
+                    copy.setSerialisedName(original.getSerialisedName()+"-copy");
+                    copy.setNextWordPart(original.getNextWordPart());
+                    addTemplatePortion((i+1),copy);
+                } else if ( type.equals("Polymorphic word") ) {
+                    PolymorphicWord copy = new PolymorphicWord(((PolymorphicWord)original).getAllMorphemes(), ((PolymorphicWord)original).getFeatures());
+                    copy.setSerialisedName(original.getSerialisedName()+"-copy");
+                    copy.setNextWordPart(original.getNextWordPart());
+                    addTemplatePortion((i+1),copy);
+                }
+
+
+
             }
         }
     }
@@ -88,7 +118,8 @@ public class DataModel {
                 templatePortions.get(i).setNextWordPart(templatePortions.get(i+1));
             }
         }
-        templatePortions.get(templatePortions.size() - 1).setNextWordPart(null);
+        if (templatePortions.size() > 0)
+            templatePortions.get(templatePortions.size() - 1).setNextWordPart(null);
     }
 
     public TemplatePortion getTemplatePortion(int index){
@@ -99,15 +130,9 @@ public class DataModel {
             return null;
         }
     }
-    public TemplatePortion getTemplatePortion(TemplatePortion templatePortion){
-        int index = templatePortions.indexOf((TemplatePortion)templatePortion);
-        if (index >=0 && index < templatePortions.size()){
-            return templatePortions.get(index);
-        }
-        else{
-            return null;
-        }
-    }
+    public int getTemplatePortionIndex(TemplatePortion templatePortion){
+       return templatePortions.indexOf((TemplatePortion)templatePortion);
+   }
 
     public int getTemplateSize(){
         return this.templatePortions.size();

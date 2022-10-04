@@ -229,10 +229,10 @@ public class CreateItem {
                         TemplatePortion oldType = ToCTeditor.dataModel.getTemplatePortions().get(index);
                         ToCTeditor.dataModel.removeTemplatePortion(index);
                         String name = oldType.getSerialisedName();
-                        List<Feature> featureList = new ArrayList<>();
-                        Slot newSlot = new Slot(name, featureList);
+                       Slot newSlot = new Slot(name, new ArrayList<Feature>());
                         newSlot.setSerialisedName(name);
                         newSlot.setNextWordPart(oldType.getNextWordPart());
+
                         ToCTeditor.dataModel.addTemplatePortion(index, newSlot);
 
                         isChangeType = false;
@@ -279,7 +279,6 @@ public class CreateItem {
                         TemplatePortion oldType = ToCTeditor.dataModel.getTemplatePortions().get(index);
                         ToCTeditor.dataModel.removeTemplatePortion(index);
                         String name = oldType.getSerialisedName();
-                        List<Feature> featureList = new ArrayList<>();
                         UnimorphicWord newWord = new UnimorphicWord("");
                         newWord.setSerialisedName(name);
                         newWord.setNextWordPart(oldType.getNextWordPart());
@@ -296,7 +295,6 @@ public class CreateItem {
             } else{
                 btnType.addActionListener(new ActionListener(){
                     public void actionPerformed(ActionEvent e){
-                        List<Feature> featureList = new ArrayList<>();
                         ToCTeditor.dataModel.addTemplatePortion(new UnimorphicWord(""));
                         int portionNumber = 0;
                         if (ToCTeditor.dataModel.getTemplatePortions().size() > 1){
@@ -364,7 +362,6 @@ public class CreateItem {
                         TemplatePortion oldType = ToCTeditor.dataModel.getTemplatePortions().get(index);
                         ToCTeditor.dataModel.removeTemplatePortion(index);
                         String name = oldType.getSerialisedName();
-                        List<Feature> featureList = new ArrayList<>();
                         Punctuation newWord = new Punctuation("");
                         newWord.setSerialisedName(name);
                         newWord.setNextWordPart(oldType.getNextWordPart());
@@ -409,7 +406,6 @@ public class CreateItem {
                         TemplatePortion oldType = ToCTeditor.dataModel.getTemplatePortions().get(index);
                         ToCTeditor.dataModel.removeTemplatePortion(index);
                         String name = oldType.getSerialisedName();
-                        List<Feature> featureList = new ArrayList<>();
                         Phrase newWord = new Phrase("");
                         newWord.setSerialisedName(name);
                         newWord.setNextWordPart(oldType.getNextWordPart());

@@ -136,11 +136,11 @@ public class ViewThread extends Thread {
                 ToCTeditor.createMorpheme.setupGUI(currentTemplatePortion);
                 callCreateItem = false;
             }
-            else if (ToCTeditor.toggleBtnState != ToCTeditor.prevToggleBtnState){
+            /**else if (ToCTeditor.toggleBtnState != ToCTeditor.prevToggleBtnState){
                 //ToCTeditor.gui.templateItems.updateEditorTurtlePanel(templateItems.getPartPanelEditor(currentPart), templateItems.getPartPanelTurtle(currentPart));
                 ToCTeditor.templateItems.updateEditorTurtlePanel(ToCTeditor.templateItems.getPartPanelEditor(currentTemplatePortion), ToCTeditor.templateItems.getPartPanelTurtle(currentTemplatePortion));
                 ToCTeditor.prevToggleBtnState = ToCTeditor.toggleBtnState;
-            }
+            }*/
 
 
             //templateItems.getPartPanelEditor(currentPart);

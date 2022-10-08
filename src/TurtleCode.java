@@ -343,7 +343,7 @@ public class TurtleCode {
             turtle += " .\n\n";
         }
 
-        turtle +=   "<lang> a mola:Dialect\n" +
+        turtle +=   "<lang> a mola:Language\n" +
                 "    ; mola:isFamily <" + ToCTeditor.dataModel.getTemplate().getLanguage().getSerialisedName() +"> .\n\n";
 
         for (TemplatePortion part: ToCTeditor.dataModel.getTemplatePortions() ){

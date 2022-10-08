@@ -101,7 +101,7 @@ public class CreateItem {
          */
         JPanel pnlExistingItem = new JPanel();
         pnlExistingItem.setLayout(new BoxLayout(pnlExistingItem, BoxLayout.Y_AXIS));
-        pnlExistingItem.setMaximumSize(new Dimension(700,250));
+        pnlExistingItem.setMaximumSize(new Dimension(700,490));
         pnlExistingItem.setAlignmentX(Component.CENTER_ALIGNMENT);
         pnlExistingItem.setBackground(Color.lightGray);
         pnlExistingItem.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
@@ -124,7 +124,7 @@ public class CreateItem {
         pnlSearchField.add(txtSearch);
 
         pnlExistingItem.add(Box.createRigidArea(new Dimension(0,5)));
-        pnlExistingItem.add(pnlSearchField);
+        //pnlExistingItem.add(pnlSearchField);
 
         pnlExistingItem.add(setupExistingItems(ToCTeditor.dataModel.getTemplatePortions()));
 
@@ -533,9 +533,9 @@ public class CreateItem {
     public JComponent setupExistingItems(List<TemplatePortion> list) {
         Box box = Box.createVerticalBox();
         box.setBackground(Color.lightGray);
-        box.setMaximumSize(new Dimension(400, 250/**200*/));
-        JScrollPane pnlScroll = new JScrollPane(box, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        pnlScroll.setMaximumSize(new Dimension(400, 250/**200*/));
+        box.setMaximumSize(new Dimension(400, 490/**200*/));
+        JScrollPane pnlScroll = new JScrollPane(box, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        pnlScroll.setMaximumSize(new Dimension(400, 490/**200*/));
         pnlScroll.setBackground(Color.lightGray);
 
         /**DragMouseAdapter dh = new DragMouseAdapter();
@@ -548,7 +548,7 @@ public class CreateItem {
             box.add(createItemComponent(name, type));
         }
         JPanel p = new JPanel();
-        p.setMaximumSize(new Dimension(700, 200));
+        p.setMaximumSize(new Dimension(700, 475));
         p.setLayout(new BoxLayout(p, BoxLayout.LINE_AXIS));
         p.setBackground(Color.lightGray);
         p.add(Box.createRigidArea(new Dimension(150,0)));

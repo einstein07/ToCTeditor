@@ -66,6 +66,7 @@ public class TemplateItems {
     JPanel pnlEditorTurtleTitle;
     JPanel pnlAnnotateTurtle;
 
+    JToggleButton tbtnTurtle;
 
     JComponent superParent;
     JComponent parent2;
@@ -77,6 +78,7 @@ public class TemplateItems {
     }
 
     public void setupGUI(JPanel currentPartProperties, JPanel turtlePreview){
+
 
         // Frame init and dimensions
         JPanel g = new JPanel();
@@ -180,7 +182,7 @@ public class TemplateItems {
         btnAdd.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
 
-                ToCTeditor.gui = new ViewThread(ToCTeditor.homeScreen, ToCTeditor.templateItems, ToCTeditor.createItem, ToCTeditor.dataModel);
+                ToCTeditor.gui = new ViewThread();
 
                 ToCTeditor.gui.setCallCreateItem(true, false);
 
@@ -350,27 +352,6 @@ public class TemplateItems {
         //pnlAnnotateTurtle.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
 
         /**
-         * Annotate template Panel
-         */
-        pnlAnnotate = new JPanel();
-        pnlAnnotate.setLayout(new BoxLayout(pnlAnnotate, BoxLayout.Y_AXIS));
-
-        pnlAnnotate.setMaximumSize(new Dimension(345,80));
-        pnlAnnotate.setBackground(Color.lightGray);
-        //pnlAnnotate.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-        JTextArea annotate = new JTextArea();
-        annotate.setMinimumSize(new Dimension(345,80));
-        annotate.setMaximumSize(new Dimension(345, 80));
-        annotate.setAlignmentX(Component.CENTER_ALIGNMENT);
-        annotate.setFont(new Font("Sans", Font.PLAIN, 12));
-        annotate.setForeground(Color.blue);
-        JScrollPane pnlScroll = new JScrollPane(annotate, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        pnlScroll.setMinimumSize(new Dimension(345,80));
-        pnlScroll.setMaximumSize(new Dimension(345, 80));
-        pnlScroll.setBackground(Color.lightGray);
-        pnlAnnotate.add(pnlScroll);
-
-        /**
          * Panel for turtle syntax toggle button
          */
         JPanel pnlToggleButton = new JPanel();
@@ -380,74 +361,130 @@ public class TemplateItems {
         pnlToggleButton.setBackground(Color.lightGray);
 
 
-        JToggleButton tbtnTurtle = new JToggleButton("Show turtle preview");
-        tbtnTurtle.setFont(new Font("Sans", Font.PLAIN, 14));
-        tbtnTurtle.setMaximumSize(new Dimension(343,20));
-        //tbtnTurtle.setSelected(true);
+        if (tbtnTurtle == null) {
+            tbtnTurtle = new JToggleButton("Show turtle preview");
+            tbtnTurtle.setFont(new Font("Sans", Font.PLAIN, 14));
+            tbtnTurtle.setMaximumSize(new Dimension(343, 20));
+            //tbtnTurtle.setSelected(true);
 
 
 
+            /**pnlToggleButton.add(Box.createRigidArea(new Dimension(10,0)));
+             pnlToggleButton.add(btnSaveTemplate);*/
+
+            ItemListener itemListener = new ItemListener() {
+                public void itemStateChanged(ItemEvent itemEvent) {
+                    int state = itemEvent.getStateChange();
+                    if (state == ItemEvent.SELECTED) {
+                        ToCTeditor.gui = new ViewThread();
+                        ToCTeditor.gui.setToggleBtnState(state);
+
+                        ToCTeditor.gui.setCallTemplateItems(true);
+
+                        ToCTeditor.gui.start();
+                    } else {
+                        ToCTeditor.gui = new ViewThread();
+                        ToCTeditor.gui.setToggleBtnState(state);
+
+                        ToCTeditor.gui.setCallTemplateItems(true);
+
+                        ToCTeditor.gui.start();
+                    }
+                }
+            };
+
+            tbtnTurtle.addItemListener(itemListener);
+        }
 
         /**
          * Add label and toggle button panel
          */
-        tbtnTurtle.setSelected(ToCTeditor.gui.getToggleBtnState() == 1);
+
         pnlToggleButton.add(tbtnTurtle);
-        /**pnlToggleButton.add(Box.createRigidArea(new Dimension(10,0)));
-         pnlToggleButton.add(btnSaveTemplate);*/
 
-        ItemListener itemListener = new ItemListener() {
-            public void itemStateChanged(ItemEvent itemEvent) {
-                int state = itemEvent.getStateChange();
-                //if (state == ItemEvent.SELECTED) {
-                ToCTeditor.gui = new ViewThread();
-                ToCTeditor.gui.setToggleBtnState(state);
-                ToCTeditor.gui.start();
-                System.out.println("State: " + state);
-                /**} else {
-                 ToCTeditor.gui.setToggleBtnState(state);
-                 //System.out.println("Deselected: " + state);
-                 }*/
-            }
-        };
+        if ( tbtnTurtle != null && tbtnTurtle.isSelected() ){
+            /**
+             * Annotate template Panel
+             */
+            pnlAnnotate = new JPanel();
+            pnlAnnotate.setLayout(new BoxLayout(pnlAnnotate, BoxLayout.Y_AXIS));
 
-        tbtnTurtle.addItemListener(itemListener);
-
-        /**
-         * Turtle title panel
-         */
-        JPanel pnlTurtleTitle = new JPanel();
-        pnlTurtleTitle.setLayout(new BoxLayout(pnlTurtleTitle, BoxLayout.LINE_AXIS));
-        pnlTurtleTitle.setMinimumSize(new Dimension(343,15));
-        pnlTurtleTitle.setMaximumSize(new Dimension(343,15));
-        pnlTurtleTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-        pnlTurtleTitle.setBackground(Color.lightGray);
-
-
-        /**
-         * Turtle Preview Panel
-         */
-        pnlTurtlePreview = new JPanel();
-        pnlTurtlePreview.setLayout(new BoxLayout(pnlTurtlePreview, BoxLayout.Y_AXIS));
-        pnlTurtlePreview.setMinimumSize(new Dimension(345,180));
-        pnlTurtlePreview.setMaximumSize(new Dimension(345,180));
-        pnlTurtlePreview.setBackground(Color.lightGray);
-        //pnlTurtlePreview.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-        pnlTurtlePreview.add(turtlePreview);
-
-        pnlAnnotateTurtle.add(pnlAnnotate);
-        pnlAnnotateTurtle.add(Box.createRigidArea(new Dimension(0,5)));
-        pnlAnnotateTurtle.add(pnlToggleButton);
-        pnlAnnotateTurtle.add(Box.createRigidArea(new Dimension(0,5)));
-        pnlTurtleTitle.add(lblTurtleTitle);
-        pnlAnnotateTurtle.add(pnlTurtleTitle);
-        pnlAnnotateTurtle.add(pnlTurtlePreview);
-
-        if (ToCTeditor.gui.getToggleBtnState() == 1){
+            pnlAnnotate.setMaximumSize(new Dimension(345,80));
+            pnlAnnotate.setBackground(Color.lightGray);
+            //pnlAnnotate.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+            JTextArea annotate = new JTextArea();
+            annotate.setMinimumSize(new Dimension(345,80));
+            annotate.setMaximumSize(new Dimension(345, 80));
+            annotate.setAlignmentX(Component.CENTER_ALIGNMENT);
+            annotate.setFont(new Font("Sans", Font.PLAIN, 12));
+            annotate.setForeground(Color.blue);
+            JScrollPane pnlScroll = new JScrollPane(annotate, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            pnlScroll.setMinimumSize(new Dimension(345,80));
+            pnlScroll.setMaximumSize(new Dimension(345, 80));
+            pnlScroll.setBackground(Color.lightGray);
+            pnlAnnotate.add(pnlScroll);
 
             /**
-             * Add title labels to labels panel
+             * Turtle title panel
              */
+            JPanel pnlTurtleTitle = new JPanel();
+            pnlTurtleTitle.setLayout(new BoxLayout(pnlTurtleTitle, BoxLayout.LINE_AXIS));
+            pnlTurtleTitle.setMinimumSize(new Dimension(343,15));
+            pnlTurtleTitle.setMaximumSize(new Dimension(343,15));
+            pnlTurtleTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+            pnlTurtleTitle.setBackground(Color.lightGray);
+
+
+            /**
+             * Turtle Preview Panel
+             */
+            pnlTurtlePreview = new JPanel();
+            pnlTurtlePreview.setLayout(new BoxLayout(pnlTurtlePreview, BoxLayout.Y_AXIS));
+            pnlTurtlePreview.setMinimumSize(new Dimension(345,180));
+            pnlTurtlePreview.setMaximumSize(new Dimension(345,180));
+            pnlTurtlePreview.setBackground(Color.lightGray);
+            //pnlTurtlePreview.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+            pnlTurtlePreview.add(turtlePreview);
+
+            pnlAnnotateTurtle.add(pnlAnnotate);
+            pnlAnnotateTurtle.add(Box.createRigidArea(new Dimension(0,5)));
+            pnlAnnotateTurtle.add(pnlToggleButton);
+            pnlAnnotateTurtle.add(Box.createRigidArea(new Dimension(0,5)));
+            pnlTurtleTitle.add(lblTurtleTitle);
+            pnlAnnotateTurtle.add(pnlTurtleTitle);
+            pnlAnnotateTurtle.add(pnlTurtlePreview);
+
+        }
+        else{
+            /**
+             * Annotate template Panel
+             */
+            pnlAnnotate = new JPanel();
+            pnlAnnotate.setLayout(new BoxLayout(pnlAnnotate, BoxLayout.Y_AXIS));
+
+            pnlAnnotate.setMaximumSize(new Dimension(345,275));
+            pnlAnnotate.setBackground(Color.lightGray);
+            //pnlAnnotate.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+            JTextArea annotate = new JTextArea();
+            annotate.setMinimumSize(new Dimension(345,275));
+            annotate.setMaximumSize(new Dimension(345, 275));
+            annotate.setAlignmentX(Component.CENTER_ALIGNMENT);
+            annotate.setFont(new Font("Sans", Font.PLAIN, 12));
+            annotate.setForeground(Color.blue);
+            JScrollPane pnlScroll = new JScrollPane(annotate, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            pnlScroll.setMinimumSize(new Dimension(345,275));
+            pnlScroll.setMaximumSize(new Dimension(345, 275));
+            pnlScroll.setBackground(Color.lightGray);
+            pnlAnnotate.add(pnlScroll);
+
+            pnlAnnotateTurtle.add(pnlAnnotate);
+            pnlAnnotateTurtle.add(Box.createRigidArea(new Dimension(0,5)));
+            pnlAnnotateTurtle.add(pnlToggleButton);
+        }
+
+        /**
+         * Add title labels to labels panel
+         */
             pnlEditorTurtleTitle.add(lblEditorTitle);
             pnlEditorTurtleTitle.add(Box.createRigidArea(new Dimension(10,0)));
             pnlEditorTurtleTitle.add(lblAnnotateTemplate);
@@ -455,24 +492,44 @@ public class TemplateItems {
             pnlItemEditor.setMinimumSize(new Dimension(345,300));
             pnlItemEditor.setMaximumSize(new Dimension(345,300));
 
-            /**
-             * Add panels to editor preview panel
-             */
-            pnlEditorPreview.add(pnlItemEditor);
-            pnlEditorPreview.add(Box.createRigidArea(new Dimension(10,0)));
-            pnlEditorPreview.add(pnlAnnotateTurtle);
-            //pnlEditorPreview.add(pnlTurtlePreview);
-        }
-        else{
+        /**
+         * Add panels to editor preview panel
+         */
+           pnlEditorPreview.add(pnlItemEditor);
+           pnlEditorPreview.add(Box.createRigidArea(new Dimension(10,0)));
+           pnlEditorPreview.add(pnlAnnotateTurtle);
+
+
+        //if (ToCTeditor.gui.getToggleBtnState() == 1){
+
             /**
              * Add title labels to labels panel
              */
-            pnlEditorTurtleTitle.add(lblEditorTitle);
-            pnlEditorTurtleTitle.add(Box.createRigidArea(new Dimension(10,0)));
+        //    pnlEditorTurtleTitle.add(lblEditorTitle);
+        //    pnlEditorTurtleTitle.add(Box.createRigidArea(new Dimension(10,0)));
+        //    pnlEditorTurtleTitle.add(lblAnnotateTemplate);
 
-            pnlItemEditor.setMaximumSize(new Dimension(700,250));
-            pnlEditorPreview.add(pnlItemEditor);
-        }
+        //    pnlItemEditor.setMinimumSize(new Dimension(345,300));
+        //    pnlItemEditor.setMaximumSize(new Dimension(345,300));
+
+            /**
+             * Add panels to editor preview panel
+             */
+        //   pnlEditorPreview.add(pnlItemEditor);
+        //    pnlEditorPreview.add(Box.createRigidArea(new Dimension(10,0)));
+        //    pnlEditorPreview.add(pnlAnnotateTurtle);
+            //pnlEditorPreview.add(pnlTurtlePreview);
+        //}
+        //else{
+            /**
+             * Add title labels to labels panel
+             */
+        //    pnlEditorTurtleTitle.add(lblEditorTitle);
+        //    pnlEditorTurtleTitle.add(Box.createRigidArea(new Dimension(10,0)));
+
+        //    pnlItemEditor.setMaximumSize(new Dimension(700,250));
+        //    pnlEditorPreview.add(pnlItemEditor);
+        //}
 
     }
     public void updateEditorTurtlePanel(JPanel currentPartProperties, JPanel currentTurtleCode){
@@ -539,7 +596,7 @@ public class TemplateItems {
         this.pnlItemEditor.getParent().revalidate();
     }
     public void updateTurtlePanel(JPanel currentPartProperties){
-        if (ToCTeditor.gui.getToggleBtnState() == 1) {
+        if ( tbtnTurtle != null && tbtnTurtle.isSelected() ) {
             this.pnlTurtlePreview.remove(0);
             this.pnlTurtlePreview.add(currentPartProperties);
             this.pnlTurtlePreview.getParent().revalidate();
@@ -1771,6 +1828,7 @@ public class TemplateItems {
     // Word portions
     /************************************************************************************************************/
     public JPanel setupConcordEditor(Concord part){
+        System.out.println(part.set);
         /**
          * Concord Editor Panel
          */

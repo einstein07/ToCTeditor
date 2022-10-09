@@ -9,6 +9,8 @@
  */
 
 import za.co.mahlaza.research.grammarengine.base.interfaces.SlotFiller;
+import za.co.mahlaza.research.grammarengine.base.models.feature.ConcordType;
+import za.co.mahlaza.research.grammarengine.base.models.feature.Feature;
 import za.co.mahlaza.research.grammarengine.base.models.interfaces.InternalSlotRootAffix;
 import za.co.mahlaza.research.grammarengine.base.models.interfaces.Word;
 import za.co.mahlaza.research.grammarengine.base.models.template.*;
@@ -1828,7 +1830,6 @@ public class TemplateItems {
     // Word portions
     /************************************************************************************************************/
     public JPanel setupConcordEditor(Concord part){
-        System.out.println(part.set);
         /**
          * Concord Editor Panel
          */
@@ -1910,6 +1911,7 @@ public class TemplateItems {
             txtType.setText(part.getConcordType().getTypeString());
         else
             txtType.setText("");
+        addChangeListener(txtType, e -> updateConcordType(part, txtLabel.getText()));
 
         pnlType.add(Box.createRigidArea(new Dimension(5,0)));
         pnlType.add(lblType);
@@ -2290,6 +2292,12 @@ public class TemplateItems {
         }
 
         updateTurtlePanel(getInternalElementPanelTurtle(part));
+        updateItems();
+    }
+
+    private void updateConcordType(Concord concord, String updatedText) {
+        concord.addFeature(new ConcordType(updatedText));
+        updateTurtlePanel(getInternalElementPanelTurtle(concord));
         updateItems();
     }
 

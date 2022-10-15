@@ -50,7 +50,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
+import java.util.Scanner;
 
 
 public class TemplateItems {
@@ -420,6 +420,7 @@ public class TemplateItems {
             annotate.setAlignmentX(Component.CENTER_ALIGNMENT);
             annotate.setFont(new Font("Sans", Font.PLAIN, 12));
             annotate.setForeground(Color.blue);
+            addChangeListener(annotate, e -> updateTemplateAnnotation( annotate.getText()));
             JScrollPane pnlScroll = new JScrollPane(annotate, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             pnlScroll.setMinimumSize(new Dimension(345,80));
             pnlScroll.setMaximumSize(new Dimension(345, 80));
@@ -473,6 +474,7 @@ public class TemplateItems {
             annotate.setAlignmentX(Component.CENTER_ALIGNMENT);
             annotate.setFont(new Font("Sans", Font.PLAIN, 12));
             annotate.setForeground(Color.blue);
+            addChangeListener(annotate, e -> updateTemplateAnnotation( annotate.getText()));
             JScrollPane pnlScroll = new JScrollPane(annotate, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             pnlScroll.setMinimumSize(new Dimension(345,275));
             pnlScroll.setMaximumSize(new Dimension(345, 275));
@@ -1244,9 +1246,17 @@ public class TemplateItems {
         updateItems();
     }
     private void updateName(TemplatePortion part, String updatedText) {
-        part.setSerialisedName(updatedText);
+        String fullName = "";
+        Scanner sl = new Scanner(updatedText);
+        while(sl.hasNext()) {
+            fullName += sl.next();
+        }
+        part.setSerialisedName(fullName);
         updateTurtlePanel(getPartPanelTurtle(part));
         updateItems();
+    }
+    private void updateTemplateAnnotation(String updatedText) {
+        ToCTeditor.dataModel.setTemplateAnnotation(updatedText);
     }
 
     private void updateComboVals(TemplatePortion part, String updatedText) {
@@ -1814,10 +1824,10 @@ public class TemplateItems {
         pnlPolymorphicWordEditor.add(pnlFirstPart);
         pnlPolymorphicWordEditor.add(Box.createRigidArea(new Dimension(0,10)));
         pnlPolymorphicWordEditor.add(pnlLastPart);
-        if (part.getAllMorphemes().size() > 2) {
+        /**if (part.getAllMorphemes().size() > 2) {
             pnlPolymorphicWordEditor.add(Box.createRigidArea(new Dimension(0, 10)));
             pnlPolymorphicWordEditor.add(pnlHasPart);
-        }
+        }*/
         pnlPolymorphicWordEditor.add(Box.createRigidArea(new Dimension(0,10)));
         //pnlPolymorphicWordEditor.add(pnlNextPart);
         pnlPolymorphicWordEditor.add(Box.createRigidArea(new Dimension(0,10)));
@@ -1891,6 +1901,50 @@ public class TemplateItems {
         pnlLabel.add(Box.createRigidArea(new Dimension(5,0)));
 
         /**
+         * Create add features panel and add button to panel
+         */
+        JPanel pnlFeatureList = new JPanel();
+        pnlFeatureList.setLayout(new BoxLayout(pnlFeatureList, BoxLayout.LINE_AXIS));
+        pnlFeatureList.setMaximumSize(new Dimension(340,30));
+        pnlFeatureList.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pnlFeatureList.setBackground(Color.lightGray);
+
+        /**
+         * drop down
+         */
+        JComboBox cbFeatureList = new JComboBox();
+        cbFeatureList.setFont(new Font("Sans", Font.PLAIN, 15));
+        cbFeatureList.setMaximumSize(new Dimension(330,30));
+
+        cbFeatureList.addItem("Remove Feature List");
+        cbFeatureList.addItem("Add New Feature");
+
+        //@TODO Concord type must have a get feature list method to pupulate combo box
+        /**for ( int i = 1; i < part.getAllMorphemes().size() -1; i++ ) {
+            cbHasPart.addItem(part.getItemAt(i).getSerialisedName());
+        }*/
+
+        /**cbFeatureList.addActionListener(e -> {
+            JComboBox cb = (JComboBox)e.getSource();
+            String selected = (CheckComboStore)cb.getSelectedItem();
+            CheckComboRenderer ccr = (CheckComboRenderer)cb.getRenderer();
+            ccr.checkBox.setSelected((store.state = !store.state));
+            List<String> newReliesOnList = new ArrayList<>();
+            for (int i = 0; i < cb.getItemCount(); i++){
+                if (((CheckComboStore)cb.getItemAt(i)).getState() == Boolean.TRUE){
+                    newReliesOnList.add(((CheckComboStore)cb.getItemAt(i)).getId());
+                }
+            }
+            part.setReliesOnLabels(newReliesOnList);
+            updateTurtlePanel(getPartPanelTurtle(part));
+            updateItems();
+        });*/
+        // add the listener to the jbutton to handle the "pressed" event
+
+        pnlFeatureList.add(Box.createRigidArea(new Dimension(5,0)));
+        pnlFeatureList.add(cbFeatureList);
+
+        /**
          * Create concord type panel and add components to panel
          */
         JPanel pnlType = new JPanel();
@@ -1911,7 +1965,8 @@ public class TemplateItems {
             txtType.setText(part.getConcordType().getTypeString());
         else
             txtType.setText("");
-        addChangeListener(txtType, e -> updateConcordType(part, txtLabel.getText()));
+        txtType.setEditable(false);
+        //addChangeListener(txtType, e -> updateConcordType(part, txtType.getText()));
 
         pnlType.add(Box.createRigidArea(new Dimension(5,0)));
         pnlType.add(lblType);
@@ -1950,9 +2005,84 @@ public class TemplateItems {
         pnlConcordEditor.add(Box.createRigidArea(new Dimension(0,10)));
         pnlConcordEditor.add(pnlType);
         pnlConcordEditor.add(Box.createRigidArea(new Dimension(0,10)));
+        //pnlConcordEditor.add(pnlFeatureList);
+        //pnlConcordEditor.add(Box.createRigidArea(new Dimension(0,10)));
         //pnlConcordEditor.add(pnlNextPart);
 
         return pnlConcordEditor;
+    }
+
+    public JPanel setupFeatureEditor(Concord part) {
+        /**
+         * Feature Editor Panel
+         */
+        JPanel pnlFeatureEditor = new JPanel();
+        pnlFeatureEditor.setLayout(new BoxLayout(pnlFeatureEditor, BoxLayout.Y_AXIS));
+        pnlFeatureEditor.setMaximumSize(new Dimension(345, 250));
+        pnlFeatureEditor.setBackground(Color.lightGray);
+
+        /**
+         * Create part name panel and add components to panel
+         */
+        JPanel pnlFeatureName = new JPanel();
+        pnlFeatureName.setLayout(new BoxLayout(pnlFeatureName, BoxLayout.LINE_AXIS));
+        pnlFeatureName.setMaximumSize(new Dimension(340, 30));
+        pnlFeatureName.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pnlFeatureName.setBackground(Color.lightGray);
+
+
+        JLabel lblFeatureName = new JLabel("Feature name:");
+        lblFeatureName.setFont(new Font("Sans", Font.PLAIN, 14));
+        lblFeatureName.setMaximumSize(new Dimension(100, 30));
+
+
+        JTextField txtFeatureName = new JTextField();
+        txtFeatureName.setFont(new Font("Sans", Font.PLAIN, 14));
+        txtFeatureName.setMaximumSize(new Dimension(225, 30));
+        txtFeatureName.setText(part.getSerialisedName());
+        addChangeListener(txtFeatureName, e -> updateInternalElementName(part, txtFeatureName.getText()));
+
+        pnlFeatureName.add(Box.createRigidArea(new Dimension(5, 0)));
+        pnlFeatureName.add(lblFeatureName);
+        pnlFeatureName.add(Box.createRigidArea(new Dimension(5, 0)));
+        pnlFeatureName.add(txtFeatureName);
+        pnlFeatureName.add(Box.createRigidArea(new Dimension(5, 0)));
+
+        /**
+         * Create label panel and add components to panel
+         */
+        JPanel pnlLabel = new JPanel();
+        pnlLabel.setLayout(new BoxLayout(pnlLabel, BoxLayout.LINE_AXIS));
+        pnlLabel.setMaximumSize(new Dimension(340, 30));
+        pnlLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        pnlLabel.setBackground(Color.lightGray);
+
+        JLabel lblLabel = new JLabel("Type:");
+        lblLabel.setFont(new Font("Sans", Font.PLAIN, 14));
+        lblLabel.setMaximumSize(new Dimension(100, 30));
+
+        JTextField txtLabel = new JTextField();
+        txtLabel.setFont(new Font("Sans", Font.PLAIN, 14));
+        txtLabel.setMaximumSize(new Dimension(225, 30));
+        txtLabel.setText(part.getLabel());
+        addChangeListener(txtLabel, e -> updateInternalElementValue(part, txtLabel.getText()));
+
+        pnlLabel.add(Box.createRigidArea(new Dimension(5, 0)));
+        pnlLabel.add(lblLabel);
+        pnlLabel.add(Box.createRigidArea(new Dimension(5, 0)));
+        pnlLabel.add(txtLabel);
+        pnlLabel.add(Box.createRigidArea(new Dimension(5, 0)));
+
+        /***
+         * Add all panels to main panel - i.e. Slot editor panel
+         */
+        pnlFeatureEditor.add(Box.createRigidArea(new Dimension(0,10)));
+        pnlFeatureEditor.add(pnlFeatureName);
+        pnlFeatureEditor.add(Box.createRigidArea(new Dimension(0,10)));
+        pnlFeatureEditor.add(pnlLabel);
+        pnlFeatureEditor.add(Box.createRigidArea(new Dimension(0,10)));
+
+        return pnlFeatureEditor;
     }
     public JPanel setupCopulaEditor(Copula part){
         /**
@@ -2264,7 +2394,12 @@ public class TemplateItems {
     }
 
     private void updateInternalElementName(InternalSlotRootAffix internalElement, String updatedText) {
-        internalElement.setSerialisedName(updatedText);
+        String fullName = "";
+        Scanner sl = new Scanner(updatedText);
+        while(sl.hasNext()) {
+            fullName += sl.next();
+        }
+        internalElement.setSerialisedName(fullName);
         updateTurtlePanel(getInternalElementPanelTurtle(internalElement));
         updateItems();
     }

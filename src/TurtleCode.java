@@ -11,6 +11,10 @@ import za.co.mahlaza.research.grammarengine.base.models.template.Slot;
 import za.co.mahlaza.research.grammarengine.base.models.template.UnimorphicAffix;
 import za.co.mahlaza.research.grammarengine.base.models.template.UnimorphicWord;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
 /*
  * @(#) TurtleCode.java   1.0   Dec 01, 2021
  *
@@ -21,6 +25,7 @@ import za.co.mahlaza.research.grammarengine.base.models.template.UnimorphicWord;
  * @(#) $Id$
  */
 public class TurtleCode {
+    List<String> conTypes = new ArrayList<>();
     public String getPartTurtle(Part part){
         String turtle = "";
         //String type = getPartType(part);
@@ -132,6 +137,16 @@ public class TurtleCode {
             }
             if ( ((PolymorphicWord)templatePortion).getAllMorphemes().size() > 0 ){
                 turtle +=   "    ; toct:hasFirstPart <" + ((PolymorphicWord)templatePortion).getFirstItem().getSerialisedName()  + ">\n";
+                if ( ((PolymorphicWord)templatePortion).getAllMorphemes().size() > 2) {
+                    turtle += "    ; toct:hasPart";
+                    for (int i = 1; i < ((PolymorphicWord)templatePortion).getAllMorphemes().size() - 1; i++) {
+                        turtle += " <" + ((PolymorphicWord)templatePortion).getItemAt(i).getSerialisedName() + ">";
+                        if (i < ((PolymorphicWord)templatePortion).getAllMorphemes().size() - 2) {
+                            turtle += ",";
+                        }
+                    }
+                    turtle += "\n";
+                }
             }
             else{
                 turtle +=   "    ; toct:hasFirstPart <>\n";
@@ -142,17 +157,19 @@ public class TurtleCode {
             else {
                 turtle += "    ; toct:hasLastPart <>\n";
             }
+
+
             if (((PolymorphicWord)templatePortion).getNextWordPart() != null ){
                 turtle += "    ; toct:hasNextPart <" + ((PolymorphicWord)templatePortion).getNextWordPart().getSerialisedName() + "> .";
             }
             else {
                 turtle += "    ; toct:hasNextPart <> .";
             }
-            if (((PolymorphicWord)templatePortion).getAllMorphemes().size() > 0)
-                turtle +=   "\n\n" + getInternalElementTurtle(((PolymorphicWord)templatePortion).getFirstItem()) +
-                            "\n\n" + getInternalElementTurtle(((PolymorphicWord)templatePortion).getLastItem());
-
-
+            if (((PolymorphicWord)templatePortion).getAllMorphemes().size() > 0){
+                for (int i = 0; i < ((PolymorphicWord)templatePortion).getAllMorphemes().size(); i++){
+                    turtle +=   "\n\n" + getInternalElementTurtle(((PolymorphicWord)templatePortion).getItemAt(i));
+                }
+            }
         }
         else if ( type.equals("Phrase") ){
             turtle = "<" + templatePortion.getSerialisedName() + "> a toct:Phrase\n" +
@@ -193,8 +210,12 @@ public class TurtleCode {
         }
         else if (internalElement.getType().equals("Concord")){
             turtle = "<" + internalElement.getSerialisedName() + "> a toct:Concord\n";
-            if (((Concord)internalElement).getConcordType() != null)
-                turtle += "    ; cao:hasConcordType <" + ((Concord)internalElement).getConcordType().getTypeString() + ">\n";
+            if (((Concord)internalElement).getConcordType() != null) {
+                turtle += "    ; cao:hasConcordType <conType>\n";
+                if (conTypes.size() == 0 || conTypes.indexOf(((Concord)internalElement).getConcordType().getTypeString()) == -1) {
+                    conTypes.add(((Concord) internalElement).getConcordType().getTypeString());
+                }
+            }
             else
                 turtle += "    ; cao:hasConcordType <>\n";
             turtle +=   "    ; toct:hasLabel \"" + ((Concord) internalElement).getLabel() + "\"^^xsd:string";
@@ -308,7 +329,14 @@ public class TurtleCode {
         return id;
     }
     public String getTemplateTurtle() {
-        String turtle = "@base <http://people.cs.uct.ac.za/~zmahlaza/templates/owlsiz/> .\n" +
+        String turtle = "";
+        if ( ToCTeditor.dataModel.getTemplateAnnotation() != null ){
+            Scanner sl = new Scanner(ToCTeditor.dataModel.getTemplateAnnotation()).useDelimiter("\n");
+            while(sl.hasNext()) {
+                turtle += "#" + sl.next() + "\n";
+            }
+        }
+        turtle += "@base <http://people.cs.uct.ac.za/~zmahlaza/templates/owlsiz/> .\n" +
                 "@prefix toct: <https://people.cs.uct.ac.za/~zmahlaza/ontologies/ToCT#> .\n" +
                 "@prefix mola: <https://ontology.londisizwe.org/mola#> .\n" +
                 "@prefix co: <http://purl.org/co/> .\n" +
@@ -348,6 +376,9 @@ public class TurtleCode {
 
         for (TemplatePortion part: ToCTeditor.dataModel.getTemplatePortions() ){
             turtle += getPartTurtle(part) + "\n\n";
+        }
+        if (conTypes.size() > 0){
+            turtle += "<subjConType> a cao:"+conTypes.get(0);
         }
         return turtle.trim();
     }

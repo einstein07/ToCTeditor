@@ -30,6 +30,8 @@ import java.util.Objects;
 
 public class DataModel {
     private List<TemplatePortion> templatePortions;
+
+    private String templateAnnotation;
     private Template template;
 
     public static List<Part> parts;
@@ -307,5 +309,13 @@ public class DataModel {
             }
         }
         return null;
+    }
+
+    public void setTemplateAnnotation(String templateAnnotation) {
+        this.templateAnnotation = templateAnnotation;
+    }
+
+    public String getTemplateAnnotation() {
+        return templateAnnotation;
     }
 }

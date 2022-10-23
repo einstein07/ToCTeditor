@@ -18,6 +18,10 @@ make run
 * Zola Mahlaza
 * Maria Keet
 
+## Demo of the ToCT Editor
+Click on the image to start the video
+
+[![Demo video of the tool](https://people.cs.uct.ac.za/~mkeet/files/screenshotTEdiAllSome.png)](https://people.cs.uct.ac.za/~mkeet/files/TEdiDemoSmall.mp4)
 
 ## More information
 
